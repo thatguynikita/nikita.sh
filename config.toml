@@ -8,8 +8,8 @@ theme = "hello-friend-ng"
 PygmentsCodeFences = true
 PygmentsStyle = "monokai"
 
-rssLimit  = 10  # Maximum number of items in the RSS feed.
-copyright = "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License." # This message is only used by the RSS template.
+# rssLimit  = 10  # Maximum number of items in the RSS feed.
+# copyright = "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License." # This message is only used by the RSS template.
 
 # googleAnalytics = ""
 # disqusShortname = ""
@@ -32,7 +32,7 @@ enableMissingTranslationPlaceholders = false
 disableRSS     = false
 disableSitemap = false
 disable404     = false
-disableHugoGeneratorInject = false
+disableHugoGeneratorInject = true
 
 [permalinks]
   posts = "/posts/:year/:month/:title/"
@@ -55,7 +55,7 @@ disableHugoGeneratorInject = false
 
   # Metadata mostly used in document's head
   description = "Homepage by Nikita Chernozipunnikov"
-  keywords = ""
+  keywords = "DevOps, SRE, AWS, Docker, Kubernetes"
   images = [""]
 
   homeSubtitle = "DevOps / SRE"
@@ -74,7 +74,7 @@ disableHugoGeneratorInject = false
   # Directory name of your blog content (default is `content/posts`)
   contentTypeName = "posts"
   # Default theme "light" or "dark"
-  defaultTheme = "dark"
+  defaultTheme = "light"
   themeColor = "#252627"
 
   [params.logo]
@@ -83,8 +83,8 @@ disableHugoGeneratorInject = false
 
   # Social icons
   [[params.social]]
-    name = "twitter"
-    url  = "https://twitter.com/thatguynikita"
+    name = "telegram"
+    url  = "https://t.me/thatguynikita"
 
   [[params.social]]
     name = "email"
@@ -96,7 +96,11 @@ disableHugoGeneratorInject = false
 
   [[params.social]]
     name = "linkedin"
-    url  = "https://www.linkedin.com/in/nikita-chernozipunnikov/"
+    url  = "https://www.linkedin.com/in/nikita-chernozipunnikov"
+
+  [[params.social]]
+    name = "twitter"
+    url  = "https://twitter.com/thatguynikita"
 
 [languages]
   [languages.en]
