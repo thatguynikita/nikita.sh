@@ -1,19 +1,13 @@
 +++
 title = "About"
-date = "2014-04-09"
-aliases = ["about-us","about-hugo","contact"]
+date = "2019-08-22"
+aliases = ["about-us","contact"]
 [ author ]
-  name = "Hugo Authors"
+  name = "Nikita Chernozipunnikov"
 +++
 
-Hugo is the **world’s fastest framework for building websites**. It is written in Go.
+**DevOps Engineer** with a background in Application Support and Operations, slowly developing towards Software Development. 
 
-It makes use of a variety of open source projects including:
+Solid understanding of how modern computer systems operate, extensive Linux and network administration experience, sound knowledge of Computer Science concepts, and plenty of enthusiasm for bringing DevOps and SRE practices into reality. 
 
-* https://github.com/russross/blackfriday
-* https://github.com/alecthomas/chroma
-* https://github.com/muesli/smartcrop
-* https://github.com/spf13/cobra
-* https://github.com/spf13/viper
-
-Learn more and contribute on [GitHub](https://github.com/gohugoio).
+Learn more on [hh.ru](https://spb.hh.ru/resume/9b1d143bff074159570039ed1f4c6839524665).
