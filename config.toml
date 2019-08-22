@@ -1,0 +1,4 @@
+baseURL = "https://nikita.sh/"
+languageCode = "en-us"
+title = "nikita.sh"
+theme = "hello-friend-ng"
