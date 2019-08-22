@@ -109,3 +109,8 @@ disableHugoGeneratorInject = false
     identifier = "about"
     name       = "About"
     url        = "about/"
+
+[deployment]
+  [[deployment.targets]]
+    name = "s3bucket"
+    URL = "s3://nikita.sh?region=eu-central-1"
