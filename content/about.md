@@ -6,8 +6,8 @@ aliases = ["about-us","contact"]
   name = "Nikita Chernozipunnikov"
 +++
 
-**DevOps Engineer** with a background in Application Support and Operations, slowly developing towards Software Development. 
+**DevOps Engineer** with a background in Application Support and Operations, gradually developing towards Software Development. 
 
-Solid understanding of how modern computer systems operate, extensive Linux and network administration experience, sound knowledge of Computer Science concepts, and plenty of enthusiasm for bringing DevOps and SRE practices into reality. 
+Solid knowledge of how modern computer systems work and how they don't work, extensive Linux and network administration experience, sound understanding of Computer Science concepts, and plenty of enthusiasm for bringing DevOps and SRE practices into reality. 
 
 Learn more on [hh.ru](https://hh.ru/resume/9b1d143bff074159570039ed1f4c6839524665).
