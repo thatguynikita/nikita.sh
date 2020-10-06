@@ -54,7 +54,7 @@ disableHugoGeneratorInject = true
   dateformNumTime = "2006-01-02 15:04 -0700"
 
   # Metadata mostly used in document's head
-  description = "Homepage by Nikita Chernozipunnikov"
+  description = "Nikita Chernozipunnikov - Homepage"
   keywords = "DevOps, SRE, AWS, Docker, Kubernetes"
   images = [""]
 
@@ -82,10 +82,6 @@ disableHugoGeneratorInject = true
     logoHomeLink = "/"
 
   # Social icons
-  [[params.social]]
-    name = "telegram"
-    url  = "https://t.me/thatguynikita"
-
   [[params.social]]
     name = "email"
     url  = "mailto:me@nikita.sh"
@@ -117,4 +113,4 @@ disableHugoGeneratorInject = true
 [deployment]
   [[deployment.targets]]
     name = "s3bucket"
-    URL = "s3://nikita.sh?region=eu-central-1"
+    URL = "s3://nikita.sh?region=eu-north-1"
