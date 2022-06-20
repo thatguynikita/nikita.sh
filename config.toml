@@ -104,7 +104,7 @@ disableHugoGeneratorInject = true
 
   [[params.social]]
     name = "facebook"
-    url  = "https://www.facebook.com/nikita.chernozipunnikov
+    url  = "https://www.facebook.com/nikita.chernozipunnikov"
 
   [[params.social]]
     name = "instagram"
