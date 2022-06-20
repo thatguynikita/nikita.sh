@@ -87,6 +87,10 @@ disableHugoGeneratorInject = true
     url  = "mailto:me@nikita.sh"
 
   [[params.social]]
+    name = "telegram"
+    url  = "https://t.me/thatguynikita"
+
+  [[params.social]]
     name = "github"
     url  = "https://github.com/thatguynikita"
 
@@ -97,6 +101,14 @@ disableHugoGeneratorInject = true
   [[params.social]]
     name = "twitter"
     url  = "https://twitter.com/thatguynikita"
+
+  [[params.social]]
+    name = "facebook"
+    url  = "https://www.facebook.com/nikita.chernozipunnikov
+
+  [[params.social]]
+    name = "instagram"
+    url  = "https://www.instagram.com/thatguynikita"
 
 [languages]
   [languages.en]
