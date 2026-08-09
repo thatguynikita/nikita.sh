@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Nikita Chernozipunnikov — nikita.sh</title>
+<meta name="description" content="DevOps / SRE. AWS, Docker, Kubernetes, Linux.">
+<meta name="theme-color" content="#060a08">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23060a08%22/><text x=%2250%25%22 y=%2262%25%22 font-size=%2260%22 text-anchor=%22middle%22 fill=%22%2339ff88%22 font-family=%22monospace%22>&gt;</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050806;
+    --panel:#070d09;
+    --fg:#3dff8a;
+    --fg-dim:#2a9c60;
+    --accent:#5ff1ff;
+    --amber:#ffb454;
+    --red:#ff5f56;
+    --border:rgba(61,255,138,.28);
+    --glow:0 0 4px rgba(61,255,138,.85), 0 0 12px rgba(61,255,138,.45), 0 0 24px rgba(61,255,138,.25);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(61,255,138,.06), transparent 60%),
+      var(--bg);
+    color:var(--fg);
+    font-family:'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:28px 14px 16px;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* ---------- background matrix rain ---------- */
+  #matrix{
+    position:fixed; inset:0; width:100%; height:100%;
+    z-index:0; opacity:.16; pointer-events:none;
+    transition:opacity .6s ease;
+  }
+  #matrix.off{opacity:0;}
+
+  /* ---------- CRT overlay ---------- */
+  .crt{
+    position:fixed; inset:0; z-index:5; pointer-events:none;
+    background:repeating-linear-gradient(
+      to bottom,
+      rgba(0,0,0,0) 0px,
+      rgba(0,0,0,0) 1px,
+      rgba(0,0,0,.22) 2px,
+      rgba(0,0,0,0) 3px
+    );
+    mix-blend-mode:multiply;
+    animation:flicker 6s infinite;
+  }
+  .vignette{
+    position:fixed; inset:0; z-index:4; pointer-events:none;
+    background:radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
+  }
+  @keyframes flicker{
+    0%,100%{opacity:.9;}
+    92%{opacity:.9;}
+    93%{opacity:.7;}
+    94%{opacity:1;}
+    95%{opacity:.75;}
+    96%{opacity:1;}
+  }
+
+  /* ---------- boot screen ---------- */
+  #boot{
+    position:fixed; inset:0; z-index:20; background:#020402;
+    color:var(--fg); font-size:14px; padding:40px;
+    white-space:pre-wrap; line-height:1.65;
+    text-shadow:var(--glow);
+  }
+  #boot.hidden{display:none;}
+
+  /* ---------- layout ---------- */
+  .wrap{position:relative; z-index:2; width:100%; max-width:880px;}
+
+  .topbar{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:12px; color:var(--fg-dim); margin-bottom:10px; padding:0 4px;
+    letter-spacing:.03em;
+  }
+  .topbar a{color:var(--fg-dim); text-decoration:none;}
+  .topbar a:hover{color:var(--fg); text-shadow:var(--glow);}
+
+  .term{
+    background:linear-gradient(180deg, rgba(15,25,17,.92), rgba(6,10,8,.96));
+    border:1px solid var(--border);
+    border-radius:10px;
+    box-shadow:var(--glow), 0 20px 60px rgba(0,0,0,.6), inset 0 0 40px rgba(61,255,138,.03);
+    overflow:hidden;
+    backdrop-filter:blur(2px);
+  }
+  .term-head{
+    display:flex; align-items:center; gap:8px;
+    padding:10px 14px;
+    background:rgba(0,0,0,.35);
+    border-bottom:1px solid var(--border);
+  }
+  .dot{width:11px; height:11px; border-radius:50%; display:inline-block;}
+  .dot.r{background:var(--red); box-shadow:0 0 6px var(--red);}
+  .dot.y{background:var(--amber); box-shadow:0 0 6px var(--amber);}
+  .dot.g{background:var(--fg); box-shadow:0 0 6px var(--fg);}
+  .term-title{
+    flex:1; text-align:center; font-size:12px; color:var(--fg-dim);
+    letter-spacing:.04em;
+  }
+
+  .term-body{
+    padding:18px 20px 14px;
+    font-size:14px;
+    line-height:1.6;
+    min-height:60vh;
+    max-height:70vh;
+    overflow-y:auto;
+    scroll-behavior:smooth;
+  }
+  .term-body::-webkit-scrollbar{width:8px;}
+  .term-body::-webkit-scrollbar-thumb{background:var(--border); border-radius:4px;}
+  .term-body::-webkit-scrollbar-track{background:transparent;}
+
+  .glow{text-shadow:var(--glow);}
+  .dim{color:var(--fg-dim);}
+  .accent{color:var(--accent); text-shadow:0 0 6px rgba(95,241,255,.7);}
+  .amber{color:var(--amber); text-shadow:0 0 6px rgba(255,180,84,.6);}
+  a{color:var(--accent);}
+  a:hover{text-shadow:0 0 8px var(--accent);}
+
+  .line{white-space:pre-wrap; word-break:break-word; margin:0 0 2px;}
+  .prompt-row{display:flex; align-items:baseline; flex-wrap:wrap; gap:0;}
+  .ps{color:var(--fg); text-shadow:var(--glow); margin-right:8px; white-space:nowrap;}
+  .ps .path{color:var(--accent);}
+
+  .input-row{display:flex; align-items:center; margin-top:4px; flex-wrap:wrap;}
+  #cmdline{
+    background:transparent; border:none; outline:none;
+    color:var(--fg); font-family:inherit; font-size:14px;
+    flex:0 0 auto; width:1ch; min-width:1ch; max-width:100%;
+    caret-color:transparent; text-shadow:var(--glow); padding:0;
+  }
+  .cursor{
+    display:inline-block; width:8px; height:16px; background:var(--fg);
+    box-shadow:var(--glow); margin-left:1px; animation:blink 1s steps(1) infinite;
+    vertical-align:middle;
+  }
+  @keyframes blink{0%,49%{opacity:1;} 50%,100%{opacity:0;}}
+
+  .neofetch{display:flex; gap:26px; flex-wrap:wrap; margin:6px 0 14px; white-space:normal;}
+  .nf-art{color:var(--fg); text-shadow:var(--glow); font-size:12px; line-height:1.15; white-space:pre; font-family:'Noto Sans Mono', monospace; font-variant-ligatures:none;}
+  .nf-info{white-space:normal;}
+  .nf-info div{margin:1px 0;}
+  .nf-key{color:var(--accent); display:inline-block; min-width:82px;}
+
+  .links{display:flex; flex-wrap:wrap; gap:6px 18px; margin:4px 0;}
+  .links a{white-space:nowrap;}
+
+  table.tbl{border-collapse:collapse; margin:4px 0;}
+  table.tbl td{padding:1px 14px 1px 0; vertical-align:top;}
+
+  /* quick chips */
+  .chips{display:flex; flex-wrap:wrap; gap:8px; padding:12px 16px 14px; border-top:1px solid var(--border); background:rgba(0,0,0,.25);}
+  .chip{
+    font-family:inherit; font-size:12px; color:var(--fg-dim);
+    background:rgba(61,255,138,.06); border:1px solid var(--border);
+    padding:5px 11px; border-radius:20px; cursor:pointer;
+    transition:.15s ease;
+  }
+  .chip:hover{color:var(--fg); border-color:var(--fg); box-shadow:0 0 10px rgba(61,255,138,.35); text-shadow:var(--glow);}
+
+  footer{
+    margin-top:14px; font-size:11px; color:var(--fg-dim); text-align:center;
+    letter-spacing:.03em; padding-bottom:6px;
+  }
+  footer a{color:var(--fg-dim); text-decoration:underline;}
+  footer a:hover{color:var(--fg);}
+
+  /* ---------- game overlay (CRT monitor) ---------- */
+  .game-overlay{
+    position:fixed; inset:0; z-index:50;
+    background:rgba(2,4,3,.9);
+    display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .game-overlay.hidden{display:none;}
+  .game-frame{
+    width:min(920px, 96vw); height:min(640px, 88vh);
+    background:linear-gradient(180deg, rgba(15,25,17,.96), rgba(6,10,8,.98));
+    border:1px solid var(--border); border-radius:10px;
+    box-shadow:var(--glow), 0 30px 80px rgba(0,0,0,.75);
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  .game-frame .term-head{position:relative;}
+  .game-close{
+    position:absolute; right:8px; top:50%; transform:translateY(-50%);
+    background:none; border:none; color:var(--fg-dim); font-size:20px; line-height:1;
+    cursor:pointer; padding:2px 9px; font-family:inherit;
+  }
+  .game-close:hover{color:var(--fg); text-shadow:var(--glow);}
+  .game-view{position:relative; flex:1; background:#000;}
+  .game-view iframe{
+    width:100%; height:100%; border:0; display:block; background:#000;
+    filter:grayscale(.55) sepia(.5) hue-rotate(75deg) saturate(1.8) brightness(1.08) contrast(1.02);
+  }
+  .game-scan{
+    position:absolute; inset:0; pointer-events:none;
+    background:repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 1px, rgba(0,0,0,.14) 2px, rgba(0,0,0,0) 3px);
+    mix-blend-mode:multiply;
+  }
+  .game-vignette{
+    position:absolute; inset:0; pointer-events:none;
+    background:radial-gradient(ellipse at center, rgba(0,0,0,0) 65%, rgba(0,0,0,.42) 100%);
+  }
+  .game-hint{
+    padding:8px 14px; font-size:11px; text-align:center;
+    border-top:1px solid var(--border); background:rgba(0,0,0,.3); letter-spacing:.02em;
+  }
+  .game-hint a{color:var(--accent);}
+
+  @media (max-width:560px){
+    .term-body{font-size:13px; max-height:65vh;}
+    .neofetch{gap:14px;}
+    .nf-art{font-size:10px;}
+    body{padding:14px 8px 10px;}
+    .game-frame{height:min(560px, 82vh);}
+    .game-hint{font-size:10px;}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+<div class="vignette"></div>
+<div class="crt"></div>
+
+<div id="boot">&gt; booting nikita.sh ...</div>
+
+<div class="wrap">
+  <div class="topbar">
+    <span class="glow">nikita.sh</span>
+    <a href="cv.html">cv.html</a>
+  </div>
+
+  <div class="term">
+    <div class="term-head">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="term-title">guest@nikita.sh — bash — 80×24</span>
+    </div>
+    <div class="term-body" id="termBody"></div>
+    <div class="chips" id="chips">
+      <button class="chip" data-cmd="neofetch">neofetch</button>
+      <button class="chip" data-cmd="about">about</button>
+      <button class="chip" data-cmd="skills">skills</button>
+      <button class="chip" data-cmd="contact">contact</button>
+      <button class="chip" data-cmd="cv">cv</button>
+      <button class="chip" data-cmd="play">play</button>
+      <button class="chip" id="langChip" data-cmd="lang ru">ru</button>
+      <button class="chip" data-cmd="help">help</button>
+      <button class="chip" data-cmd="clear">clear</button>
+    </div>
+  </div>
+
+  <footer>
+    © 2026 <a href="https://nikita.sh" target="_blank" rel="noopener">Nikita Chernozipunnikov</a> ·
+    <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>
+    · type <span class="accent">help</span> to explore
+  </footer>
+</div>
+
+<div id="gameOverlay" class="game-overlay hidden">
+  <div class="game-frame">
+    <div class="term-head">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="term-title">guest@nikita.sh — cat.nikita.sh</span>
+      <button class="game-close" id="gameClose" aria-label="close game">&times;</button>
+    </div>
+    <div class="game-view">
+      <iframe id="gameFrame" src="" title="Котик и Сгущенка" loading="lazy" allow="autoplay"></iframe>
+      <div class="game-scan"></div>
+      <div class="game-vignette"></div>
+    </div>
+    <div class="game-hint dim">
+      press <span class="accent">ESC</span> or click <span class="accent">&times;</span> to exit &middot;
+      arrows / WASD to move &middot; space to jump &middot;
+      <a href="https://cat.nikita.sh" target="_blank" rel="noopener">open directly &#8599;</a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ================= matrix rain ================= */
+  const canvas = document.getElementById('matrix');
+  const ctx = canvas.getContext('2d');
+  let cols, drops, matrixOn = true;
+  const glyphs = "01アイウエオカキクケコサシスセソ$#&+=-<>/\\{}[]";
+
+  function resizeMatrix(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const fontSize = 15;
+    cols = Math.floor(canvas.width / fontSize);
+    drops = new Array(cols).fill(0).map(()=>Math.random()*-50);
+  }
+  function drawMatrix(){
+    if(matrixOn){
+      ctx.fillStyle = "rgba(2,4,3,0.08)";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle = "#3dff8a";
+      ctx.font = "15px monospace";
+      for(let i=0;i<cols;i++){
+        const text = glyphs[Math.floor(Math.random()*glyphs.length)];
+        ctx.fillText(text, i*15, drops[i]*15);
+        if(drops[i]*15 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      }
+    }
+    requestAnimationFrame(drawMatrix);
+  }
+  resizeMatrix();
+  window.addEventListener('resize', resizeMatrix);
+  drawMatrix();
+
+  /* ================= boot sequence ================= */
+  const bootEl = document.getElementById('boot');
+  const bootLines = [
+    "nikita.sh boot sequence — kernel 6.6.0-sre",
+    "[  OK  ] mounted /dev/coffee",
+    "[  OK  ] started network-administration.service",
+    "[  OK  ] started kubernetes-cluster.service",
+    "[  OK  ] started aws-vpc-peering.service",
+    "[  OK  ] started docker.service",
+    "[  OK  ] loaded module: eleven_years_of_uptime.ko",
+    "[  OK  ] started condensed-milk-heist.service (cat: 0/30 cans, fully motivated)",
+    "[  OK  ] on-call pager silenced (for now)",
+    "",
+    "access granted — welcome, guest",
+  ];
+  let bootHTML = "";
+  let li = 0;
+  function typeBoot(){
+    if(li < bootLines.length){
+      bootHTML += bootLines[li] + "\n";
+      bootEl.textContent = bootHTML;
+      const isTitle = li === 0;
+      const isBlank = bootLines[li] === "";
+      li++;
+      const delay = isTitle ? 900 : isBlank ? 500 : 650;
+      setTimeout(typeBoot, delay);
+    } else {
+      setTimeout(()=>{
+        bootEl.classList.add('hidden');
+        startTerminal();
+      }, 1200);
+    }
+  }
+  setTimeout(typeBoot, 400);
+
+  /* ================= game overlay ================= */
+  const gameOverlay = document.getElementById('gameOverlay');
+  const gameFrame = document.getElementById('gameFrame');
+  const gameClose = document.getElementById('gameClose');
+
+  function openGame(){
+    gameFrame.src = "https://cat.nikita.sh/";
+    gameOverlay.classList.remove('hidden');
+  }
+  function closeGame(){
+    gameOverlay.classList.add('hidden');
+    gameFrame.src = "about:blank";
+  }
+  gameClose.addEventListener('click', closeGame);
+  gameOverlay.addEventListener('click', (e)=>{
+    if(e.target === gameOverlay) closeGame();
+  });
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === "Escape" && !gameOverlay.classList.contains('hidden')) closeGame();
+  });
+
+  /* ================= terminal ================= */
+  const body = document.getElementById('termBody');
+  const PROMPT_PATH = "~";
+
+  function el(tag, cls, html){
+    const e = document.createElement(tag);
+    if(cls) e.className = cls;
+    if(html !== undefined) e.innerHTML = html;
+    return e;
+  }
+  function printLine(html, cls){
+    const p = el('div', 'line' + (cls?(' '+cls):''), html);
+    body.appendChild(p);
+    body.scrollTop = body.scrollHeight;
+    return p;
+  }
+  function printPromptEcho(cmd){
+    const row = el('div','line prompt-row');
+    row.innerHTML = `<span class="ps">guest@nikita.sh <span class="path">${PROMPT_PATH}</span> $</span>${escapeHtml(cmd)}`;
+    body.appendChild(row);
+    body.scrollTop = body.scrollHeight;
+  }
+  function escapeHtml(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  async function typeLine(text, cls, speed){
+    speed = speed || 12;
+    const p = el('div','line'+(cls?(' '+cls):''));
+    body.appendChild(p);
+    for(let i=0;i<text.length;i++){
+      p.textContent += text[i];
+      body.scrollTop = body.scrollHeight;
+      await sleep(speed);
+    }
+  }
+  function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+  const NEOFETCH = `     ░░░░░
+  ░░▒▓▓▓▓▓▒░░
+ ░▒▒▓▓▓●▓▓▓▒▒░
+⋆░▒▓▓●◉◉◉●▓▓▒░⋆
+ ░▒▒▓▓▓●▓▓▓▒▒░
+  ░░▒▓▓▓▓▓▒░░
+     ░░░░░`;
+
+  let lang = 'en';
+
+  function neofetchHTML(){
+    const L = lang === 'ru'
+      ? { name:"Имя", role:"Должность", uptime:"Стаж", shell:"Оболочка", stack:"Стек", status:"Статус",
+          nameVal:"Никита Чернозипунников",
+          roleVal:"DevOps / SRE", uptimeVal:"11+ лет в проде", stackVal:"AWS · OpenStack · Kubernetes · Linux",
+          statusVal:"наверное, на дежурстве" }
+      : { name:"Name", role:"Role", uptime:"Uptime", shell:"Shell", stack:"Stack", status:"Status",
+          nameVal:"Nikita Chernozipunnikov",
+          roleVal:"DevOps / SRE", uptimeVal:"11+ years in production", stackVal:"AWS · OpenStack · Kubernetes · Linux",
+          statusVal:"probably on-call" };
+    return `<div class="neofetch">
+      <div class="nf-art">${NEOFETCH}</div>
+      <div class="nf-info">
+        <div><span class="nf-key accent">guest</span>@<span class="accent">nikita.sh</span></div>
+        <div class="dim">-----------------</div>
+        <div><span class="nf-key">${L.name}</span> ${L.nameVal}</div>
+        <div><span class="nf-key">${L.role}</span> ${L.roleVal}</div>
+        <div><span class="nf-key">${L.uptime}</span> ${L.uptimeVal}</div>
+        <div><span class="nf-key">${L.shell}</span> /bin/bash</div>
+        <div><span class="nf-key">${L.stack}</span> ${L.stackVal}</div>
+        <div><span class="nf-key">${L.status}</span> <span class="amber">${L.statusVal}</span></div>
+      </div>
+    </div>`;
+  }
+
+  const ABOUT_EN = `DevOps/SRE with eleven years of experience in Application Support and Operations,
+gradually developing towards AI-driven Software Development.
+
+Solid knowledge of how modern computer systems work (and how they don't),
+extensive Linux and network administration experience, a sound understanding
+of Computer Science concepts, and plenty of enthusiasm for bringing DevOps
+and SRE practices into reality.`;
+
+  const ABOUT_RU = `DevOps/SRE-инженер с одиннадцатилетним опытом в Application Support и Operations,
+постепенно развивающийся в сторону разработки ПО с применением ИИ.
+
+Хорошее понимание того, как устроены современные компьютерные системы
+(и как именно они ломаются), богатый опыт администрирования Linux и сетей,
+крепкое понимание основ Computer Science и море энтузиазма по внедрению
+практик DevOps и SRE в реальную жизнь.`;
+
+  function ABOUT(){ return lang === 'ru' ? ABOUT_RU : ABOUT_EN; }
+
+  const SKILLS_EN = [
+    ["Cloud","AWS, OpenStack, Yandex Cloud"],
+    ["Containers","Docker, Kubernetes"],
+    ["Systems","Linux administration, Networking, Virtualization"],
+    ["Databases","PostgreSQL, MariaDB/MySQL, ClickHouse"],
+    ["Foundations","Computer Science, Application Support & Operations"],
+  ];
+
+  const SKILLS_RU = [
+    ["Облако","AWS, OpenStack, Yandex Cloud"],
+    ["Контейнеры","Docker, Kubernetes"],
+    ["Системы","Администрирование Linux, сети, виртуализация"],
+    ["Базы данных","PostgreSQL, MariaDB/MySQL, ClickHouse"],
+    ["Основы","Computer Science, Application Support & Operations"],
+  ];
+
+  function SKILLS(){ return lang === 'ru' ? SKILLS_RU : SKILLS_EN; }
+
+  const SOCIALS = [
+    ["Email","mailto:me@nikita.sh","me@nikita.sh"],
+    ["Telegram","https://t.me/thatguynikita","@thatguynikita"],
+    ["GitHub","https://github.com/thatguynikita","thatguynikita"],
+    ["LinkedIn","https://www.linkedin.com/in/nikita-chernozipunnikov","nikita-chernozipunnikov"],
+    ["Twitter","https://twitter.com/thatguynikita","@thatguynikita"],
+    ["Facebook","https://www.facebook.com/nikita.chernozipunnikov","nikita.chernozipunnikov"],
+    ["Instagram","https://www.instagram.com/thatguynikita","@thatguynikita"],
+  ];
+
+  const HELP_EN = [
+    ["about","who is nikita"],
+    ["skills","tech stack"],
+    ["contact / socials","ways to reach me"],
+    ["cv / resume","open CV page"],
+    ["play / game","launch the cat game (CRT mode)"],
+    ["neofetch","system info card"],
+    ["whoami","identity check"],
+    ["ls","list files"],
+    ["cat <file>","print a file"],
+    ["theme <green|amber|cyan>","change terminal color"],
+    ["matrix <on|off>","toggle background rain"],
+    ["lang <ru|en>","switch output language"],
+    ["date","current date/time"],
+    ["clear","clear the screen"],
+    ["help","show this list"],
+  ];
+
+  const HELP_RU = [
+    ["about","кто такой никита"],
+    ["skills","технологический стек"],
+    ["contact / socials","как со мной связаться"],
+    ["cv / resume","открыть страницу резюме"],
+    ["play / game","запустить игру про кота (в стиле CRT)"],
+    ["neofetch","карточка с информацией о системе"],
+    ["whoami","проверка личности"],
+    ["ls","список файлов"],
+    ["cat <file>","вывести файл"],
+    ["theme <green|amber|cyan>","сменить цвет терминала"],
+    ["matrix <on|off>","вкл/выкл фоновый дождь из символов"],
+    ["lang <ru|en>","сменить язык вывода"],
+    ["date","текущая дата и время"],
+    ["clear","очистить экран"],
+    ["help","показать этот список"],
+  ];
+
+  function HELP(){ return lang === 'ru' ? HELP_RU : HELP_EN; }
+
+  const ALIASES = {
+    "справка":"help", "помощь":"help",
+    "кто":"whoami",
+    "обо":"about", "обомне":"about",
+    "навыки":"skills",
+    "контакты":"contact", "связь":"contact",
+    "резюме":"cv",
+    "игра":"play", "играть":"play",
+    "очистить":"clear", "чистить":"clear",
+    "дата":"date",
+    "выход":"exit", "выйти":"exit",
+    "язык":"lang",
+  };
+
+  const UI = {
+    en: {
+      availableCommands: "Available commands:",
+      whoami: `<span class="accent">guest</span> — viewing the terminal of <span class="glow">Nikita Chernozipunnikov</span>, DevOps/SRE.`,
+      openingCv: `opening <a href="cv.html" class="glow">cv.html</a> ...`,
+      launchingGame: `launching <span class="glow">cat.nikita.sh</span> in a sandboxed CRT window...`,
+      catNotText: `cat: cv.html: not a text file — use <span class="glow">cv</span> to open it instead`,
+      catUsage: `usage: cat &lt;file&gt;`,
+      catNoFile: (f)=>`cat: ${f}: No such file or directory`,
+      matrixOff: "matrix rain: off",
+      matrixOn: "matrix rain: on",
+      matrixUsage: "usage: matrix &lt;on|off&gt;",
+      themeSet: (n)=>`theme set to <span class="glow">${n}</span>`,
+      themeUsage: `usage: theme &lt;green|amber|cyan&gt;`,
+      langUsage: `usage: lang &lt;ru|en&gt;  /  использование: lang &lt;ru|en&gt;`,
+      langSet: `language switched to <span class="glow">English</span>`,
+      sudo: `<span class="amber">This incident will be reported.</span>`,
+      loggingOut: "logging out...",
+      connClosed: "connection to nikita.sh closed.",
+      notFound: (b)=>`command not found: <span class="accent">${b}</span> — type <span class="glow">help</span> for a list of commands`,
+      welcome: "Welcome to my terminal. Type 'help' to see what's available.",
+    },
+    ru: {
+      availableCommands: "Доступные команды:",
+      whoami: `<span class="accent">гость</span> — вы смотрите терминал <span class="glow">Никиты Чернозипунникова</span>, DevOps/SRE.`,
+      openingCv: `открываю <a href="cv.html" class="glow">cv.html</a> ...`,
+      launchingGame: `запускаю <span class="glow">cat.nikita.sh</span> в песочнице CRT-режима...`,
+      catNotText: `cat: cv.html: не текстовый файл — используйте <span class="glow">cv</span>, чтобы открыть его`,
+      catUsage: `использование: cat &lt;файл&gt;`,
+      catNoFile: (f)=>`cat: ${f}: Нет такого файла или каталога`,
+      matrixOff: "дождь из матрицы: выкл",
+      matrixOn: "дождь из матрицы: вкл",
+      matrixUsage: "использование: matrix &lt;on|off&gt;",
+      themeSet: (n)=>`тема изменена на <span class="glow">${n}</span>`,
+      themeUsage: `использование: theme &lt;green|amber|cyan&gt;`,
+      langUsage: `usage: lang &lt;ru|en&gt;  /  использование: lang &lt;ru|en&gt;`,
+      langSet: `язык переключён на <span class="glow">русский</span>`,
+      sudo: `<span class="amber">Об этом инциденте будет доложено.</span>`,
+      loggingOut: "выхожу из системы...",
+      connClosed: "соединение с nikita.sh закрыто.",
+      notFound: (b)=>`команда не найдена: <span class="accent">${b}</span> — введите <span class="glow">help</span> для списка команд`,
+      welcome: "Добро пожаловать в мой терминал. Введите «help», чтобы увидеть список команд.",
+    },
+  };
+  function t(key, ...args){
+    const v = UI[lang][key];
+    return typeof v === 'function' ? v(...args) : v;
+  }
+
+  const COMMANDS = ["about","skills","contact","socials","cv","resume","play","game","neofetch","whoami","ls","cat","date","echo","history","matrix","theme","lang","sudo","clear","help","exit","logout"];
+  const ARG_CANDIDATES = {
+    cat: ["about.txt","skills.txt","socials.txt","cv.html"],
+    theme: ["green","amber","cyan"],
+    matrix: ["on","off"],
+    lang: ["ru","en"],
+  };
+
+  function commonPrefix(arr){
+    if(!arr.length) return "";
+    let prefix = arr[0];
+    for(const s of arr.slice(1)){
+      while(prefix && !s.startsWith(prefix)) prefix = prefix.slice(0, -1);
+      if(!prefix) return "";
+    }
+    return prefix;
+  }
+
+  function setTheme(name){
+    const root = document.documentElement.style;
+    const map = {
+      green:{fg:"#3dff8a",dim:"#2a9c60",accent:"#5ff1ff"},
+      amber:{fg:"#ffb454",dim:"#a06a1f",accent:"#ffe08a"},
+      cyan :{fg:"#5ff1ff",dim:"#2a8a9c",accent:"#3dff8a"},
+    };
+    const t = map[name];
+    if(!t) return false;
+    root.setProperty('--fg', t.fg);
+    root.setProperty('--fg-dim', t.dim);
+    root.setProperty('--accent', t.accent);
+    root.setProperty('--glow', `0 0 4px ${t.fg}, 0 0 12px ${t.fg}88, 0 0 24px ${t.fg}44`);
+    return true;
+  }
+
+  const history = [];
+  let hIndex = -1;
+
+  async function runCommand(raw){
+    const cmd = raw.trim();
+    printPromptEcho(raw);
+    if(cmd) { history.push(raw); hIndex = history.length; }
+    if(!cmd) return;
+
+    const [base, ...rest] = cmd.split(/\s+/);
+    const arg = rest.join(" ");
+    const rawB = base.toLowerCase();
+    const b = ALIASES[rawB] || rawB;
+
+    switch(b){
+      case "help": {
+        printLine(`<span class="accent">${t('availableCommands')}</span>`);
+        let helpTbl = `<table class="tbl">`;
+        HELP().forEach(([c,d])=>{
+          helpTbl += `<tr><td class="glow">${c}</td><td class="dim">${d}</td></tr>`;
+        });
+        helpTbl += `</table>`;
+        printLine(helpTbl);
+        break;
+      }
+      case "about": {
+        const aboutText = ABOUT();
+        await typeLine(aboutText.split("\n")[0]);
+        for(const line of aboutText.split("\n").slice(1)){
+          printLine(line || "&nbsp;");
+        }
+        break;
+      }
+      case "whoami": {
+        printLine(t('whoami'));
+        break;
+      }
+      case "skills": {
+        let sk = `<table class="tbl">`;
+        SKILLS().forEach(([k,v])=>{ sk += `<tr><td class="accent">${k}</td><td>${v}</td></tr>`; });
+        sk += `</table>`;
+        printLine(sk);
+        break;
+      }
+      case "contact": case "socials": {
+        let sc = `<div class="links">`;
+        SOCIALS.forEach(([label,href])=>{
+          sc += `<a href="${href}" target="_blank" rel="noopener">${label}</a>`;
+        });
+        sc += `</div>`;
+        printLine(sc);
+        break;
+      }
+      case "cv": case "resume": {
+        printLine(t('openingCv'));
+        setTimeout(()=>{ window.location.href = "cv.html"; }, 400);
+        break;
+      }
+      case "play": case "game": {
+        printLine(t('launchingGame'));
+        openGame();
+        break;
+      }
+      case "neofetch": {
+        printLine(neofetchHTML());
+        break;
+      }
+      case "ls": {
+        printLine(`about.txt   skills.txt   socials.txt   cv.html`);
+        break;
+      }
+      case "cat": {
+        if(arg === "about.txt") { ABOUT().split("\n").forEach(l=>printLine(l||"&nbsp;")); }
+        else if(arg === "skills.txt") { SKILLS().forEach(([k,v])=>printLine(`<span class="accent">${k}:</span> ${v}`)); }
+        else if(arg === "socials.txt") { SOCIALS.forEach(([l,h,tt])=>printLine(`<span class="accent">${l}:</span> <a href="${h}" target="_blank" rel="noopener">${tt}</a>`)); }
+        else if(arg === "cv.html") { printLine(t('catNotText')); }
+        else if(!arg) { printLine(t('catUsage')); }
+        else { printLine(t('catNoFile', escapeHtml(arg))); }
+        break;
+      }
+      case "date": {
+        printLine(lang === 'ru' ? new Date().toLocaleString('ru-RU') : new Date().toString());
+        break;
+      }
+      case "echo": {
+        printLine(escapeHtml(arg));
+        break;
+      }
+      case "history": {
+        history.forEach((h,i)=>printLine(`<span class="dim">${(i+1).toString().padStart(3)}</span>  ${escapeHtml(h)}`));
+        break;
+      }
+      case "matrix": {
+        if(arg === "off"){ matrixOn = false; canvas.classList.add('off'); printLine(t('matrixOff')); }
+        else if(arg === "on"){ matrixOn = true; canvas.classList.remove('off'); printLine(t('matrixOn')); }
+        else { printLine(t('matrixUsage')); }
+        break;
+      }
+      case "theme": {
+        if(setTheme(arg)) printLine(t('themeSet', arg));
+        else printLine(t('themeUsage'));
+        break;
+      }
+      case "lang": {
+        const choice = arg.toLowerCase();
+        if(choice === "ru" || choice === "en"){
+          lang = choice;
+          document.documentElement.lang = lang;
+          updateLangChip();
+          printLine(t('langSet'));
+        } else {
+          printLine(t('langUsage'));
+        }
+        break;
+      }
+      case "sudo": {
+        printLine(t('sudo'));
+        break;
+      }
+      case "clear": {
+        body.innerHTML = "";
+        break;
+      }
+      case "exit": case "logout": {
+        printLine(t('loggingOut'));
+        setTimeout(()=>{
+          body.innerHTML = "";
+          printLine(t('connClosed'));
+          setTimeout(()=>{ body.innerHTML=""; bootIntro(); }, 1400);
+        }, 500);
+        break;
+      }
+      default: {
+        printLine(t('notFound', escapeHtml(rawB)));
+      }
+    }
+  }
+
+  /* ================= input handling ================= */
+  const inputRow = el('div','input-row');
+  inputRow.innerHTML = `<span class="ps">guest@nikita.sh <span class="path">${PROMPT_PATH}</span> $</span>
+    <input id="cmdline" autocomplete="off" autocapitalize="off" spellcheck="false" />
+    <span class="cursor"></span>`;
+
+  const cmdInput = inputRow.querySelector('#cmdline');
+  let busy = false;
+  let lastTabValue = null;
+
+  function resizeInput(){
+    cmdInput.style.width = Math.max(1, cmdInput.value.length) + 'ch';
+  }
+  cmdInput.addEventListener('input', resizeInput);
+
+  cmdInput.addEventListener('keydown', (e)=>{
+    if(e.key !== "Tab") lastTabValue = null;
+
+    if(e.key === "Enter"){
+      if(busy) { e.preventDefault(); return; }
+      const val = cmdInput.value;
+      cmdInput.value = "";
+      resizeInput();
+      busy = true;
+      inputRow.remove();
+      runCommand(val).then(()=>{ mountInput(); busy = false; });
+    } else if(e.key === "ArrowUp"){
+      e.preventDefault();
+      if(hIndex > 0){ hIndex--; cmdInput.value = history[hIndex] || ""; }
+      resizeInput();
+    } else if(e.key === "ArrowDown"){
+      e.preventDefault();
+      if(hIndex < history.length-1){ hIndex++; cmdInput.value = history[hIndex] || ""; }
+      else { hIndex = history.length; cmdInput.value = ""; }
+      resizeInput();
+    } else if(e.key === "Tab"){
+      e.preventDefault();
+      const raw = cmdInput.value;
+      const spaceIdx = raw.indexOf(" ");
+      let candidates, headPart, prefix;
+
+      if(spaceIdx === -1){
+        candidates = COMMANDS;
+        headPart = "";
+        prefix = raw.toLowerCase();
+      } else {
+        const base = raw.slice(0, spaceIdx).toLowerCase();
+        headPart = raw.slice(0, spaceIdx + 1);
+        prefix = raw.slice(spaceIdx + 1).toLowerCase();
+        candidates = ARG_CANDIDATES[base] || [];
+      }
+
+      const matches = candidates.filter(c => c.startsWith(prefix));
+
+      if(matches.length === 1){
+        cmdInput.value = headPart + matches[0] + (spaceIdx === -1 ? " " : "");
+        lastTabValue = null;
+      } else if(matches.length > 1){
+        const common = commonPrefix(matches);
+        if(common.length > prefix.length){
+          cmdInput.value = headPart + common;
+          lastTabValue = null;
+        } else if(lastTabValue === raw){
+          const sugg = el('div', 'line dim', matches.join('&nbsp;&nbsp;&nbsp;'));
+          body.insertBefore(sugg, inputRow);
+          body.scrollTop = body.scrollHeight;
+          lastTabValue = null;
+        } else {
+          lastTabValue = raw;
+        }
+      }
+      resizeInput();
+    }
+  });
+
+  function mountInput(){
+    body.appendChild(inputRow);
+    resizeInput();
+    cmdInput.focus();
+    body.scrollTop = body.scrollHeight;
+  }
+
+  document.addEventListener('click', ()=>{
+    cmdInput.focus();
+  });
+
+  document.getElementById('chips').addEventListener('click', (e)=>{
+    const btn = e.target.closest('.chip');
+    if(!btn) return;
+    cmdInput.value = btn.dataset.cmd;
+    cmdInput.dispatchEvent(new KeyboardEvent('keydown', {key:'Enter'}));
+  });
+
+  const langChip = document.getElementById('langChip');
+  function updateLangChip(){
+    const next = lang === 'ru' ? 'en' : 'ru';
+    langChip.textContent = next;
+    langChip.dataset.cmd = `lang ${next}`;
+  }
+  updateLangChip();
+
+  async function bootIntro(){
+    printLine(neofetchHTML());
+    await sleep(200);
+    await typeLine(t('welcome'), "dim", 14);
+    printLine("&nbsp;");
+    mountInput();
+  }
+
+  window.startTerminal = bootIntro;
+
+})();
+</script>
+</body>
+</html>

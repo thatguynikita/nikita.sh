@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Nikita Chernozipunnikov — CV</title>
+<meta name="description" content="DevOps / SRE — CV / résumé. AWS, Docker, Kubernetes, Linux.">
+<meta name="theme-color" content="#060a08">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23060a08%22/><text x=%2250%25%22 y=%2262%25%22 font-size=%2260%22 text-anchor=%22middle%22 fill=%22%2339ff88%22 font-family=%22monospace%22>&gt;</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050806;
+    --panel:#070d09;
+    --fg:#3dff8a;
+    --fg-dim:#2a9c60;
+    --fg-dim2:#1f6b45;
+    --accent:#5ff1ff;
+    --amber:#ffb454;
+    --red:#ff5f56;
+    --border:rgba(61,255,138,.28);
+    --glow:0 0 4px rgba(61,255,138,.85), 0 0 12px rgba(61,255,138,.45), 0 0 24px rgba(61,255,138,.25);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(61,255,138,.06), transparent 60%),
+      var(--bg);
+    color:var(--fg);
+    font-family:'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:28px 14px 16px;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  #matrix{
+    position:fixed; inset:0; width:100%; height:100%;
+    z-index:0; opacity:.14; pointer-events:none;
+  }
+  .crt{
+    position:fixed; inset:0; z-index:5; pointer-events:none;
+    background:repeating-linear-gradient(
+      to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 1px, rgba(0,0,0,.22) 2px, rgba(0,0,0,0) 3px
+    );
+    mix-blend-mode:multiply;
+    animation:flicker 6s infinite;
+  }
+  .vignette{
+    position:fixed; inset:0; z-index:4; pointer-events:none;
+    background:radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
+  }
+  @keyframes flicker{
+    0%,100%{opacity:.9;} 92%{opacity:.9;} 93%{opacity:.7;} 94%{opacity:1;} 95%{opacity:.75;} 96%{opacity:1;}
+  }
+
+  .wrap{position:relative; z-index:2; width:100%; max-width:880px;}
+
+  .topbar{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:12px; color:var(--fg-dim); margin-bottom:10px; padding:0 4px;
+    letter-spacing:.03em;
+  }
+  .topbar a{color:var(--fg-dim); text-decoration:none; cursor:pointer; background:none; border:none; font:inherit;}
+  .topbar a:hover, .topbar button:hover{color:var(--fg); text-shadow:var(--glow);}
+  .topbar .right{display:flex; gap:16px; align-items:center;}
+  .topbar button{color:var(--fg-dim); text-decoration:none; cursor:pointer; background:none; border:none; font:inherit; letter-spacing:.03em; padding:0;}
+
+  .term{
+    background:linear-gradient(180deg, rgba(15,25,17,.92), rgba(6,10,8,.96));
+    border:1px solid var(--border);
+    border-radius:10px;
+    box-shadow:var(--glow), 0 20px 60px rgba(0,0,0,.6), inset 0 0 40px rgba(61,255,138,.03);
+    overflow:hidden;
+    backdrop-filter:blur(2px);
+  }
+  .term-head{
+    display:flex; align-items:center; gap:8px;
+    padding:10px 14px;
+    background:rgba(0,0,0,.35);
+    border-bottom:1px solid var(--border);
+  }
+  .dot{width:11px; height:11px; border-radius:50%; display:inline-block;}
+  .dot.r{background:var(--red); box-shadow:0 0 6px var(--red);}
+  .dot.y{background:var(--amber); box-shadow:0 0 6px var(--amber);}
+  .dot.g{background:var(--fg); box-shadow:0 0 6px var(--fg);}
+  .term-title{flex:1; text-align:center; font-size:12px; color:var(--fg-dim); letter-spacing:.04em;}
+
+  .term-body{padding:20px 22px 8px; font-size:14px; line-height:1.6;}
+
+  .glow{text-shadow:var(--glow);}
+  .dim{color:var(--fg-dim);}
+  .accent{color:var(--accent); text-shadow:0 0 6px rgba(95,241,255,.7);}
+  .amber{color:var(--amber); text-shadow:0 0 6px rgba(255,180,84,.6);}
+  a{color:var(--accent);}
+  a:hover{text-shadow:0 0 8px var(--accent);}
+
+  .line{margin:0 0 2px; word-break:break-word;}
+  .ps{color:var(--fg-dim); margin-right:6px; white-space:nowrap;}
+
+  .title{font-size:26px; margin:4px 0 4px;}
+  .tagline{font-size:13px; margin-bottom:10px;}
+  .contact-row{display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12.5px; margin-bottom:4px;}
+  .contact-row a{white-space:nowrap;}
+  .meta-line{font-size:12px; color:var(--fg-dim); margin-bottom:16px;}
+
+  .rule{height:1px; border:none; margin:8px 0 18px; background:var(--accent);
+    box-shadow:0 0 6px var(--accent), 0 0 14px rgba(95,241,255,.35); opacity:.55;}
+  .rule.strong{background:var(--fg); box-shadow:0 0 6px var(--fg), 0 0 16px rgba(61,255,138,.4); opacity:.75;}
+
+  .section{margin-top:26px;}
+  .section:first-of-type{margin-top:0;}
+  .section-head{font-size:15.5px; margin-bottom:8px;}
+  .section-head .cmd{color:var(--amber);}
+  .section-head .file{color:var(--fg); text-shadow:var(--glow); font-weight:700;}
+
+  p.body{margin:0 0 12px; font-size:13.6px; line-height:1.7;}
+
+  .job{margin-bottom:20px; padding-left:14px; border-left:2px solid var(--border);}
+  .job-meta{font-size:12.6px; color:var(--accent); margin-bottom:2px;}
+  .job-meta .dates{color:var(--accent); font-weight:700;}
+  .job-meta .span{color:var(--fg-dim);}
+  .job-meta .co{color:var(--fg); font-weight:700; text-shadow:var(--glow);}
+  .job-meta .loc{color:var(--fg-dim);}
+  .job-title{font-weight:700; color:var(--fg); margin-bottom:6px; font-size:14.5px;}
+  ul.bullets{margin:0 0 6px; padding-left:18px;}
+  ul.bullets li{margin-bottom:3px; font-size:13.3px; line-height:1.55;}
+  ul.bullets li::marker{color:var(--fg-dim); content:"› ";}
+  .tech{font-size:12px; font-style:italic; color:var(--amber); opacity:.9; line-height:1.55;}
+
+  table.tbl{border-collapse:collapse; width:100%;}
+  table.tbl td{padding:3px 14px 3px 0; vertical-align:top; font-size:13.3px;}
+  table.tbl td.key{color:var(--fg); font-weight:700; white-space:nowrap;}
+
+  .cert-row{font-size:13.3px; margin-bottom:4px;}
+  .cert-row .ok{color:var(--fg); text-shadow:var(--glow); margin-right:6px;}
+  .cert-row .yr{color:var(--fg-dim); margin-right:8px;}
+
+  .langrow{display:flex; align-items:center; gap:10px; margin:6px 0; flex-wrap:wrap;}
+  .lang-label{min-width:72px; font-weight:700; color:var(--fg); font-size:13.3px;}
+  .lang-bar{display:inline-flex; gap:2px;}
+  .lang-bar i{width:9px; height:13px; display:inline-block; background:rgba(61,255,138,.16); border-radius:1px;}
+  .lang-bar i.on{background:var(--fg); box-shadow:0 0 4px rgba(61,255,138,.7);}
+  .lang-sub{font-size:12.5px; color:var(--fg-dim);}
+
+  .traits{font-size:12.6px; line-height:1.7; color:var(--fg-dim); font-style:italic;}
+  .traits .hash{color:var(--fg-dim2);}
+
+  .sign-off{margin:22px 0 4px; font-size:13px;}
+  .fake-cursor{display:inline-block; width:8px; height:14px; background:var(--fg); box-shadow:var(--glow);
+    vertical-align:middle; margin-left:2px; animation:blink 1s steps(1) infinite;}
+  @keyframes blink{0%,49%{opacity:1;} 50%,100%{opacity:0;}}
+
+  footer{margin-top:14px; font-size:11px; color:var(--fg-dim); text-align:center; letter-spacing:.03em; padding-bottom:24px;}
+  footer a{color:var(--fg-dim); text-decoration:underline;}
+  footer a:hover{color:var(--fg);}
+
+  @media print{
+    #matrix, .crt, .vignette, .topbar, footer{display:none !important;}
+    body{background:#050806; padding:0;}
+    .term{box-shadow:none; border:none;}
+    .term-body{max-height:none; overflow:visible;}
+  }
+
+  @media (max-width:560px){
+    body{padding:14px 8px 10px;}
+    .term-body{padding:16px 14px 6px; font-size:13px;}
+    .title{font-size:21px;}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+<div class="vignette"></div>
+<div class="crt"></div>
+
+<div class="wrap">
+  <div class="topbar">
+    <a href="https://nikita.sh">&larr; nikita.sh</a>
+    <div class="right">
+      <button id="langChip" data-lang="ru">RU</button>
+      <button id="printBtn" onclick="window.print()">print</button>
+      <a href="mailto:me@nikita.sh">me@nikita.sh</a>
+    </div>
+  </div>
+
+  <div class="term">
+    <div class="term-head">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="term-title">guest@nikita.sh — cat resume.txt</span>
+    </div>
+
+    <div class="term-body" id="termBody"></div>
+  </div>
+
+  <footer id="pageFooter">
+    © 2026 <a href="https://nikita.sh" target="_blank" rel="noopener">Nikita Chernozipunnikov</a> ·
+    <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener">CC BY-NC 4.0</a>
+    · <a href="https://nikita.sh" id="footerBack">back to terminal</a>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ================= matrix rain ================= */
+  const canvas = document.getElementById('matrix');
+  const ctx = canvas.getContext('2d');
+  let cols, drops;
+  const glyphs = "01アイウエオカキクケコサシスセソ$#&+=-<>/\\{}[]";
+
+  function resizeMatrix(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const fontSize = 15;
+    cols = Math.floor(canvas.width / fontSize);
+    drops = new Array(cols).fill(0).map(()=>Math.random()*-50);
+  }
+  function drawMatrix(){
+    ctx.fillStyle = "rgba(2,4,3,0.08)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = "#3dff8a";
+    ctx.font = "15px monospace";
+    for(let i=0;i<cols;i++){
+      const text = glyphs[Math.floor(Math.random()*glyphs.length)];
+      ctx.fillText(text, i*15, drops[i]*15);
+      if(drops[i]*15 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+      drops[i]++;
+    }
+    requestAnimationFrame(drawMatrix);
+  }
+  resizeMatrix();
+  window.addEventListener('resize', resizeMatrix);
+  drawMatrix();
+
+  /* ================= content data ================= */
+  const JOBS = [
+    {
+      dates:{en:"Nov 2022 &ndash; Sep 2025", ru:"Ноя 2022 &ndash; Сен 2025"}, span:{en:"2y 11m", ru:"2 г. 11 мес."},
+      co:"VK", loc:{en:"Saint Petersburg &middot; vk.company", ru:"Санкт-Петербург &middot; vk.company"},
+      title:{en:"Site Reliability Engineer", ru:"Инженер по надёжности (SRE)"},
+      bullets:{
+        en:[
+          "Built and ran CorpCloud and ProdCloud, OpenStack-based private clouds spanning 500+ hypervisors",
+          "Stood up a complete test environment for the platform from scratch",
+          "Led a large-scale compute migration across multiple data centers with minimal downtime",
+          "Delivered Managed Kubernetes and Cloud Databases as core platform services",
+          "Rolled out cloud logging, monitoring, and event tracing for full-stack observability",
+          "Investigated incidents, ran root-cause analysis, and squashed performance bottlenecks",
+          "Wrote runbooks, operational guides, and technical documentation for the team",
+          "Learned to sleep with one eye open during on-call weeks",
+        ],
+        ru:[
+          "Построил и поддерживал CorpCloud и ProdCloud — частные облака на базе OpenStack на 500+ гипервизорах",
+          "Развернул полное тестовое окружение платформы с нуля",
+          "Провёл масштабную миграцию вычислительных мощностей между несколькими ЦОД с минимальным простоем",
+          "Реализовал Managed Kubernetes и облачные базы данных как ключевые сервисы платформы",
+          "Внедрил облачное логирование, мониторинг и трассировку событий для полного observability",
+          "Разбирал инциденты, проводил root-cause анализ и устранял узкие места производительности",
+          "Писал runbook'и, инструкции по эксплуатации и техническую документацию для команды",
+          "Научился спать с одним открытым глазом во время дежурств",
+        ],
+      },
+      tech: "OpenStack, Linux (RHEL, CentOS, RedOS), libvirt, Kubernetes, Docker, Ansible, Terraform, HAProxy, Nginx, PostgreSQL, MariaDB, MySQL, ClickHouse, Prometheus, Grafana, ELK Stack",
+    },
+    {
+      dates:{en:"Jan 2021 &ndash; Jun 2022", ru:"Янв 2021 &ndash; Июн 2022"}, span:{en:"1y 6m", ru:"1 г. 6 мес."},
+      co:"EPAM Anywhere", loc:{en:"Moscow &middot; anywhere.epam.com", ru:"Москва &middot; anywhere.epam.com"},
+      title:{en:"Systems Engineer", ru:"Системный инженер"},
+      bullets:{
+        en:[
+          "Supported development and release of a Biotech solution from MVP to production readiness",
+          "Designed serverless AWS architecture in collaboration with the Solutions Architect",
+          "Automated CI/CD procedures from scratch",
+          "Provisioned AWS infrastructure with IaC",
+          "Implemented and fine-tuned strict security policies for compliance",
+          "Singlehandedly owned the whole infrastructure and automation stack",
+          "Battled off the enterprise bureaucracy",
+        ],
+        ru:[
+          "Сопровождал разработку и релиз биотех-решения от MVP до продакшн-готовности",
+          "Проектировал serverless-архитектуру на AWS совместно с Solutions Architect",
+          "Автоматизировал процессы CI/CD с нуля",
+          "Разворачивал инфраструктуру AWS через IaC",
+          "Внедрял и настраивал строгие политики безопасности для соответствия требованиям",
+          "В одиночку отвечал за всю инфраструктуру и стек автоматизации",
+          "Отбивался от корпоративной бюрократии",
+        ],
+      },
+      tech: "AWS (CloudFormation, Lambda, IAM, ECS, SQS, SNS, Step Functions, EventBridge, API Gateway, S3, EC2, CloudWatch), Jenkins, GitLab, SonarQube, Nexus, Bash, PowerShell, Python, Terraform, Docker, CentOS, TypeScript, Maven, Jest, Stryker",
+    },
+    {
+      dates:{en:"Feb 2020 &ndash; Sep 2020", ru:"Фев 2020 &ndash; Сен 2020"}, span:{en:"8m", ru:"8 мес."},
+      co:"Assaia International AG", loc:{en:"Switzerland &middot; assaia.com", ru:"Швейцария &middot; assaia.com"},
+      title:{en:"Infrastructure Engineer", ru:"Инженер по инфраструктуре"},
+      bullets:{
+        en:[
+          "Configured, deployed, and supported pilot instances of the platform",
+          "Developed a video delivery pipeline with collection and storage systems",
+          "Pushed the platform's first-ever release to production readiness",
+          "Automated cloud resource provisioning; refactored and improved IaC readability",
+          "Reinforced infrastructure security with best practices",
+          "Supported software engineers, data availability, and internal uptime",
+          "Perfected blindfold YAML engineering skills",
+        ],
+        ru:[
+          "Настраивал, разворачивал и поддерживал пилотные инстансы платформы",
+          "Разработал пайплайн доставки видео со сбором и хранением данных",
+          "Довёл самый первый релиз платформы до продакшн-готовности",
+          "Автоматизировал выделение облачных ресурсов; рефакторил и улучшал читаемость IaC",
+          "Усилил безопасность инфраструктуры лучшими практиками",
+          "Поддерживал разработчиков, доступность данных и внутренний аптайм",
+          "Отточил навык писать YAML с закрытыми глазами",
+        ],
+      },
+      tech: "Azure, GCP, Debian, CentOS, Docker, Podman, K3s, Kubeflow, TensorFlow, PyTorch, Ansible, Terraform, Python, Bash, PostgreSQL, MongoDB, NSQ, Nginx, GitLab CI, Zabbix, Prometheus, Git, FFmpeg, Nvidia GPU, Jetson AGX Xavier",
+    },
+    {
+      dates:{en:"Oct 2019 &ndash; Dec 2019", ru:"Окт 2019 &ndash; Дек 2019"}, span:{en:"3m", ru:"3 мес."},
+      co:"Deutsche Telekom IT Solutions", loc:{en:"Saint Petersburg &middot; ex. T-Systems", ru:"Санкт-Петербург &middot; ранее T-Systems"},
+      title:{en:"Configuration Manager", ru:"Менеджер по конфигурациям"},
+      bullets:{
+        en:[
+          "Troubleshot infrastructure and deployment process issues",
+          "Supported and consulted 15+ dev teams on CI/CD topics",
+          "Managed an OpenShift cluster's load (30+ namespaces, ~100 pods each)",
+          "Implemented a custom reverse/forward proxy plugin for Kong (in Lua)",
+          "Participated on-call during critical incidents and primary rollouts",
+          "Mentored and shared knowledge with team members",
+        ],
+        ru:[
+          "Решал проблемы инфраструктуры и процессов деплоя",
+          "Поддерживал и консультировал 15+ команд разработки по вопросам CI/CD",
+          "Управлял нагрузкой кластера OpenShift (30+ namespace'ов, ~100 подов в каждом)",
+          "Разработал кастомный reverse/forward proxy-плагин для Kong (на Lua)",
+          "Участвовал в дежурствах при критичных инцидентах и основных релизах",
+          "Менторил и делился знаниями с командой",
+        ],
+      },
+      tech: "OpenShift, Kubernetes, Docker, Helm, Lua, Python, Bash, 3scale, Keycloak, PostgreSQL, Redis, Nginx, Kong, HAProxy, GitLab CI, Prometheus, Grafana, EFK Stack, Nexus, Jira, Confluence, Git",
+    },
+    {
+      dates:{en:"Jan 2018 &ndash; Jul 2018", ru:"Янв 2018 &ndash; Июл 2018"}, span:{en:"7m", ru:"7 мес."},
+      co:"ventx GmbH", loc:{en:"Germany &middot; ventx.de", ru:"Германия &middot; ventx.de"},
+      title:{en:"Cloud Engineer", ru:"Облачный инженер"},
+      bullets:{
+        en:[
+          "Designed and built a highly-available Kubernetes cluster on bare-metal infrastructure",
+          "Configured cluster networking; implemented log management and monitoring",
+          "Shifted Jenkins pipelines to deploy via Kubernetes",
+          "Established policies and operated the cluster for security and multi-tenancy",
+          "Transitioned AWS infrastructure to code with Terraform and Ansible",
+          "Consulted and shared wisdom with business clients and the team",
+          "Contributed to the imposter syndrome rate in tech",
+        ],
+        ru:[
+          "Спроектировал и построил отказоустойчивый Kubernetes-кластер на bare-metal инфраструктуре",
+          "Настраивал сеть кластера; внедрил управление логами и мониторинг",
+          "Перевёл пайплайны Jenkins на деплой через Kubernetes",
+          "Внедрил политики и обслуживал кластер с учётом безопасности и мультитенантности",
+          "Перевёл инфраструктуру AWS в код с помощью Terraform и Ansible",
+          "Консультировал и делился опытом с бизнес-клиентами и командой",
+          "Внёс свой вклад в статистику синдрома самозванца в IT",
+        ],
+      },
+      tech: "AWS, Ubuntu, Docker, LXC, Kubernetes, Terraform, Ansible, Helm, Python, Bash, PostgreSQL, Redis, Nginx, HAProxy, Jenkins, Prometheus, Grafana, ELK Stack, Graylog, Ceph, MAAS, pfSense, Jira, Confluence, Bitbucket, Git",
+    },
+    {
+      dates:{en:"Oct 2015 &ndash; Sep 2017", ru:"Окт 2015 &ndash; Сен 2017"}, span:{en:"2y", ru:"2 г."},
+      co:"Devexperts GmbH", loc:{en:"Germany &middot; devexperts.com", ru:"Германия &middot; devexperts.com"},
+      title:{en:"Operations Engineer", ru:"Инженер по эксплуатации"},
+      bullets:{
+        en:[
+          "Maintained dev, test, pre-prod, and production environments for a large-scale trading platform",
+          "Ran deployments and configuration changes, troubleshooting issues while meeting SLAs",
+          "Managed incidents, emergency response, and root-cause analysis",
+          "Kept internal monitoring solutions in sync with the platform",
+          "Automated release processes, built tooling with Bash and Python",
+          "Collaborated with application support, QA, developers, and business owners",
+          "Developed a healthy on-call fatigue",
+        ],
+        ru:[
+          "Поддерживал dev, test, pre-prod и production окружения крупной торговой платформы",
+          "Выполнял деплои и изменения конфигураций, устранял проблемы с соблюдением SLA",
+          "Управлял инцидентами, экстренным реагированием и root-cause анализом",
+          "Поддерживал внутренние системы мониторинга в актуальном состоянии",
+          "Автоматизировал процессы релизов, писал инструменты на Bash и Python",
+          "Взаимодействовал с поддержкой приложений, QA, разработчиками и бизнес-заказчиками",
+          "Выработал здоровую усталость от дежурств",
+        ],
+      },
+      tech: "Java EE, WebLogic, Tomcat, Log4j, Oracle RDBMS, PostgreSQL, RHEL, CentOS, Splunk, Bash, Perl, Python, AWS EC2, Jira, Confluence, Bitbucket, Fisheye, Git",
+    },
+    {
+      dates:{en:"Sep 2012 &ndash; Sep 2015", ru:"Сен 2012 &ndash; Сен 2015"}, span:{en:"3y 1m", ru:"3 г. 1 мес."},
+      co:"Devexperts", loc:{en:"Saint Petersburg &middot; devexperts.com", ru:"Санкт-Петербург &middot; devexperts.com"},
+      title:{en:"Application Support Specialist (Tier 2)", ru:"Специалист технической поддержки (2-я линия)"},
+      bullets:{
+        en:[
+          "Monitored applications and infrastructure of a large-scale distributed trading platform",
+          "Registered and supported incoming service requests and incidents through their lifecycle",
+          "Investigated application/environment issues; ran SQL queries; analyzed logs",
+          "Participated on-call during major incidents, engaging in resolution",
+          "Performed daily maintenance, assisted with rollouts and configuration changes",
+          "Wrote instructions and kept internal documentation up to date",
+          "Operated in low-power mode during night shifts",
+        ],
+        ru:[
+          "Мониторил приложения и инфраструктуру крупной распределённой торговой платформы",
+          "Регистрировал и сопровождал заявки и инциденты на всех этапах их жизненного цикла",
+          "Разбирал проблемы приложений и окружения; писал SQL-запросы; анализировал логи",
+          "Участвовал в дежурствах при крупных инцидентах, помогая с их устранением",
+          "Выполнял ежедневное обслуживание, помогал с релизами и изменениями конфигураций",
+          "Писал инструкции и поддерживал внутреннюю документацию в актуальном состоянии",
+          "Работал в режиме энергосбережения во время ночных смен",
+        ],
+      },
+      tech: "Java EE, JVM, SQL, RHEL, Bash, grep, sed, awk, Perl, regex, Python, Jira, Confluence, Bitbucket, Git",
+    },
+  ];
+
+  const CERTS = [
+    {yr:"2026", name:"Certified DevOps Engineer &ndash; Yandex Cloud"},
+    {yr:"2021", name:"AWS Certified DevOps Engineer &ndash; Professional"},
+    {yr:"2019", name:"CKA: Certified Kubernetes Administrator"},
+    {yr:"2017", name:"Cisco Certified Network Associate &ndash; Routing and Switching (CCNA)"},
+    {yr:"2017", name:"Red Hat Certified Engineer (RHCE)"},
+  ];
+
+  const LANGUAGES = [
+    {name:{en:"Russian", ru:"Русский"}, filled:10, sub:{en:"Native", ru:"Родной"}},
+    {name:{en:"English", ru:"Английский"}, filled:8, sub:{en:"C1 &mdash; Advanced", ru:"C1 &mdash; Продвинутый"}},
+    {name:{en:"German", ru:"Немецкий"}, filled:3, sub:{en:"A2 &mdash; Elementary", ru:"A2 &mdash; Начальный"}},
+    {name:{en:"Spanish", ru:"Испанский"}, filled:5, sub:{en:"B1 &mdash; Intermediate", ru:"B1 &mdash; Средний"}},
+  ];
+
+  const SKILLS = [
+    {key:{en:"Languages", ru:"Языки программирования"}, val:"Python, Bash, PowerShell, Go (beginner)"},
+    {key:{en:"Linux", ru:"Linux"}, val:"RHEL, CentOS, Ubuntu, RedOS"},
+    {key:{en:"Network", ru:"Сети"}, val:"TCP/IP, HTTP(S), DNS, SSH, SSL/TLS, APIs, proxies, load balancers, routing, security"},
+    {key:{en:"Web / LB", ru:"Web / балансировщики"}, val:"Nginx, OpenResty, HAProxy"},
+    {key:{en:"CI/CD", ru:"CI/CD"}, val:"Jenkins, GitLab CI, Terraform, Ansible"},
+    {key:{en:"Containers", ru:"Контейнеры"}, val:"ECS, Kubernetes, OpenShift, Docker, Helm"},
+    {key:{en:"Virtualization", ru:"Виртуализация"}, val:"libvirt, LXC, Ceph, MAAS"},
+    {key:{en:"Cloud", ru:"Облако"}, val:"AWS (primarily), GCP, Azure, Yandex Cloud, OpenStack"},
+    {key:{en:"Databases", ru:"Базы данных"}, val:"PostgreSQL, MariaDB, MySQL, ClickHouse, MongoDB"},
+    {key:{en:"Monitoring", ru:"Мониторинг"}, val:"Prometheus, Grafana, ELK Stack, Graylog, CloudWatch"},
+  ];
+
+  const TRAITS = {
+    en:[
+      "English without a Slavic flavor",
+      "devotion to the deity of technology",
+      "dedication and perseverance of a dung beetle",
+      "insatiable curiosity",
+      "empathetic capacities of a shrink",
+      "ability to make magic happen",
+      "supernatural attention to detail",
+      "healthy skepticism (that anyone reading this far)",
+      "a born leader and a cutie patootie (as per my mom)",
+    ],
+    ru:[
+      "английский без славянского акцента",
+      "преданность богу технологий",
+      "упорство и целеустремлённость навозного жука",
+      "неутолимое любопытство",
+      "эмпатия на уровне психотерапевта",
+      "умение творить магию",
+      "сверхъестественное внимание к деталям",
+      "здоровый скептицизм (в том, что кто-то дочитал досюда)",
+      "прирождённый лидер и лапочка (по словам моей мамы)",
+    ],
+  };
+
+  const SOCIALS = [
+    ["me@nikita.sh","mailto:me@nikita.sh"],
+    ["nikita.sh","https://nikita.sh"],
+    ["@thatguynikita","https://t.me/thatguynikita"],
+    ["thatguynikita","https://github.com/thatguynikita"],
+    ["in/nikita-chernozipunnikov","https://www.linkedin.com/in/nikita-chernozipunnikov"],
+  ];
+
+  const UI = {
+    en: {
+      name: "Nikita Chernozipunnikov",
+      tagline: `<span class="accent">DevOps / SRE</span> <span class="dim">&mdash; Systems Engineer &middot; 11y experience</span>`,
+      metaLine: `Saint Petersburg, Russia &middot; Citizenship: Russia &middot; hybrid, full day &middot; not available for relocation or business trips`,
+      about: `DevOps/SRE with eleven years of experience in Application Support and Operations, gradually
+        developing towards AI-driven Software Development. Solid knowledge of how modern computer systems work
+        (and how they don't), extensive Linux and network administration experience, a sound understanding
+        of Computer Science concepts, and plenty of enthusiasm for bringing DevOps and SRE practices into
+        reality. Looking for an opportunity to gang up with bright, seasoned folks passionate about their
+        work &mdash; and add all my skills, wisdom, and zeal to the heap.`,
+      cmdCatAbout: "cat", fileAbout: "about.txt",
+      cmdExperience: "tail -n 200", fileExperience: "experience.log",
+      cmdEducation: "cat", fileEducation: "education.txt",
+      educationBody: `<b>Izhevsk Kalashnikov State Technical University</b> &mdash; Izhevsk, 2012<br>
+        <span class="dim">Radio Engineering, Wireless Communication Facilities</span>`,
+      cmdCerts: "cat", fileCerts: "certifications.txt",
+      cmdLangs: "cat", fileLangs: "languages.txt",
+      cmdSkills: "less", fileSkills: "skills.sh",
+      cmdNotes: "grep -A99 not_so_hard_skills", fileNotes: "notes.txt",
+      techPrefix: "// tech:",
+      signOff: `$ <span class="accent">echo</span> <span class="amber">"thanks for reading this far. let's build something reliable together."</span>`,
+      print: "print", footerBack: "back to terminal", langChip: "RU",
+    },
+    ru: {
+      name: "Никита Чернозипунников",
+      tagline: `<span class="accent">DevOps / SRE</span> <span class="dim">&mdash; Системный инженер &middot; 11 лет опыта</span>`,
+      metaLine: `Санкт-Петербург, Россия &middot; Гражданство: Россия &middot; гибридный график, полный день &middot; не готов к переезду или командировкам`,
+      about: `DevOps/SRE-инженер с одиннадцатилетним опытом в Application Support и Operations,
+        постепенно развивающийся в сторону разработки ПО с применением ИИ. Хорошее понимание того,
+        как устроены современные компьютерные системы (и как именно они ломаются), богатый опыт
+        администрирования Linux и сетей, крепкое понимание основ Computer Science и море энтузиазма
+        по внедрению практик DevOps и SRE в реальную жизнь. Ищу возможность объединиться с толковыми,
+        опытными людьми, увлечёнными своим делом &mdash; и добавить все свои навыки, мудрость и рвение в общую копилку.`,
+      cmdCatAbout: "cat", fileAbout: "about.txt",
+      cmdExperience: "tail -n 200", fileExperience: "experience.log",
+      cmdEducation: "cat", fileEducation: "education.txt",
+      educationBody: `<b>Ижевский государственный технический университет имени М.Т. Калашникова</b> &mdash; Ижевск, 2012<br>
+        <span class="dim">Радиотехника, средства беспроводной связи</span>`,
+      cmdCerts: "cat", fileCerts: "certifications.txt",
+      cmdLangs: "cat", fileLangs: "languages.txt",
+      cmdSkills: "less", fileSkills: "skills.sh",
+      cmdNotes: "grep -A99 not_so_hard_skills", fileNotes: "notes.txt",
+      techPrefix: "// стек:",
+      signOff: `$ <span class="accent">echo</span> <span class="amber">"спасибо, что дочитали до конца. давайте построим что-то надёжное вместе."</span>`,
+      print: "печать", footerBack: "назад в терминал", langChip: "EN",
+    },
+  };
+
+  /* ================= render ================= */
+  const termBody = document.getElementById('termBody');
+  let lang = 'en';
+
+  function sectionHead(cmd, file){
+    return `<div class="line section-head"><span class="ps">guest@nikita.sh:~$</span><span class="cmd">${cmd}</span> <span class="file">${file}</span></div>`;
+  }
+
+  function render(){
+    const U = UI[lang];
+
+    let html = "";
+    html += `<div class="line glow title">${U.name}</div>`;
+    html += `<div class="line tagline">${U.tagline}</div>`;
+    html += `<div class="contact-row">`;
+    html += SOCIALS.map(([label,href])=>`<a href="${href}" target="_blank" rel="noopener">${label}</a>`).join(`<span class="dim">&middot;</span>`);
+    html += `</div>`;
+    html += `<div class="meta-line">${U.metaLine}</div>`;
+    html += `<hr class="rule strong">`;
+
+    html += `<div class="section">`;
+    html += sectionHead(U.cmdCatAbout, U.fileAbout);
+    html += `<p class="body">${U.about}</p>`;
+    html += `</div>`;
+
+    html += `<div class="section">`;
+    html += sectionHead(U.cmdExperience, U.fileExperience);
+    JOBS.forEach(j=>{
+      html += `<div class="job">`;
+      html += `<div class="job-meta"><span class="dates">${j.dates[lang]}</span> <span class="span">(${j.span[lang]})</span> &rsaquo; <span class="co">${j.co}</span> <span class="loc">${j.loc[lang]}</span></div>`;
+      html += `<div class="job-title">${j.title[lang]}</div>`;
+      html += `<ul class="bullets">` + j.bullets[lang].map(b=>`<li>${b}</li>`).join('') + `</ul>`;
+      html += `<div class="tech">${U.techPrefix} ${j.tech}</div>`;
+      html += `</div>`;
+    });
+    html += `</div>`;
+
+    html += `<div class="section">`;
+    html += sectionHead(U.cmdEducation, U.fileEducation);
+    html += `<p class="body">${U.educationBody}</p>`;
+    html += `</div>`;
+
+    html += `<div class="section">`;
+    html += sectionHead(U.cmdCerts, U.fileCerts);
+    CERTS.forEach(c=>{
+      html += `<div class="cert-row"><span class="ok">[x]</span><span class="yr">${c.yr}</span> ${c.name}</div>`;
+    });
+    html += `</div>`;
+
+    html += `<div class="section">`;
+    html += sectionHead(U.cmdLangs, U.fileLangs);
+    LANGUAGES.forEach(l=>{
+      html += `<div class="langrow"><span class="lang-label">${l.name[lang]}</span><span class="lang-bar">`;
+      for(let i=0;i<10;i++){ html += `<i${i<l.filled?' class="on"':''}></i>`; }
+      html += `</span><span class="lang-sub">${l.sub[lang]}</span></div>`;
+    });
+    html += `</div>`;
+
+    html += `<div class="section">`;
+    html += sectionHead(U.cmdSkills, U.fileSkills);
+    html += `<table class="tbl">`;
+    SKILLS.forEach(s=>{
+      html += `<tr><td class="key">${s.key[lang]}</td><td>${s.val}</td></tr>`;
+    });
+    html += `</table></div>`;
+
+    html += `<div class="section">`;
+    html += sectionHead(U.cmdNotes, U.fileNotes);
+    html += `<div class="traits">`;
+    TRAITS[lang].forEach(tr=>{ html += `<div><span class="hash"># </span>${tr}</div>`; });
+    html += `</div></div>`;
+
+    html += `<hr class="rule">`;
+    html += `<div class="line sign-off dim">${U.signOff}<span class="fake-cursor"></span></div>`;
+
+    termBody.innerHTML = html;
+    document.getElementById('printBtn').textContent = U.print;
+    document.getElementById('footerBack').textContent = U.footerBack;
+    document.documentElement.lang = lang;
+  }
+
+  const langChip = document.getElementById('langChip');
+  function updateLangChip(){
+    langChip.textContent = UI[lang].langChip;
+  }
+  langChip.addEventListener('click', ()=>{
+    lang = lang === 'en' ? 'ru' : 'en';
+    updateLangChip();
+    render();
+  });
+
+  updateLangChip();
+  render();
+})();
+</script>
+</body>
+</html>
