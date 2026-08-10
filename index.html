@@ -206,14 +206,18 @@
     position:fixed; inset:0; z-index:50;
     background:rgba(2,4,3,.9);
     display:flex; align-items:center; justify-content:center; padding:20px;
+    overflow-y:auto;
   }
   .game-overlay.hidden{display:none;}
   .game-frame{
-    width:min(920px, 96vw); height:min(640px, 88vh);
+    width:min(920px, 96vw);
+    height:min(640px, 88vh);
+    height:min(640px, 88dvh);
     background:linear-gradient(180deg, rgba(15,25,17,.96), rgba(6,10,8,.98));
     border:1px solid var(--border); border-radius:10px;
     box-shadow:var(--glow), 0 30px 80px rgba(0,0,0,.75);
     display:flex; flex-direction:column; overflow:hidden;
+    flex-shrink:0;
   }
   .game-frame .term-head{position:relative;}
   .game-close{
@@ -247,7 +251,12 @@
     .neofetch{gap:14px;}
     .nf-art{font-size:10px;}
     body{padding:14px 8px 10px;}
-    .game-frame{height:min(560px, 82vh);}
+    .game-overlay{padding:8px;}
+    .game-frame{
+      width:96vw;
+      height:92vh;
+      height:92dvh;
+    }
     .game-hint{font-size:10px;}
     .nf-info{flex-basis:100%;}
   }
@@ -373,16 +382,16 @@
       const isTitle = li === 0;
       const isBlank = bootLines[li] === "";
       li++;
-      const delay = isTitle ? 900 : isBlank ? 500 : 650;
+      const delay = isTitle ? 550 : isBlank ? 300 : 380;
       setTimeout(typeBoot, delay);
     } else {
       setTimeout(()=>{
         bootEl.classList.add('hidden');
         startTerminal();
-      }, 1200);
+      }, 700);
     }
   }
-  setTimeout(typeBoot, 400);
+  setTimeout(typeBoot, 250);
 
   /* ================= game overlay ================= */
   const gameOverlay = document.getElementById('gameOverlay');
