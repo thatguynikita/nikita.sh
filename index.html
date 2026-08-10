@@ -178,6 +178,25 @@
   .nf-key{color:var(--accent); display:inline-block; min-width:82px;}
   .np-row{display:flex; align-items:center; gap:1ch; min-width:0;}
 
+  .np-eq{display:none; align-items:flex-end; gap:2px; height:11px; flex:0 0 auto;}
+  .np-row.playing .np-eq{display:inline-flex;}
+  .np-eq span{
+    display:block; width:3px; height:100%; border-radius:1px;
+    background:var(--fg); box-shadow:var(--glow);
+    transform-origin:bottom; animation:np-eq-bounce ease-in-out infinite;
+  }
+  .np-eq span:nth-child(1){animation-duration:.85s; animation-delay:-.7s;}
+  .np-eq span:nth-child(2){animation-duration:1.05s; animation-delay:-.2s;}
+  .np-eq span:nth-child(3){animation-duration:.75s; animation-delay:-.9s;}
+  .np-eq span:nth-child(4){animation-duration:.95s; animation-delay:-.45s;}
+  @keyframes np-eq-bounce{
+    0%, 100%{transform:scaleY(.15);}
+    50%{transform:scaleY(1);}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .np-eq span{animation:none; transform:scaleY(.6);}
+  }
+
   .links{display:flex; flex-wrap:wrap; gap:6px 18px; margin:4px 0;}
   .links a{white-space:nowrap;}
 
@@ -470,6 +489,8 @@
   function applyNowPlaying(){
     document.querySelectorAll('.np-track').forEach(trackEl=>{
       const wrap = trackEl.parentElement;
+      const row = wrap.closest('.np-row');
+      const isPlaying = typeof npLatest === 'string';
       let text;
       if(npLatest === undefined) text = lang === 'ru' ? "spotify недоступен" : "spotify offline";
       else if(npLatest === null) text = lang === 'ru' ? "сейчас ничего не играет" : "nothing playing right now";
@@ -480,6 +501,8 @@
       } else {
         trackEl.textContent = text;
       }
+
+      if(row) row.classList.toggle('playing', isPlaying);
 
       wrap.classList.remove('scrolling');
       requestAnimationFrame(()=>{
@@ -529,7 +552,7 @@
         <div><span class="nf-key">${L.shell}</span> /bin/bash</div>
         <div><span class="nf-key">${L.stack}</span> ${L.stackVal}</div>
         <div><span class="nf-key">${L.status}</span> <span class="amber">${L.statusVal}</span></div>
-        <div class="np-row"><span class="nf-key">${L.playing}</span><span class="np-field"><span class="np-track">&hellip;</span></span></div>
+        <div class="np-row"><span class="nf-key">${L.playing}</span><span class="np-eq" aria-hidden="true"><span></span><span></span><span></span><span></span></span><span class="np-field"><span class="np-track">&hellip;</span></span></div>
       </div>
     </div>`;
     setTimeout(applyNowPlaying, 0);
