@@ -277,7 +277,7 @@
       <button class="chip" data-cmd="skills">skills</button>
       <button class="chip" data-cmd="contact">contact</button>
       <button class="chip" data-cmd="cv">cv</button>
-      <button class="chip" data-cmd="play">play</button>
+      <button class="chip" data-cmd="game">game</button>
       <button class="chip" id="langChip" data-cmd="lang ru">ru</button>
       <button class="chip" data-cmd="help">help</button>
       <button class="chip" data-cmd="clear">clear</button>
@@ -454,6 +454,7 @@
   const NP_ENDPOINT = '/now-playing.json';
   const NP_POLL_MS = 20000;
   let npLatest; // undefined = unknown/offline, null = idle, string = "track — artist"
+  let npUrl = null; // spotify link for the current track, if any
 
   function applyNowPlaying(){
     document.querySelectorAll('.np-track').forEach(trackEl=>{
@@ -462,7 +463,13 @@
       if(npLatest === undefined) text = lang === 'ru' ? "spotify недоступен" : "spotify offline";
       else if(npLatest === null) text = lang === 'ru' ? "сейчас ничего не играет" : "nothing playing right now";
       else text = npLatest;
-      trackEl.textContent = text;
+
+      if(npLatest && npUrl){
+        trackEl.innerHTML = `<a href="${npUrl}" target="_blank" rel="noopener">${escapeHtml(text)}</a>`;
+      } else {
+        trackEl.textContent = text;
+      }
+
       wrap.classList.remove('scrolling');
       requestAnimationFrame(()=>{
         if(trackEl.scrollWidth > wrap.clientWidth) wrap.classList.add('scrolling');
@@ -474,9 +481,16 @@
     try {
       const res = await fetch(NP_ENDPOINT, { cache: 'no-store' });
       const data = await res.json();
-      npLatest = (data.is_playing && data.track) ? `${data.track} — ${data.artist}` : null;
+      if(data.is_playing && data.track){
+        npLatest = `${data.track} — ${data.artist}`;
+        npUrl = data.url || `https://open.spotify.com/search/${encodeURIComponent(data.track + ' ' + (data.artist || ''))}`;
+      } else {
+        npLatest = null;
+        npUrl = null;
+      }
     } catch(err){
       npLatest = undefined;
+      npUrl = null;
     }
     applyNowPlaying();
   }
