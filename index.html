@@ -116,6 +116,20 @@
     letter-spacing:.04em;
   }
 
+  .np-field{
+    display:inline-block; max-width:180px; overflow:hidden;
+    white-space:nowrap; vertical-align:bottom;
+  }
+  .np-track{display:inline-block; white-space:nowrap;}
+  .np-field.scrolling .np-track{
+    padding-left:100%;
+    animation:np-scroll 9s linear infinite;
+  }
+  @keyframes np-scroll{
+    from{transform:translateX(0);}
+    to{transform:translateX(-100%);}
+  }
+
   .term-body{
     padding:18px 20px 14px;
     font-size:14px;
@@ -232,6 +246,7 @@
     body{padding:14px 8px 10px;}
     .game-frame{height:min(560px, 82vh);}
     .game-hint{font-size:10px;}
+    .np-field{max-width:120px;}
   }
 </style>
 </head>
@@ -434,17 +449,50 @@
 
   let lang = 'en';
 
+  /* ================= now playing (lives inside neofetch) ================= */
+  const NP_ENDPOINT = '/now-playing.json';
+  const NP_POLL_MS = 20000;
+  let npLatest; // undefined = unknown/offline, null = idle, string = "track — artist"
+
+  function applyNowPlaying(){
+    document.querySelectorAll('.np-track').forEach(trackEl=>{
+      const wrap = trackEl.parentElement;
+      let text;
+      if(npLatest === undefined) text = lang === 'ru' ? "spotify недоступен" : "spotify offline";
+      else if(npLatest === null) text = lang === 'ru' ? "сейчас ничего не играет" : "nothing playing right now";
+      else text = npLatest;
+      trackEl.textContent = text;
+      wrap.classList.remove('scrolling');
+      requestAnimationFrame(()=>{
+        if(trackEl.scrollWidth > wrap.clientWidth) wrap.classList.add('scrolling');
+      });
+    });
+  }
+
+  async function fetchNowPlaying(){
+    try {
+      const res = await fetch(NP_ENDPOINT, { cache: 'no-store' });
+      const data = await res.json();
+      npLatest = (data.is_playing && data.track) ? `${data.track} — ${data.artist}` : null;
+    } catch(err){
+      npLatest = undefined;
+    }
+    applyNowPlaying();
+  }
+  fetchNowPlaying();
+  setInterval(fetchNowPlaying, NP_POLL_MS);
+
   function neofetchHTML(){
     const L = lang === 'ru'
-      ? { name:"Имя", role:"Должность", uptime:"Стаж", shell:"Оболочка", stack:"Стек", status:"Статус",
+      ? { name:"Имя", role:"Должность", uptime:"Стаж", shell:"Оболочка", stack:"Стек", status:"Статус", playing:"Играет",
           nameVal:"Никита Чернозипунников",
           roleVal:"DevOps / SRE", uptimeVal:"11+ лет в проде", stackVal:"AWS · OpenStack · Kubernetes · Linux",
           statusVal:"наверное, на дежурстве" }
-      : { name:"Name", role:"Role", uptime:"Uptime", shell:"Shell", stack:"Stack", status:"Status",
+      : { name:"Name", role:"Role", uptime:"Uptime", shell:"Shell", stack:"Stack", status:"Status", playing:"Playing",
           nameVal:"Nikita Chernozipunnikov",
           roleVal:"DevOps / SRE", uptimeVal:"11+ years in production", stackVal:"AWS · OpenStack · Kubernetes · Linux",
           statusVal:"probably on-call" };
-    return `<div class="neofetch">
+    const html = `<div class="neofetch">
       <div class="nf-art">${NEOFETCH}</div>
       <div class="nf-info">
         <div><span class="nf-key accent">guest</span>@<span class="accent">nikita.sh</span></div>
@@ -455,8 +503,11 @@
         <div><span class="nf-key">${L.shell}</span> /bin/bash</div>
         <div><span class="nf-key">${L.stack}</span> ${L.stackVal}</div>
         <div><span class="nf-key">${L.status}</span> <span class="amber">${L.statusVal}</span></div>
+        <div><span class="nf-key">${L.playing}</span> <span class="np-field"><span class="np-track">&hellip;</span></span></div>
       </div>
     </div>`;
+    setTimeout(applyNowPlaying, 0);
+    return html;
   }
 
   const ABOUT_EN = `DevOps/SRE with eleven years of experience in Application Support and Operations,
