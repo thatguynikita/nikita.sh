@@ -627,16 +627,16 @@ and SRE practices into reality.`;
     ["skills","tech stack"],
     ["contact / socials","ways to reach me"],
     ["cv / resume","open CV page"],
-    ["play / game","launch the cat game (CRT mode)"],
+    ["play / game","launch the cat game"],
     ["neofetch","system info card"],
     ["whoami","identity check"],
     ["ls","list files"],
     ["cat <file>","print a file"],
     ["fortune","random sysadmin wisdom"],
     ["htop / top","fake process monitor"],
-    ["kubectl","peek at a pretend cluster (tab for subcommands)"],
-    ["terraform","apply or destroy things (tab for subcommands)"],
-    ["ssh recruiter@nikita.sh","talk to a recruiter (interactive)"],
+    ["kubectl","peek at a pretend cluster"],
+    ["terraform","apply or destroy things"],
+    ["ssh recruiter@nikita.sh","talk to a recruiter"],
     ["theme <green|amber|cyan>","change terminal color"],
     ["matrix <on|off>","toggle background rain"],
     ["lang <ru|en>","switch output language"],
@@ -650,16 +650,16 @@ and SRE practices into reality.`;
     ["skills","технологический стек"],
     ["contact / socials","как со мной связаться"],
     ["cv / resume","открыть страницу резюме"],
-    ["play / game","запустить игру про кота (в стиле CRT)"],
+    ["play / game","запустить игру про кота"],
     ["neofetch","карточка с информацией о системе"],
     ["whoami","проверка личности"],
     ["ls","список файлов"],
     ["cat <file>","вывести файл"],
     ["fortune","случайная мудрость сисадмина"],
     ["htop / top","фейковый монитор процессов"],
-    ["kubectl","заглянуть в игрушечный кластер (tab — подкоманды)"],
-    ["terraform","apply или destroy (tab — подкоманды)"],
-    ["ssh recruiter@nikita.sh","поговорить с рекрутером (интерактивно)"],
+    ["kubectl","заглянуть в игрушечный кластер"],
+    ["terraform","apply или destroy"],
+    ["ssh recruiter@nikita.sh","поговорить с рекрутером"],
     ["theme <green|amber|cyan>","сменить цвет терминала"],
     ["matrix <on|off>","вкл/выкл фоновый дождь из символов"],
     ["lang <ru|en>","сменить язык вывода"],
@@ -1316,7 +1316,7 @@ and SRE practices into reality.`;
             ? `<span class="amber">Plan: 0 to add, 0 to change, 3 to destroy.</span>`
             : `<span class="amber">Plan: 0 to add, 0 to change, 3 to destroy.</span>`);
           printLine(lang === 'ru'
-            ? `Do you really want to destroy all resources? Только "yes" будет принято для подтверждения.`
+            ? `Вы действительно хотите уничтожить все ресурсы? Только "yes" будет принято для подтверждения.`
             : `Do you really want to destroy all resources? Only 'yes' will be accepted to approve.`);
           await sleep(550);
           printLine(lang === 'ru'
