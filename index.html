@@ -73,6 +73,23 @@
     96%{opacity:1;}
   }
 
+  /* ---------- panic effect (sudo rm -rf /) ---------- */
+  .rm-line{color:var(--red); text-shadow:0 0 4px rgba(255,95,86,.8);}
+  body.panic .term{animation:panic-shake .12s infinite;}
+  body.panic .crt{animation:panic-flicker .3s infinite; background-color:rgba(255,0,0,.04);}
+  @keyframes panic-shake{
+    0%{transform:translate(0,0);}
+    20%{transform:translate(-3px,2px);}
+    40%{transform:translate(3px,-2px);}
+    60%{transform:translate(-2px,-3px);}
+    80%{transform:translate(2px,3px);}
+    100%{transform:translate(0,0);}
+  }
+  @keyframes panic-flicker{
+    0%,100%{opacity:.95;}
+    50%{opacity:.55;}
+  }
+
   /* ---------- boot screen ---------- */
   #boot{
     position:fixed; inset:0; z-index:20; background:#020402;
@@ -161,7 +178,7 @@
   #cmdline{
     background:transparent; border:none; outline:none;
     color:var(--fg); font-family:inherit; font-size:14px;
-    flex:0 0 auto; width:1ch; min-width:1ch; max-width:100%;
+    flex:0 0 auto; width:0; min-width:0; max-width:100%;
     caret-color:transparent; text-shadow:var(--glow); padding:0;
   }
   .cursor{
@@ -451,7 +468,7 @@
   }
   function printPromptEcho(cmd){
     const row = el('div','line prompt-row');
-    row.innerHTML = `<span class="ps">guest@nikita.sh <span class="path">${PROMPT_PATH}</span> $</span>${escapeHtml(cmd)}`;
+    row.innerHTML = `<span class="ps">${psHTML()}</span>${escapeHtml(cmd)}`;
     body.appendChild(row);
     body.scrollTop = body.scrollHeight;
   }
@@ -615,6 +632,11 @@ and SRE practices into reality.`;
     ["whoami","identity check"],
     ["ls","list files"],
     ["cat <file>","print a file"],
+    ["fortune","random sysadmin wisdom"],
+    ["htop / top","fake process monitor"],
+    ["kubectl","peek at a pretend cluster (tab for subcommands)"],
+    ["terraform","apply or destroy things (tab for subcommands)"],
+    ["ssh recruiter@nikita.sh","talk to a recruiter (interactive)"],
     ["theme <green|amber|cyan>","change terminal color"],
     ["matrix <on|off>","toggle background rain"],
     ["lang <ru|en>","switch output language"],
@@ -633,6 +655,11 @@ and SRE practices into reality.`;
     ["whoami","проверка личности"],
     ["ls","список файлов"],
     ["cat <file>","вывести файл"],
+    ["fortune","случайная мудрость сисадмина"],
+    ["htop / top","фейковый монитор процессов"],
+    ["kubectl","заглянуть в игрушечный кластер (tab — подкоманды)"],
+    ["terraform","apply или destroy (tab — подкоманды)"],
+    ["ssh recruiter@nikita.sh","поговорить с рекрутером (интерактивно)"],
     ["theme <green|amber|cyan>","сменить цвет терминала"],
     ["matrix <on|off>","вкл/выкл фоновый дождь из символов"],
     ["lang <ru|en>","сменить язык вывода"],
@@ -642,6 +669,190 @@ and SRE practices into reality.`;
   ];
 
   function HELP(){ return lang === 'ru' ? HELP_RU : HELP_EN; }
+
+  /* ---------- easter-egg content ---------- */
+  const FORTUNES_EN = [
+    "It's always DNS.",
+    "99.9% uptime means 8h46m of downtime a year — you've already used six of them today.",
+    "There is no cloud. It's just someone else's Kubernetes cluster.",
+    "Friday deploy energy: high risk, higher regret.",
+    "The bug is never in prod. (The bug is in prod.)",
+    "A watched pipeline never finishes.",
+    "Works on my machine — shipping the machine.",
+    "Chaos engineering: it's not a bug, it's a Tuesday.",
+    "Your on-call shift called. It wants a raise.",
+    "Backups are like flossing — everyone agrees they matter, right up until they don't do them.",
+    "Automate the boring stuff, then automate the automation.",
+    "There's no place like 127.0.0.1.",
+    "A distributed system is one where a machine you've never heard of can stop you from doing your job.",
+    "Monitoring without alerting is just a very expensive screensaver.",
+    "If it hurts, do it more often.",
+    "The best runbook is the one nobody has to read at 3am.",
+    "Postmortems: where 'human error' quietly becomes 'process gap'.",
+    "Your load balancer doesn't care about your feelings.",
+    "Idempotency: because running it twice shouldn't cost you twice.",
+    "Every 'temporary' fix becomes permanent the moment it works.",
+    "Kubernetes: making simple things complicated since 2014.",
+    "The graph looked fine until someone zoomed in.",
+    "Infrastructure as Code: now your typos have version history.",
+    "Nothing is really deleted — it's just eventually consistent.",
+    "The rollback button is the most underrated feature in your whole pipeline.",
+    "SLOs: the art of promising slightly less than 100%.",
+    "A good on-call rotation is invisible. A bad one is a group chat at 2am.",
+    "Latency is just distance with better excuses.",
+    "The incident is never really over — it just becomes a Jira ticket nobody assigns.",
+    "You don't need more dashboards. You need to read the ones you have.",
+  ];
+  const FORTUNES_RU = [
+    "Это всегда DNS.",
+    "99.9% аптайма — это 8ч46м простоя в год, и шесть из них вы уже потратили сегодня.",
+    "Никакого облака нет. Есть чужой кластер Kubernetes.",
+    "Энергия пятничного деплоя: высокий риск, ещё более высокое сожаление.",
+    "Баг никогда не в проде. (Баг в проде.)",
+    "Если следить за пайплайном, он никогда не закончится.",
+    "У меня работает — значит, отгружаем мою машину.",
+    "Chaos engineering — это не баг, это вторник.",
+    "Ваша дежурная смена звонила. Она хочет прибавку.",
+    "Бэкапы как чистка зубной нитью — все согласны, что это важно, пока не перестают это делать.",
+    "Автоматизируй рутину, а потом автоматизируй саму автоматизацию.",
+    "Нет места лучше, чем 127.0.0.1.",
+    "Распределённая система — это когда неизвестная вам машина мешает вам делать вашу работу.",
+    "Мониторинг без алертинга — это просто очень дорогая заставка.",
+    "Если больно — делай это чаще.",
+    "Лучший runbook — тот, который никому не приходится читать в три часа ночи.",
+    "Постмортемы: там, где «человеческий фактор» незаметно превращается в «пробел в процессе».",
+    "Балансировщике нагрузки плевать на ваши чувства.",
+    "Идемпотентность нужна, чтобы повторный запуск не стоил вдвойне.",
+    "Любой «временный» костыль становится постоянным в тот момент, когда он заработал.",
+    "Kubernetes: усложняет простые вещи с 2014 года.",
+    "График выглядел нормально, пока кто-то не приблизил масштаб.",
+    "Infrastructure as Code — теперь у ваших опечаток есть история версий.",
+    "На самом деле ничего не удаляется — оно просто eventually consistent.",
+    "Кнопка rollback — самая недооценённая функция во всём пайплайне.",
+    "SLO — искусство обещать чуть меньше, чем 100%.",
+    "Хорошее дежурство незаметно. Плохое — это групповой чат в два часа ночи.",
+    "Задержка — это просто расстояние с более убедительными оправданиями.",
+    "Инцидент никогда по-настоящему не заканчивается — он просто становится тикетом в Jira, который никому не назначают.",
+    "Вам не нужно больше дашбордов. Вам нужно читать те, что уже есть.",
+  ];
+  function fortune(){
+    const arr = lang === 'ru' ? FORTUNES_RU : FORTUNES_EN;
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function htopTable(){
+    const H = lang === 'ru' ? ["PID","КОМАНДА","CPU%","MEM%","СТАТУС"] : ["PID","CMD","CPU%","MEM%","STATUS"];
+    const running = lang === 'ru' ? "работает" : "running";
+    const sleeping = lang === 'ru' ? "ожидание" : "sleeping";
+    const zombie = lang === 'ru' ? "зомби" : "zombie";
+    const procs = [
+      ["1","coffee.service",(10+Math.random()*10).toFixed(1),(2+Math.random()*3).toFixed(1),running],
+      ["2","cat_herder.py",(70+Math.random()*20).toFixed(1),(30+Math.random()*15).toFixed(1),running],
+      ["3","on_call_anxiety",(95+Math.random()*4).toFixed(1),(8+Math.random()*6).toFixed(1),running],
+      ["4","condensed_milk_watch",(1+Math.random()*4).toFixed(1),(0.5+Math.random()*1).toFixed(1),sleeping],
+      ["5","kubernetes-cluster",(15+Math.random()*15).toFixed(1),(10+Math.random()*10).toFixed(1),running],
+      ["6","dreams_of_vacation","0.0","0.0",zombie],
+    ];
+    let html = `<table class="tbl"><tr>` + H.map(h=>`<td class="accent">${h}</td>`).join("") + `</tr>`;
+    procs.forEach(p=>{ html += `<tr>` + p.map(v=>`<td>${v}</td>`).join("") + `</tr>`; });
+    html += `</table>`;
+    return html;
+  }
+
+  function kubectlPods(){
+    const H = lang === 'ru' ? ["ИМЯ","ГОТОВНОСТЬ","СТАТУС","ВОЗРАСТ"] : ["NAME","READY","STATUS","AGE"];
+    const running = lang === 'ru' ? "Работает" : "Running";
+    const pods = [
+      ["cat-deployment-7f9d8c-x2m4q","1/1",running,"11y"],
+      ["condensed-milk-store-0","0/1","CrashLoopBackOff","3m"],
+      ["sre-sanity-canary","1/1",running,lang==='ru'?"еле-еле":"just barely"],
+      ["deploy-friday-afternoon","0/1","Evicted","2m"],
+    ];
+    let html = `<table class="tbl"><tr>` + H.map(h=>`<td class="accent">${h}</td>`).join("") + `</tr>`;
+    pods.forEach(p=>{ html += `<tr>` + p.map(v=>`<td>${v}</td>`).join("") + `</tr>`; });
+    html += `</table>`;
+    return html;
+  }
+
+  function describePod(name){
+    const known = {
+      "condensed-milk-store-0": {
+        status: "CrashLoopBackOff",
+        reason: lang === 'ru' ? "OOMKilled (переел сгущёнки)" : "OOMKilled (ate too much condensed milk)",
+        restarts: "47",
+        events: lang === 'ru' ? [
+          "Killing — контейнер превысил лимит по сахару",
+          "BackOff — перезапуск отложен, контейнер приходит в себя",
+          "Pulling — image \"cat:hungry-latest\"",
+        ] : [
+          "Killing — container exceeded sugar limit",
+          "BackOff — restart delayed, container is recovering",
+          "Pulling — image \"cat:hungry-latest\"",
+        ],
+      },
+      "sre-sanity-canary": {
+        status: lang === 'ru' ? "Работает" : "Running",
+        reason: lang === 'ru' ? "держится на кофе и упрямстве" : "held together by coffee and stubbornness",
+        restarts: "0",
+        events: lang === 'ru' ? [
+          "Started — контейнер запущен",
+          "Warning — уровень тревожности приближается к критическому",
+        ] : [
+          "Started — container started",
+          "Warning — anxiety level approaching critical",
+        ],
+      },
+      "deploy-friday-afternoon": {
+        status: "Evicted",
+        reason: lang === 'ru' ? "node pressure: пятница, 17:58" : "node pressure: it's Friday, 5:58pm",
+        restarts: "0",
+        events: lang === 'ru' ? [
+          "Evicted — узел решил, что с него хватит на сегодня",
+        ] : [
+          "Evicted — the node decided it was done for the day",
+        ],
+      },
+      "cat-deployment-7f9d8c-x2m4q": {
+        status: lang === 'ru' ? "Работает" : "Running",
+        reason: lang === 'ru' ? "полностью мотивирован, сгущёнки: 0/30" : "fully motivated, condensed milk cans: 0/30",
+        restarts: "0",
+        events: lang === 'ru' ? [
+          "Started — контейнер запущен 11 лет назад",
+          "Normal — работает стабильнее, чем большинство прод-сервисов",
+        ] : [
+          "Started — container started 11 years ago",
+          "Normal — more stable than most production services",
+        ],
+      },
+    };
+    const d = known[name];
+    if(!d){
+      return null;
+    }
+    let html = `<div><span class="accent">Name:</span> ${escapeHtml(name)}</div>`;
+    html += `<div><span class="accent">Status:</span> ${d.status}</div>`;
+    html += `<div><span class="accent">${lang==='ru'?'Причина':'Reason'}:</span> ${d.reason}</div>`;
+    html += `<div><span class="accent">Restarts:</span> ${d.restarts}</div>`;
+    html += `<div class="dim">${lang==='ru'?'Events':'Events'}:</div>`;
+    d.events.forEach(ev=>{ html += `<div class="dim">  ${ev}</div>`; });
+    return html;
+  }
+
+  function recruiterQA(){
+    return lang === 'ru' ? [
+      {cmd:'why', q:"Почему нам стоит вас нанять?", a:"Одиннадцать лет держал прод в рабочем состоянии, пока другие спали. Спокоен в инцидентах, дружу с автоматизацией и беру на себя ответственность."},
+      {cmd:'favorite', q:"Что вам больше всего нравится в DevOps?", a:"Момент, когда шаткая ручная процедура превращается в скучный, надёжный пайплайн — и про неё можно забыть."},
+      {cmd:'incident', q:"Расскажите про инцидент, который вы разруливали.", a:"Опустим подробности — кластер лёг в пятницу вечером, а к понедельнику про это уже никто не помнил, кроме постмортема."},
+      {cmd:'goals', q:"Что вы ищете в следующей роли?", a:"Команду, где SRE-практики не факультатив, и где можно расти в сторону AI-driven разработки."},
+      {cmd:'salary', q:"Ожидания по зарплате?", a:"Обсуждаемо — предлагаю продолжить это через contact, а не в терминальном пасхальном яйце :)"},
+    ] : [
+      {cmd:'why', q:"Why should we hire you?", a:"Eleven years of keeping production upright while everyone else slept. Calm in incidents, comfortable with automation, and I take ownership."},
+      {cmd:'favorite', q:"What's your favorite part of DevOps?", a:"The moment a shaky manual process turns into a boring, reliable pipeline — and everyone can forget it exists."},
+      {cmd:'incident', q:"Tell me about an incident you handled.", a:"Skipping the gory details — a cluster went down on a Friday night, and by Monday nobody remembered it except the postmortem doc."},
+      {cmd:'goals', q:"What are you looking for next?", a:"A team where SRE practices aren't optional, with room to grow toward AI-driven development."},
+      {cmd:'salary', q:"Salary expectations?", a:"Negotiable — let's actually talk about that via contact instead of a terminal easter egg :)"},
+    ];
+  }
 
   const ALIASES = {
     "справка":"help", "помощь":"help",
@@ -706,13 +917,55 @@ and SRE practices into reality.`;
     return typeof v === 'function' ? v(...args) : v;
   }
 
-  const COMMANDS = ["about","skills","contact","socials","cv","resume","play","game","neofetch","whoami","ls","cat","date","echo","history","matrix","theme","lang","sudo","clear","help","exit","logout"];
-  const ARG_CANDIDATES = {
-    cat: ["about.txt","skills.txt","socials.txt","cv.html"],
-    theme: ["green","amber","cyan"],
-    matrix: ["on","off"],
-    lang: ["ru","en"],
-  };
+  const COMMANDS = ["about","skills","contact","socials","cv","resume","play","game","neofetch","whoami","ls","cat","date","echo","history","matrix","theme","lang","sudo","fortune","htop","top","kubectl","terraform","ssh","clear","help","exit","logout"];
+
+  const POD_NAMES = ["cat-deployment-7f9d8c-x2m4q","condensed-milk-store-0","sre-sanity-canary","deploy-friday-afternoon"];
+
+  function getArgCandidates(base, remainderLower){
+    switch(base){
+      case "cat": return ["about.txt","skills.txt","socials.txt","cv.html"];
+      case "theme": return ["green","amber","cyan"];
+      case "matrix": return ["on","off"];
+      case "lang": return ["ru","en"];
+      case "sudo": return ["rm -rf /"];
+      case "ssh": return ["recruiter@nikita.sh"];
+      case "terraform": return ["apply","destroy"];
+      case "kubectl":
+        if(remainderLower.startsWith("describe pod")){
+          return POD_NAMES.map(n => `describe pod ${n}`);
+        }
+        return ["get pods","describe pod "];
+      default: return [];
+    }
+  }
+
+  function candidateDisplayLabel(base, candidate){
+    if(base === 'kubectl' && candidate.toLowerCase().startsWith('describe pod ')){
+      const rest = candidate.slice('describe pod '.length);
+      return rest || candidate;
+    }
+    return candidate;
+  }
+
+  /* ---------- shell mode (normal | recruiter | htop) ---------- */
+  let mode = 'shell';
+  let htopInterval = null;
+  let htopContainerEl = null;
+  function psHTML(){
+    if(mode === 'recruiter') return `recruiter@nikita.sh <span class="path">~</span> $`;
+    if(mode === 'htop') return `<span class="dim">${lang === 'ru' ? '(htop — q для выхода)' : '(htop — q to quit)'}</span>`;
+    return `guest@nikita.sh <span class="path">~</span> $`;
+  }
+  function updatePromptUI(){
+    const label = document.getElementById('psLabel');
+    if(label) label.innerHTML = psHTML();
+    const title = document.querySelector('.term-title');
+    if(title) title.textContent = mode === 'recruiter'
+      ? 'recruiter@nikita.sh — ssh — 80×24'
+      : mode === 'htop'
+        ? 'guest@nikita.sh — htop — 80×24'
+        : 'guest@nikita.sh — bash — 80×24';
+  }
 
   function commonPrefix(arr){
     if(!arr.length) return "";
@@ -740,12 +993,150 @@ and SRE practices into reality.`;
     return true;
   }
 
+  async function sudoRmRfPanic(){
+    document.body.classList.add('panic');
+    const paths = ["/bin","/boot","/dev","/etc","/home/guest","/lib","/opt","/proc","/root","/sbin","/srv","/sys","/usr","/var","/home/guest/.bashrc","/home/guest/dreams"];
+    for(const p of paths){
+      printLine(`<span class="rm-line">removing ${p} ...</span>`);
+      await sleep(65);
+    }
+    await sleep(300);
+    body.innerHTML = "";
+    await sleep(650);
+    document.body.classList.remove('panic');
+    printLine(lang === 'ru'
+      ? `<span class="amber">...шучу. неплохая попытка.</span>`
+      : `<span class="amber">...just kidding. nice try though.</span>`);
+    printLine(lang === 'ru'
+      ? `<span class="dim">(ничего не пострадало — это статичный сайт, вы в браузере, а не на моём сервере)</span>`
+      : `<span class="dim">(nothing was harmed — this is a static site, you're in a browser, not my server)</span>`);
+    printLine(t('sudo'));
+  }
+
+  async function sshHandshake(){
+    const lines = lang === 'ru' ? [
+      "запрашиваю рукопожатие с recruiter@nikita.sh ...",
+      "ECDSA key fingerprint is SHA256:7hR3s+kn0wYouR3Wo7rth.",
+      "Are you sure you want to continue connecting (yes/no)? yes",
+      "Warning: Permanently added 'recruiter@nikita.sh' (ECDSA) to the list of known hosts.",
+      "аутентификация...",
+      "доступ разрешён.",
+    ] : [
+      "requesting handshake with recruiter@nikita.sh ...",
+      "ECDSA key fingerprint is SHA256:7hR3s+kn0wYouR3Wo7rth.",
+      "Are you sure you want to continue connecting (yes/no)? yes",
+      "Warning: Permanently added 'recruiter@nikita.sh' (ECDSA) to the list of known hosts.",
+      "authenticating...",
+      "access granted.",
+    ];
+    for(const l of lines){
+      printLine(`<span class="dim">${l}</span>`);
+      await sleep(260);
+    }
+    await sleep(150);
+  }
+
+  function recruiterMenuHTML(){
+    const qa = recruiterQA();
+    let html = `<div>${lang === 'ru'
+      ? `Введите команду, чтобы задать вопрос, или "exit", чтобы отключиться:`
+      : `Type a command to ask a question, or "exit" to disconnect:`}</div>`;
+    html += `<table class="tbl">`;
+    qa.forEach(item=>{ html += `<tr><td class="accent">${item.cmd}</td><td>${item.q}</td></tr>`; });
+    html += `</table>`;
+    return html;
+  }
+
+  async function enterRecruiterMode(){
+    await sshHandshake();
+    mode = 'recruiter';
+    updatePromptUI();
+    printLine(lang === 'ru'
+      ? `подключено к <span class="glow">recruiter@nikita.sh</span>.`
+      : `connected to <span class="glow">recruiter@nikita.sh</span>.`);
+    printLine(recruiterMenuHTML());
+  }
+
+  async function runRecruiterCommand(raw){
+    const cmd = raw.trim();
+    if(cmd) { history.push(raw); hIndex = history.length; }
+    const lc = cmd.toLowerCase();
+    if(lc === 'exit' || lc === 'logout' || lc === 'quit'){
+      printLine(lang === 'ru'
+        ? 'разрываю соединение с recruiter@nikita.sh...'
+        : 'closing connection to recruiter@nikita.sh...');
+      mode = 'shell';
+      updatePromptUI();
+      return;
+    }
+    const qa = recruiterQA();
+    const normalized = lc.replace(/^ask\s+/, '').trim();
+    const item = qa.find(q => q.cmd === normalized);
+    if(item){
+      printLine(`<span class="accent">${item.q}</span>`);
+      await typeLine(item.a);
+      printLine(recruiterMenuHTML());
+    } else if(lc === 'help' || lc === ''){
+      printLine(recruiterMenuHTML());
+    } else {
+      printLine(lang === 'ru'
+        ? `неизвестная команда — доступны: ${qa.map(q=>q.cmd).join(', ')} или "exit"`
+        : `unrecognized command — available: ${qa.map(q=>q.cmd).join(', ')} or "exit"`);
+    }
+  }
+
+  function refreshHtopView(){
+    htopContainerEl = printLine(htopTable());
+  }
+
+  async function enterHtopMode(){
+    mode = 'htop';
+    updatePromptUI();
+    refreshHtopView();
+    printLine(lang === 'ru'
+      ? `<span class="dim">обновление в реальном времени — нажмите <span class="accent">q</span> или введите <span class="accent">exit</span>, чтобы выйти</span>`
+      : `<span class="dim">refreshing live — press <span class="accent">q</span> or type <span class="accent">exit</span> to quit</span>`);
+    htopInterval = setInterval(()=>{
+      if(htopContainerEl) htopContainerEl.innerHTML = htopTable();
+    }, 1200);
+  }
+
+  function exitHtopMode(){
+    if(htopInterval){ clearInterval(htopInterval); htopInterval = null; }
+    htopContainerEl = null;
+    mode = 'shell';
+    updatePromptUI();
+    printLine(lang === 'ru' ? 'вышли из htop.' : 'exited htop.');
+  }
+
+  async function runHtopCommand(raw){
+    const cmd = raw.trim().toLowerCase();
+    if(raw.trim()) { history.push(raw); hIndex = history.length; }
+    if(cmd === 'q' || cmd === 'exit' || cmd === 'quit'){
+      exitHtopMode();
+    } else {
+      printLine(lang === 'ru'
+        ? `нажмите <span class="accent">q</span> или введите <span class="accent">exit</span>, чтобы выйти`
+        : `press <span class="accent">q</span> or type <span class="accent">exit</span> to quit`);
+    }
+  }
+
   const history = [];
   let hIndex = -1;
 
   async function runCommand(raw){
     const cmd = raw.trim();
     printPromptEcho(raw);
+
+    if(mode === 'recruiter'){
+      await runRecruiterCommand(raw);
+      return;
+    }
+    if(mode === 'htop'){
+      await runHtopCommand(raw);
+      return;
+    }
+
     if(cmd) { history.push(raw); hIndex = history.length; }
     if(!cmd) return;
 
@@ -856,7 +1247,102 @@ and SRE practices into reality.`;
         break;
       }
       case "sudo": {
-        printLine(t('sudo'));
+        const normalized = arg.trim().toLowerCase().replace(/\s+/g,' ');
+        if(/^rm -rf \/\*?$/.test(normalized)){
+          await sudoRmRfPanic();
+        } else {
+          printLine(t('sudo'));
+        }
+        break;
+      }
+      case "fortune": {
+        printLine(`<span class="glow">${fortune()}</span>`);
+        break;
+      }
+      case "htop": case "top": {
+        await enterHtopMode();
+        break;
+      }
+      case "kubectl": {
+        const a = arg.trim().toLowerCase();
+        if(a === 'get pods' || a === 'get pod'){
+          printLine(kubectlPods());
+        } else if(a.startsWith('describe pod')){
+          const podName = arg.trim().slice(arg.trim().toLowerCase().indexOf('describe pod') + 'describe pod'.length).trim();
+          if(!podName){
+            printLine(lang === 'ru' ? 'использование: kubectl describe pod &lt;имя&gt;' : 'usage: kubectl describe pod <name>');
+          } else {
+            const desc = describePod(podName);
+            if(desc){
+              printLine(desc);
+            } else {
+              printLine(lang === 'ru'
+                ? `Error from server (NotFound): pods "${escapeHtml(podName)}" не найден`
+                : `Error from server (NotFound): pods "${escapeHtml(podName)}" not found`);
+            }
+          }
+        } else if(!a){
+          printLine(lang === 'ru' ? 'kubectl управляет менеджером кластера Kubernetes.' : 'kubectl controls the Kubernetes cluster manager.');
+          printLine(lang === 'ru'
+            ? 'доступные подкоманды: <span class="glow">get pods</span>, <span class="glow">describe pod &lt;имя&gt;</span>'
+            : 'available subcommands: <span class="glow">get pods</span>, <span class="glow">describe pod &lt;name&gt;</span>');
+        } else {
+          printLine(lang === 'ru' ? `error: неизвестная команда "${escapeHtml(arg)}" для "kubectl"` : `error: unknown command "${escapeHtml(arg)}" for "kubectl"`);
+        }
+        break;
+      }
+      case "terraform": {
+        const a = arg.trim().toLowerCase();
+        if(a === 'apply'){
+          printLine(lang === 'ru' ? `<span class="dim">Terraform выполнит следующие действия:</span>` : `<span class="dim">Terraform will perform the following actions:</span>`);
+          printLine(`  <span class="amber">~</span> resource "aws_instance" "sre_sleep_schedule" { hours = 0 -&gt; 8 }`);
+          printLine(`  <span style="color:var(--red)">-</span> resource "personal_time" "weekend" {}`);
+          printLine(`  <span class="glow">+</span> resource "incident" "unplanned" { severity = "sev1" }`);
+          await sleep(350);
+          printLine(lang === 'ru'
+            ? `<span class="amber">Это уничтожит ваши выходные. Только "yes" будет принято для подтверждения.</span>`
+            : `<span class="amber">This will destroy your weekend. Only 'yes' will be accepted to approve.</span>`);
+          await sleep(550);
+          printLine(lang === 'ru'
+            ? `<span class="dim">Enter a value: (тайм-аут) — apply отменён.</span>`
+            : `<span class="dim">Enter a value: (timed out) — apply cancelled.</span>`);
+        } else if(a === 'destroy'){
+          printLine(lang === 'ru' ? `<span class="dim">Terraform уничтожит:</span>` : `<span class="dim">Terraform will destroy:</span>`);
+          printLine(`  <span style="color:var(--red)">-</span> resource "condensed_milk_reserve" "cat_stash" { cans = 30 }`);
+          printLine(`  <span style="color:var(--red)">-</span> resource "on_call_pager" "sanity" {}`);
+          printLine(`  <span style="color:var(--red)">-</span> resource "personal_time" "weekend" {}`);
+          await sleep(350);
+          printLine(lang === 'ru'
+            ? `<span class="amber">Plan: 0 to add, 0 to change, 3 to destroy.</span>`
+            : `<span class="amber">Plan: 0 to add, 0 to change, 3 to destroy.</span>`);
+          printLine(lang === 'ru'
+            ? `Do you really want to destroy all resources? Только "yes" будет принято для подтверждения.`
+            : `Do you really want to destroy all resources? Only 'yes' will be accepted to approve.`);
+          await sleep(550);
+          printLine(lang === 'ru'
+            ? `<span class="dim">Enter a value: (тайм-аут) — destroy отменён. кот сохранил запасы сгущёнки.</span>`
+            : `<span class="dim">Enter a value: (timed out) — destroy cancelled. the cat's condensed milk stash survives.</span>`);
+        } else if(!a){
+          printLine(lang === 'ru' ? 'использование: terraform &lt;subcommand&gt;' : 'usage: terraform <subcommand>');
+          printLine(lang === 'ru'
+            ? 'доступные подкоманды: <span class="glow">apply</span>, <span class="glow">destroy</span>'
+            : 'available subcommands: <span class="glow">apply</span>, <span class="glow">destroy</span>');
+        } else {
+          printLine(lang === 'ru' ? `terraform: неизвестная субкоманда "${escapeHtml(arg)}"` : `terraform: unknown subcommand "${escapeHtml(arg)}"`);
+        }
+        break;
+      }
+      case "ssh": {
+        const target = arg.trim();
+        if(target.toLowerCase() === 'recruiter@nikita.sh'){
+          await enterRecruiterMode();
+        } else if(!target){
+          printLine(lang === 'ru' ? 'использование: ssh &lt;user@host&gt;' : 'usage: ssh &lt;user@host&gt;');
+        } else {
+          printLine(lang === 'ru'
+            ? `ssh: не удаётся разрешить имя хоста ${escapeHtml(target)}: имя или служба неизвестны`
+            : `ssh: Could not resolve hostname ${escapeHtml(target)}: Name or service not known`);
+        }
         break;
       }
       case "clear": {
@@ -880,7 +1366,7 @@ and SRE practices into reality.`;
 
   /* ================= input handling ================= */
   const inputRow = el('div','input-row');
-  inputRow.innerHTML = `<span class="ps">guest@nikita.sh <span class="path">${PROMPT_PATH}</span> $</span>
+  inputRow.innerHTML = `<span class="ps" id="psLabel">guest@nikita.sh <span class="path">${PROMPT_PATH}</span> $</span>
     <input id="cmdline" autocomplete="off" autocapitalize="off" spellcheck="false" />
     <span class="cursor"></span>`;
 
@@ -889,12 +1375,79 @@ and SRE practices into reality.`;
   let lastTabValue = null;
 
   function resizeInput(){
-    cmdInput.style.width = Math.max(1, cmdInput.value.length) + 'ch';
+    cmdInput.style.width = cmdInput.value.length + 'ch';
   }
   cmdInput.addEventListener('input', resizeInput);
 
   cmdInput.addEventListener('keydown', (e)=>{
     if(e.key !== "Tab") lastTabValue = null;
+
+    const isCtrlC = (e.ctrlKey || e.metaKey) && (e.code === 'KeyC' || e.key === 'c' || e.key === 'C' || e.key === 'с' || e.key === 'С');
+    const isCtrlW = (e.ctrlKey || e.metaKey) && (e.code === 'KeyW' || e.key === 'w' || e.key === 'W' || e.key === 'ц' || e.key === 'Ц');
+    const isCtrlL = (e.ctrlKey || e.metaKey) && (e.code === 'KeyL' || e.key === 'l' || e.key === 'L' || e.key === 'д' || e.key === 'Д');
+
+    if(isCtrlL){
+      e.preventDefault();
+      if(busy) return;
+      inputRow.remove();
+      body.innerHTML = "";
+      if(mode === 'htop') refreshHtopView();
+      mountInput();
+      return;
+    }
+
+    if(isCtrlC){
+      e.preventDefault();
+      if(busy) return;
+      if(mode === 'htop'){
+        if(cmdInput.value === ''){
+          inputRow.remove();
+          exitHtopMode();
+          mountInput();
+        } else {
+          cmdInput.value = "";
+          resizeInput();
+        }
+        return;
+      }
+      const val = cmdInput.value;
+      cmdInput.value = "";
+      resizeInput();
+      inputRow.remove();
+      const row = el('div','line prompt-row');
+      row.innerHTML = `<span class="ps">${psHTML()}</span>${escapeHtml(val)}<span class="amber">^C</span>`;
+      body.appendChild(row);
+      body.scrollTop = body.scrollHeight;
+      mountInput();
+      return;
+    }
+
+    if(isCtrlW){
+      e.preventDefault();
+      const pos = cmdInput.selectionStart ?? cmdInput.value.length;
+      const value = cmdInput.value;
+      const before = value.slice(0, pos);
+      const after = value.slice(pos);
+      const trimmed = before.replace(/\s+$/, '');
+      const lastSpaceIdx = trimmed.lastIndexOf(' ');
+      const newBefore = lastSpaceIdx === -1 ? '' : trimmed.slice(0, lastSpaceIdx + 1);
+      cmdInput.value = newBefore + after;
+      const newPos = newBefore.length;
+      cmdInput.setSelectionRange(newPos, newPos);
+      resizeInput();
+      return;
+    }
+
+    if(mode === 'htop'){
+      if((e.key === 'q' || e.key === 'Q') && cmdInput.value === ''){
+        e.preventDefault();
+        inputRow.remove();
+        exitHtopMode();
+        mountInput();
+        return;
+      }
+      if(e.key === 'Tab'){ e.preventDefault(); return; }
+    }
 
     if(e.key === "Enter"){
       if(busy) { e.preventDefault(); return; }
@@ -917,17 +1470,19 @@ and SRE practices into reality.`;
       e.preventDefault();
       const raw = cmdInput.value;
       const spaceIdx = raw.indexOf(" ");
-      let candidates, headPart, prefix;
+      let candidates, headPart, prefix, base = null;
 
       if(spaceIdx === -1){
-        candidates = COMMANDS;
+        candidates = (mode === 'recruiter')
+          ? [...recruiterQA().map(q => q.cmd), "help", "exit"]
+          : COMMANDS;
         headPart = "";
         prefix = raw.toLowerCase();
       } else {
-        const base = raw.slice(0, spaceIdx).toLowerCase();
+        base = raw.slice(0, spaceIdx).toLowerCase();
         headPart = raw.slice(0, spaceIdx + 1);
         prefix = raw.slice(spaceIdx + 1).toLowerCase();
-        candidates = ARG_CANDIDATES[base] || [];
+        candidates = getArgCandidates(base, prefix);
       }
 
       const matches = candidates.filter(c => c.startsWith(prefix));
@@ -941,7 +1496,8 @@ and SRE practices into reality.`;
           cmdInput.value = headPart + common;
           lastTabValue = null;
         } else if(lastTabValue === raw){
-          const sugg = el('div', 'line dim', matches.join('&nbsp;&nbsp;&nbsp;'));
+          const labels = matches.map(m => candidateDisplayLabel(base, m));
+          const sugg = el('div', 'line dim', labels.join('&nbsp;&nbsp;&nbsp;'));
           body.insertBefore(sugg, inputRow);
           body.scrollTop = body.scrollHeight;
           lastTabValue = null;
@@ -955,6 +1511,7 @@ and SRE practices into reality.`;
 
   function mountInput(){
     body.appendChild(inputRow);
+    updatePromptUI();
     resizeInput();
     cmdInput.focus();
     body.scrollTop = body.scrollHeight;
