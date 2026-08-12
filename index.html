@@ -171,7 +171,9 @@
   a:hover{text-shadow:0 0 8px var(--accent);}
 
   .line{white-space:pre-wrap; word-break:break-word; margin:0 0 2px;}
-  .prompt-row{display:flex; align-items:baseline; flex-wrap:wrap; gap:0;}
+  .prompt-row{display:flex; align-items:baseline; flex-wrap:wrap; gap:0; cursor:pointer; border-radius:4px;}
+  .prompt-row:hover{background:rgba(61,255,138,.08);}
+  .prompt-row:active{background:rgba(61,255,138,.16);}
   .ps{color:var(--fg); text-shadow:var(--glow); margin-right:8px; white-space:nowrap;}
   .ps .path{color:var(--accent);}
 
@@ -313,16 +315,7 @@
       <span class="term-title">guest@nikita.sh — bash — 80×24</span>
     </div>
     <div class="term-body" id="termBody"></div>
-    <div class="chips" id="chips">
-      <button class="chip" data-cmd="help">help</button>
-      <button class="chip" id="langChip" data-cmd="lang ru">ru</button>
-      <button class="chip" data-cmd="about">about</button>
-      <button class="chip" data-cmd="skills">skills</button>
-      <button class="chip" data-cmd="contact">contact</button>
-      <button class="chip" data-cmd="cv">cv</button>
-      <button class="chip" data-cmd="game">game</button>
-      <button class="chip" data-cmd="clear">clear</button>
-    </div>
+    <div class="chips" id="chips"></div>
   </div>
 
   <footer>
@@ -463,6 +456,7 @@
   function printPromptEcho(cmd){
     const row = el('div','line prompt-row');
     row.innerHTML = `<span class="ps">${psHTML()}</span>${escapeHtml(cmd)}`;
+    row.dataset.cmd = cmd;
     body.appendChild(row);
     body.scrollTop = body.scrollHeight;
   }
@@ -941,6 +935,90 @@ and SRE practices into reality.`;
     return candidate;
   }
 
+  function escapeAttr(s){
+    return escapeHtml(s).replace(/"/g, '&quot;');
+  }
+
+  function defaultChips(){
+    const nextLang = lang === 'ru' ? 'en' : 'ru';
+    return [
+      {label:'help', value:'help'},
+      {label:nextLang, value:`lang ${nextLang}`},
+      {label:'about', value:'about'},
+      {label:'skills', value:'skills'},
+      {label:'contact', value:'contact'},
+      {label:'cv', value:'cv'},
+      {label:'game', value:'game'},
+      {label:'clear', value:'clear'},
+    ];
+  }
+
+  let chipsRAF = null;
+  function renderChips(){
+    if(chipsRAF) cancelAnimationFrame(chipsRAF);
+    chipsRAF = requestAnimationFrame(()=>{
+      chipsRAF = null;
+      const chipsEl = document.getElementById('chips');
+      const raw = cmdInput.value;
+      let items;
+
+      if(mode === 'htop'){
+        items = [{label: lang === 'ru' ? 'q — выход' : 'q — quit', value:'q'}];
+      } else if(mode === 'recruiter'){
+        const cmds = [...recruiterQA().map(q => q.cmd), 'exit'];
+        const prefix = raw.trim().toLowerCase();
+        const matches = prefix ? cmds.filter(c => c.startsWith(prefix)) : cmds;
+        items = matches.map(c => ({label:c, value:c}));
+      } else if(!raw){
+        items = defaultChips();
+      } else {
+        const spaceIdx = raw.indexOf(" ");
+        if(spaceIdx === -1){
+          const prefix = raw.toLowerCase();
+          items = COMMANDS.filter(c => c.startsWith(prefix)).map(c => ({label:c, value:c}));
+        } else {
+          const base = raw.slice(0, spaceIdx).toLowerCase();
+          const headPart = raw.slice(0, spaceIdx + 1);
+          const prefix = raw.slice(spaceIdx + 1).toLowerCase();
+          const candidates = getArgCandidates(base, prefix).filter(c => c.startsWith(prefix));
+          items = candidates.map(c => ({label:candidateDisplayLabel(base, c), value:headPart + c}));
+        }
+      }
+
+      chipsEl.innerHTML = items.map(it =>
+        `<button class="chip" data-value="${escapeAttr(it.value)}">${escapeHtml(it.label)}</button>`
+      ).join('');
+    });
+  }
+
+  function applyChipValue(value){
+    cmdInput.value = value;
+
+    if(mode === 'recruiter' || mode === 'htop'){
+      cmdInput.dispatchEvent(new KeyboardEvent('keydown', {key:'Enter'}));
+      return;
+    }
+
+    const spaceIdx = value.indexOf(" ");
+    let hasMore;
+    if(spaceIdx === -1){
+      hasMore = getArgCandidates(value.toLowerCase(), '').length > 0;
+      if(hasMore) cmdInput.value = value + " ";
+    } else {
+      const base = value.slice(0, spaceIdx).toLowerCase();
+      const remainder = value.slice(spaceIdx + 1).toLowerCase();
+      const candidates = getArgCandidates(base, remainder);
+      hasMore = candidates.some(c => c.startsWith(remainder) && c.length > remainder.length);
+    }
+
+    if(hasMore){
+      cmdInput.focus();
+      renderChips();
+    } else {
+      cmdInput.dispatchEvent(new KeyboardEvent('keydown', {key:'Enter'}));
+    }
+  }
+
   /* ---------- shell mode (normal | recruiter | htop) ---------- */
   let mode = 'shell';
   let htopInterval = null;
@@ -1233,7 +1311,6 @@ and SRE practices into reality.`;
         if(choice === "ru" || choice === "en"){
           lang = choice;
           document.documentElement.lang = lang;
-          updateLangChip();
           printLine(t('langSet'));
         } else {
           printLine(t('langUsage'));
@@ -1366,6 +1443,7 @@ and SRE practices into reality.`;
   const cmdInput = inputRow.querySelector('#cmdline');
   let busy = false;
   let lastTabValue = null;
+  cmdInput.addEventListener('input', renderChips);
 
   cmdInput.addEventListener('keydown', (e)=>{
     if(e.key !== "Tab") lastTabValue = null;
@@ -1394,6 +1472,7 @@ and SRE practices into reality.`;
           mountInput();
         } else {
           cmdInput.value = "";
+          renderChips();
         }
         return;
       }
@@ -1402,6 +1481,7 @@ and SRE practices into reality.`;
       inputRow.remove();
       const row = el('div','line prompt-row');
       row.innerHTML = `<span class="ps">${psHTML()}</span>${escapeHtml(val)}<span class="amber">^C</span>`;
+      row.dataset.cmd = val;
       body.appendChild(row);
       body.scrollTop = body.scrollHeight;
       mountInput();
@@ -1420,6 +1500,7 @@ and SRE practices into reality.`;
       cmdInput.value = newBefore + after;
       const newPos = newBefore.length;
       cmdInput.setSelectionRange(newPos, newPos);
+      renderChips();
       return;
     }
 
@@ -1438,16 +1519,19 @@ and SRE practices into reality.`;
       if(busy) { e.preventDefault(); return; }
       const val = cmdInput.value;
       cmdInput.value = "";
+      renderChips();
       busy = true;
       inputRow.remove();
       runCommand(val).then(()=>{ mountInput(); busy = false; });
     } else if(e.key === "ArrowUp"){
       e.preventDefault();
       if(hIndex > 0){ hIndex--; cmdInput.value = history[hIndex] || ""; }
+      renderChips();
     } else if(e.key === "ArrowDown"){
       e.preventDefault();
       if(hIndex < history.length-1){ hIndex++; cmdInput.value = history[hIndex] || ""; }
       else { hIndex = history.length; cmdInput.value = ""; }
+      renderChips();
     } else if(e.key === "Tab"){
       e.preventDefault();
       const raw = cmdInput.value;
@@ -1472,11 +1556,13 @@ and SRE practices into reality.`;
       if(matches.length === 1){
         cmdInput.value = headPart + matches[0] + (spaceIdx === -1 ? " " : "");
         lastTabValue = null;
+        renderChips();
       } else if(matches.length > 1){
         const common = commonPrefix(matches);
         if(common.length > prefix.length){
           cmdInput.value = headPart + common;
           lastTabValue = null;
+          renderChips();
         } else if(lastTabValue === raw){
           const labels = matches.map(m => candidateDisplayLabel(base, m));
           const sugg = el('div', 'line dim', labels.join('&nbsp;&nbsp;&nbsp;'));
@@ -1494,27 +1580,24 @@ and SRE practices into reality.`;
     body.appendChild(inputRow);
     updatePromptUI();
     cmdInput.focus();
+    renderChips();
     body.scrollTop = body.scrollHeight;
   }
 
-  document.addEventListener('click', ()=>{
+  document.addEventListener('click', (e)=>{
+    const replay = e.target.closest('.prompt-row');
+    if(replay && replay.dataset.cmd !== undefined){
+      cmdInput.value = replay.dataset.cmd;
+      renderChips();
+    }
     cmdInput.focus();
   });
 
   document.getElementById('chips').addEventListener('click', (e)=>{
     const btn = e.target.closest('.chip');
     if(!btn) return;
-    cmdInput.value = btn.dataset.cmd;
-    cmdInput.dispatchEvent(new KeyboardEvent('keydown', {key:'Enter'}));
+    applyChipValue(btn.dataset.value);
   });
-
-  const langChip = document.getElementById('langChip');
-  function updateLangChip(){
-    const next = lang === 'ru' ? 'en' : 'ru';
-    langChip.textContent = next;
-    langChip.dataset.cmd = `lang ${next}`;
-  }
-  updateLangChip();
 
   async function bootIntro(){
     printLine(neofetchHTML());
