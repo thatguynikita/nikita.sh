@@ -23,6 +23,7 @@
   }
   *{box-sizing:border-box;}
   html,body{height:100%;}
+  html{-webkit-text-size-adjust:100%; text-size-adjust:100%;}
   body{
     margin:0;
     background:
@@ -174,19 +175,13 @@
   .ps{color:var(--fg); text-shadow:var(--glow); margin-right:8px; white-space:nowrap;}
   .ps .path{color:var(--accent);}
 
-  .input-row{display:flex; align-items:center; margin-top:4px; flex-wrap:wrap;}
+  .input-row{display:flex; align-items:center; flex-wrap:wrap;}
   #cmdline{
     background:transparent; border:none; outline:none;
-    color:var(--fg); font-family:inherit; font-size:14px;
-    flex:0 0 auto; width:0; min-width:0; max-width:100%;
-    caret-color:transparent; text-shadow:var(--glow); padding:0;
+    color:var(--fg); font-family:inherit; font-size:14px; line-height:1.6;
+    flex:1 1 0; width:0; min-width:2ch; max-width:100%;
+    caret-color:var(--fg); caret-shape:block; text-shadow:var(--glow); padding:0;
   }
-  .cursor{
-    display:inline-block; width:8px; height:16px; background:var(--fg);
-    box-shadow:var(--glow); margin-left:1px; animation:blink 1s steps(1) infinite;
-    vertical-align:middle;
-  }
-  @keyframes blink{0%,49%{opacity:1;} 50%,100%{opacity:0;}}
 
   .neofetch{display:flex; gap:26px; flex-wrap:wrap; margin:6px 0 14px; white-space:normal;}
   .nf-art{color:var(--fg); text-shadow:var(--glow); font-size:12px; line-height:1.15; white-space:pre; font-family:'Noto Sans Mono', monospace; font-variant-ligatures:none;}
@@ -221,7 +216,7 @@
   table.tbl td{padding:1px 14px 1px 0; vertical-align:top;}
 
   /* quick chips */
-  .chips{display:flex; flex-wrap:wrap; gap:8px; padding:12px 16px 14px; border-top:1px solid var(--border); background:rgba(0,0,0,.25);}
+  .chips{display:flex; flex-wrap:wrap; justify-content:center; gap:8px; padding:12px 16px 14px; border-top:1px solid var(--border); background:rgba(0,0,0,.25);}
   .chip{
     font-family:inherit; font-size:12px; color:var(--fg-dim);
     background:rgba(61,255,138,.06); border:1px solid var(--border);
@@ -319,14 +314,13 @@
     </div>
     <div class="term-body" id="termBody"></div>
     <div class="chips" id="chips">
-      <button class="chip" data-cmd="neofetch">neofetch</button>
+      <button class="chip" data-cmd="help">help</button>
+      <button class="chip" id="langChip" data-cmd="lang ru">ru</button>
       <button class="chip" data-cmd="about">about</button>
       <button class="chip" data-cmd="skills">skills</button>
       <button class="chip" data-cmd="contact">contact</button>
       <button class="chip" data-cmd="cv">cv</button>
       <button class="chip" data-cmd="game">game</button>
-      <button class="chip" id="langChip" data-cmd="lang ru">ru</button>
-      <button class="chip" data-cmd="help">help</button>
       <button class="chip" data-cmd="clear">clear</button>
     </div>
   </div>
@@ -721,7 +715,7 @@ and SRE practices into reality.`;
     "Если больно — делай это чаще.",
     "Лучший runbook — тот, который никому не приходится читать в три часа ночи.",
     "Постмортемы: там, где «человеческий фактор» незаметно превращается в «пробел в процессе».",
-    "Балансировщике нагрузки плевать на ваши чувства.",
+    "Балансировщику нагрузки плевать на ваши чувства.",
     "Идемпотентность нужна, чтобы повторный запуск не стоил вдвойне.",
     "Любой «временный» костыль становится постоянным в тот момент, когда он заработал.",
     "Kubernetes: усложняет простые вещи с 2014 года.",
@@ -1367,17 +1361,11 @@ and SRE practices into reality.`;
   /* ================= input handling ================= */
   const inputRow = el('div','input-row');
   inputRow.innerHTML = `<span class="ps" id="psLabel">guest@nikita.sh <span class="path">${PROMPT_PATH}</span> $</span>
-    <input id="cmdline" autocomplete="off" autocapitalize="off" spellcheck="false" />
-    <span class="cursor"></span>`;
+    <input id="cmdline" autocomplete="off" autocapitalize="off" spellcheck="false" />`;
 
   const cmdInput = inputRow.querySelector('#cmdline');
   let busy = false;
   let lastTabValue = null;
-
-  function resizeInput(){
-    cmdInput.style.width = cmdInput.value.length + 'ch';
-  }
-  cmdInput.addEventListener('input', resizeInput);
 
   cmdInput.addEventListener('keydown', (e)=>{
     if(e.key !== "Tab") lastTabValue = null;
@@ -1406,13 +1394,11 @@ and SRE practices into reality.`;
           mountInput();
         } else {
           cmdInput.value = "";
-          resizeInput();
         }
         return;
       }
       const val = cmdInput.value;
       cmdInput.value = "";
-      resizeInput();
       inputRow.remove();
       const row = el('div','line prompt-row');
       row.innerHTML = `<span class="ps">${psHTML()}</span>${escapeHtml(val)}<span class="amber">^C</span>`;
@@ -1434,7 +1420,6 @@ and SRE practices into reality.`;
       cmdInput.value = newBefore + after;
       const newPos = newBefore.length;
       cmdInput.setSelectionRange(newPos, newPos);
-      resizeInput();
       return;
     }
 
@@ -1453,19 +1438,16 @@ and SRE practices into reality.`;
       if(busy) { e.preventDefault(); return; }
       const val = cmdInput.value;
       cmdInput.value = "";
-      resizeInput();
       busy = true;
       inputRow.remove();
       runCommand(val).then(()=>{ mountInput(); busy = false; });
     } else if(e.key === "ArrowUp"){
       e.preventDefault();
       if(hIndex > 0){ hIndex--; cmdInput.value = history[hIndex] || ""; }
-      resizeInput();
     } else if(e.key === "ArrowDown"){
       e.preventDefault();
       if(hIndex < history.length-1){ hIndex++; cmdInput.value = history[hIndex] || ""; }
       else { hIndex = history.length; cmdInput.value = ""; }
-      resizeInput();
     } else if(e.key === "Tab"){
       e.preventDefault();
       const raw = cmdInput.value;
@@ -1505,14 +1487,12 @@ and SRE practices into reality.`;
           lastTabValue = raw;
         }
       }
-      resizeInput();
     }
   });
 
   function mountInput(){
     body.appendChild(inputRow);
     updatePromptUI();
-    resizeInput();
     cmdInput.focus();
     body.scrollTop = body.scrollHeight;
   }
