@@ -112,7 +112,7 @@
     object-fit:cover; border-radius:12px;
     border:1px solid var(--border);
     box-shadow:var(--glow), 0 10px 28px rgba(0,0,0,.55);
-    background:#03110a;
+    background:transparent;
   }
 
   .title{font-size:26px; margin:4px 0 4px;}
@@ -183,8 +183,10 @@
     body{padding:14px 8px 10px;}
     .term-body{padding:16px 14px 6px; font-size:13px;}
     .title{font-size:21px;}
-    .profile-block{gap:14px;}
-    .avatar{width:96px; height:96px;}
+    .profile-block{gap:10px; flex-direction:column; align-items:center; text-align:center;}
+    .profile-text{order:2; width:100%;}
+    .contact-row{justify-content:center;}
+    .avatar{order:1; width:120px; height:120px;}
   }
 </style>
 </head>
@@ -571,7 +573,7 @@
     html += `</div>`;
     html += `<div class="meta-line">${U.metaLine}</div>`;
     html += `</div>`;
-    html += `<img class="avatar" src="nikita-photo.jpg" alt="${U.name}">`;
+    html += `<img class="avatar" src="nikita-photo.png" alt="${U.name}">`;
     html += `</div>`;
     html += `<hr class="rule strong">`;
 
