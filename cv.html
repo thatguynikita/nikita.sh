@@ -104,6 +104,17 @@
   .line{margin:0 0 2px; word-break:break-word;}
   .ps{color:var(--fg-dim); margin-right:6px; white-space:nowrap;}
 
+  .profile-block{display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap;}
+  .profile-text{flex:1 1 320px; min-width:0;}
+  .avatar{
+    flex:0 0 auto;
+    width:168px; height:168px;
+    object-fit:cover; border-radius:12px;
+    border:1px solid var(--border);
+    box-shadow:var(--glow), 0 10px 28px rgba(0,0,0,.55);
+    background:#03110a;
+  }
+
   .title{font-size:26px; margin:4px 0 4px;}
   .tagline{font-size:13px; margin-bottom:10px;}
   .contact-row{display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12.5px; margin-bottom:4px;}
@@ -172,6 +183,8 @@
     body{padding:14px 8px 10px;}
     .term-body{padding:16px 14px 6px; font-size:13px;}
     .title{font-size:21px;}
+    .profile-block{gap:14px;}
+    .avatar{width:96px; height:96px;}
   }
 </style>
 </head>
@@ -549,12 +562,17 @@
     const U = UI[lang];
 
     let html = "";
+    html += `<div class="profile-block">`;
+    html += `<div class="profile-text">`;
     html += `<div class="line glow title">${U.name}</div>`;
     html += `<div class="line tagline">${U.tagline}</div>`;
     html += `<div class="contact-row">`;
     html += SOCIALS.map(([label,href])=>`<a href="${href}" target="_blank" rel="noopener">${label}</a>`).join(`<span class="dim">&middot;</span>`);
     html += `</div>`;
     html += `<div class="meta-line">${U.metaLine}</div>`;
+    html += `</div>`;
+    html += `<img class="avatar" src="nikita-photo.jpg" alt="${U.name}">`;
+    html += `</div>`;
     html += `<hr class="rule strong">`;
 
     html += `<div class="section">`;
