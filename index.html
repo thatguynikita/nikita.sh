@@ -81,6 +81,8 @@
   .rm-line{color:var(--red); text-shadow:0 0 4px rgba(255,95,86,.8);}
   body.panic .term{animation:panic-shake .12s infinite;}
   body.panic .crt{animation:panic-flicker .3s infinite; background-color:rgba(255,0,0,.04);}
+  body.panic-amber .term{animation:panic-shake .16s infinite;}
+  body.panic-amber .crt{animation:panic-flicker .4s infinite; background-color:rgba(255,180,84,.05);}
   @keyframes panic-shake{
     0%{transform:translate(0,0);}
     20%{transform:translate(-3px,2px);}
@@ -1394,21 +1396,59 @@ and SRE practices into reality.`;
             ? `<span class="dim">Enter a value: (тайм-аут) — apply отменён.</span>`
             : `<span class="dim">Enter a value: (timed out) — apply cancelled.</span>`);
         } else if(a === 'destroy'){
-          printLine(lang === 'ru' ? `<span class="dim">Terraform уничтожит:</span>` : `<span class="dim">Terraform will destroy:</span>`);
-          printLine(`  <span style="color:var(--red)">-</span> resource "condensed_milk_reserve" "cat_stash" { cans = 30 }`);
-          printLine(`  <span style="color:var(--red)">-</span> resource "on_call_pager" "sanity" {}`);
-          printLine(`  <span style="color:var(--red)">-</span> resource "personal_time" "weekend" {}`);
-          await sleep(350);
+          const resources = [
+            {addr:'condensed_milk_reserve.cat_stash', block:'resource "condensed_milk_reserve" "cat_stash" { cans = 30 }', id:'cans-0030', t:2},
+            {addr:'on_call_pager.sanity', block:'resource "on_call_pager" "sanity" {}', id:'sanity-0001', t:3},
+            {addr:'personal_time.weekend', block:'resource "personal_time" "weekend" {}', id:'sat-sun-47', t:2},
+            {addr:'aws_iam_role.impostor_syndrome', block:'resource "aws_iam_role" "impostor_syndrome" {}', id:'self-esteem-8f21', t:4},
+            {addr:'dns_record.last_two_brain_cells', block:'resource "dns_record" "last_two_brain_cells" {}', id:'ttl-300s', t:3},
+            {addr:'kubernetes_deployment.social_life', block:'resource "kubernetes_deployment" "social_life" {}', id:'replicas-0', t:5},
+            {addr:'aws_backup_plan.will_to_live', block:'resource "aws_backup_plan" "will_to_live" {}', id:'retention-inf', t:23},
+          ];
+
           printLine(lang === 'ru'
-            ? `<span class="amber">Plan: 0 to add, 0 to change, 3 to destroy.</span>`
-            : `<span class="amber">Plan: 0 to add, 0 to change, 3 to destroy.</span>`);
+            ? `<span class="dim">Acquiring state lock (это может занять некоторое время)...</span>`
+            : `<span class="dim">Acquiring state lock (this may take a few moments)...</span>`);
+          await sleep(320);
+          printLine(lang === 'ru' ? `<span class="dim">Terraform уничтожит:</span>` : `<span class="dim">Terraform will destroy:</span>`);
+          for(const r of resources){
+            printLine(`  <span style="color:var(--red)">-</span> ${r.block}`);
+            await sleep(70);
+          }
+          printLine(`<span class="amber">Plan: 0 to add, 0 to change, ${resources.length} to destroy.</span>`);
           printLine(lang === 'ru'
             ? `Вы действительно хотите уничтожить все ресурсы? Только "yes" будет принято для подтверждения.`
             : `Do you really want to destroy all resources? Only 'yes' will be accepted to approve.`);
-          await sleep(550);
+          await sleep(500);
           printLine(lang === 'ru'
-            ? `<span class="dim">Enter a value: (тайм-аут) — destroy отменён. кот сохранил запасы сгущёнки.</span>`
-            : `<span class="dim">Enter a value: (timed out) — destroy cancelled. the cat's condensed milk stash survives.</span>`);
+            ? `<span class="dim">Enter a value: <span class="glow">yes</span> (терминал ответил за вас)</span>`
+            : `<span class="dim">Enter a value: <span class="glow">yes</span> (the terminal answered for you)</span>`);
+          await sleep(1400);
+
+          document.body.classList.add('panic-amber');
+          await sleep(200);
+          for(let i = 0; i < resources.length; i++){
+            const r = resources[i];
+            const isLast = i === resources.length - 1;
+            printLine(`<span class="dim">${r.addr}: Destroying... [id=${r.id}]</span>`);
+            if(isLast){
+              await sleep(420);
+              printLine(`<span class="dim">${r.addr}: Still destroying... [id=${r.id}, 10s elapsed]</span>`);
+              await sleep(420);
+              printLine(`<span class="dim">${r.addr}: Still destroying... [id=${r.id}, 20s elapsed]</span>`);
+              await sleep(380);
+            } else {
+              await sleep(160);
+            }
+            printLine(`<span class="dim">${r.addr}: Destruction complete after ${r.t}s</span>`);
+            if(!isLast) await sleep(110);
+          }
+          document.body.classList.remove('panic-amber');
+
+          printLine(`<span class="amber">Destroy complete! Resources: ${resources.length} destroyed.</span>`);
+          printLine(lang === 'ru'
+            ? `<span class="dim">(Покойтесь с миром, выходные. остальное вы, как ни странно, почти не заметите.)</span>`
+            : `<span class="dim">(RIP weekend. the rest, somehow, you'll barely notice.)</span>`);
         } else if(!a){
           printLine(lang === 'ru' ? 'использование: terraform &lt;subcommand&gt;' : 'usage: terraform <subcommand>');
           printLine(lang === 'ru'
