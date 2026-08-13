@@ -216,6 +216,9 @@
 
   table.tbl{border-collapse:collapse; margin:4px 0;}
   table.tbl td{padding:1px 14px 1px 0; vertical-align:top;}
+  .help-cmd{cursor:pointer; border-radius:3px;}
+  .help-cmd:hover{text-decoration:underline;}
+  .help-cmd:active{background:rgba(61,255,138,.16);}
 
   /* quick chips */
   .chips{display:flex; flex-wrap:wrap; justify-content:center; gap:8px; padding:12px 16px 14px; border-top:1px solid var(--border); background:rgba(0,0,0,.25);}
@@ -611,47 +614,43 @@ and SRE practices into reality.`;
   ];
 
   const HELP_EN = [
-    ["about","who is nikita"],
-    ["skills","tech stack"],
-    ["contact / socials","ways to reach me"],
-    ["cv / resume","open CV page"],
-    ["neofetch","system info card"],
-    ["whoami","identity check"],
-    ["ls","list files"],
-    ["cat <file>","print a file"],
-    ["fortune","random sysadmin wisdom"],
-    ["htop / top","fake process monitor"],
-    ["kubectl","peek at a pretend cluster"],
-    ["terraform","apply or destroy things"],
-    ["ssh recruiter@nikita.sh","talk to a recruiter"],
-    ["theme <green|amber|cyan>","change terminal color"],
-    ["matrix <on|off>","toggle background rain"],
-    ["lang <ru|en>","switch output language"],
-    ["date","current date/time"],
-    ["clear","clear the screen"],
-    ["help","show this list"],
+    ["about","who is nikita","about"],
+    ["skills","tech stack","skills"],
+    ["contact / socials","ways to reach me","contact"],
+    ["cv / resume","open CV page","cv"],
+    ["neofetch","system info card","neofetch"],
+    ["whoami","identity check","whoami"],
+    ["ls","list files","ls"],
+    ["cat","print a file","cat "],
+    ["fortune","random sysadmin wisdom","fortune"],
+    ["htop / top","fake process monitor","htop"],
+    ["kubectl","peek at a pretend cluster","kubectl "],
+    ["terraform","apply or destroy things","terraform "],
+    ["ssh recruiter@nikita.sh","talk to a recruiter","ssh recruiter@nikita.sh"],
+    ["theme","change terminal color","theme "],
+    ["matrix","toggle background rain","matrix "],
+    ["lang","switch output language","lang "],
+    ["help","show this list","help"],
   ];
 
   const HELP_RU = [
-    ["about","кто такой никита"],
-    ["skills","технологический стек"],
-    ["contact / socials","как со мной связаться"],
-    ["cv / resume","открыть страницу резюме"],
-    ["neofetch","карточка с информацией о системе"],
-    ["whoami","проверка личности"],
-    ["ls","список файлов"],
-    ["cat <file>","вывести файл"],
-    ["fortune","случайная мудрость сисадмина"],
-    ["htop / top","фейковый монитор процессов"],
-    ["kubectl","заглянуть в игрушечный кластер"],
-    ["terraform","apply или destroy"],
-    ["ssh recruiter@nikita.sh","поговорить с рекрутером"],
-    ["theme <green|amber|cyan>","сменить цвет терминала"],
-    ["matrix <on|off>","вкл/выкл фоновый дождь из символов"],
-    ["lang <ru|en>","сменить язык вывода"],
-    ["date","текущая дата и время"],
-    ["clear","очистить экран"],
-    ["help","показать этот список"],
+    ["about","кто такой никита","about"],
+    ["skills","технологический стек","skills"],
+    ["contact / socials","как со мной связаться","contact"],
+    ["cv / resume","открыть страницу резюме","cv"],
+    ["neofetch","карточка с информацией о системе","neofetch"],
+    ["whoami","проверка личности","whoami"],
+    ["ls","список файлов","ls"],
+    ["cat","вывести файл","cat "],
+    ["fortune","случайная мудрость сисадмина","fortune"],
+    ["htop / top","фейковый монитор процессов","htop"],
+    ["kubectl","заглянуть в игрушечный кластер","kubectl "],
+    ["terraform","apply или destroy","terraform "],
+    ["ssh recruiter@nikita.sh","поговорить с рекрутером","ssh recruiter@nikita.sh"],
+    ["theme","сменить цвет терминала","theme "],
+    ["matrix","вкл/выкл фоновый дождь из символов","matrix "],
+    ["lang","сменить язык вывода","lang "],
+    ["help","показать этот список","help"],
   ];
 
   function HELP(){ return lang === 'ru' ? HELP_RU : HELP_EN; }
@@ -849,7 +848,6 @@ and SRE practices into reality.`;
     "резюме":"cv",
     "игра":"game", "играть":"game",
     "очистить":"clear", "чистить":"clear",
-    "дата":"date",
     "выход":"exit", "выйти":"exit",
     "язык":"lang",
   };
@@ -905,7 +903,7 @@ and SRE practices into reality.`;
     return typeof v === 'function' ? v(...args) : v;
   }
 
-  const COMMANDS = ["about","skills","contact","socials","cv","resume","neofetch","whoami","ls","cat","date","echo","history","matrix","theme","lang","sudo","fortune","htop","top","kubectl","terraform","ssh","./nikita.sh","clear","help","exit","logout"];
+  const COMMANDS = ["about","skills","contact","socials","cv","resume","neofetch","whoami","ls","cat","echo","history","matrix","theme","lang","sudo","fortune","htop","top","kubectl","terraform","ssh","./nikita.sh","clear","help","exit","logout"];
 
   const POD_NAMES = ["cat-deployment-7f9d8c-x2m4q","condensed-milk-store-0","sre-sanity-canary","deploy-friday-afternoon"];
 
@@ -1220,8 +1218,8 @@ and SRE practices into reality.`;
       case "help": {
         printLine(`<span class="accent">${t('availableCommands')}</span>`);
         let helpTbl = `<table class="tbl">`;
-        HELP().forEach(([c,d])=>{
-          helpTbl += `<tr><td class="glow">${c}</td><td class="dim">${d}</td></tr>`;
+        HELP().forEach(([c,d,fill])=>{
+          helpTbl += `<tr><td class="glow help-cmd" data-value="${escapeAttr(fill)}">${escapeHtml(c)}</td><td class="dim">${d}</td></tr>`;
         });
         helpTbl += `</table>`;
         printLine(helpTbl);
@@ -1297,10 +1295,6 @@ and SRE practices into reality.`;
         }
         else if(!arg) { printLine(t('catUsage')); }
         else { printLine(t('catNoFile', escapeHtml(arg))); }
-        break;
-      }
-      case "date": {
-        printLine(lang === 'ru' ? new Date().toLocaleString('ru-RU') : new Date().toString());
         break;
       }
       case "echo": {
@@ -1604,8 +1598,12 @@ and SRE practices into reality.`;
   }
 
   document.addEventListener('click', (e)=>{
+    const helpCmd = e.target.closest('.help-cmd');
     const replay = e.target.closest('.prompt-row');
-    if(replay && replay.dataset.cmd !== undefined){
+    if(helpCmd && helpCmd.dataset.value !== undefined){
+      cmdInput.value = helpCmd.dataset.value;
+      renderChips();
+    } else if(replay && replay.dataset.cmd !== undefined){
       cmdInput.value = replay.dataset.cmd;
       renderChips();
     }
