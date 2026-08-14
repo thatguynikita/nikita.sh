@@ -739,14 +739,14 @@ and SRE practices into reality.`;
   const HELP_EN = [
     ["about","who the hell is nikita","about"],
     ["skills","tech stack","skills"],
-    ["contact / socials","ways to reach me","contact"],
-    ["cv / resume","open CV page","cv"],
+    ["contact","ways to reach me","contact"],
+    ["cv","open CV page","cv"],
     ["neofetch","system info card","neofetch"],
     ["whoami","a little too much about you","whoami"],
     ["ls","list files","ls"],
     ["cat","print a file","cat "],
     ["fortune","random sysadmin wisdom","fortune"],
-    ["htop / top","fake process monitor","htop"],
+    ["htop","fake process monitor","htop"],
     ["kubectl","peek at a pretend cluster","kubectl "],
     ["terraform","apply optimism, destroy everything","terraform "],
     ["ssh","remote login — skip the screening call (or find out what else is out there)","ssh "],
@@ -760,14 +760,14 @@ and SRE practices into reality.`;
   const HELP_RU = [
     ["about","кто такой вообще этот никита","about"],
     ["skills","технологический стек","skills"],
-    ["contact / socials","как со мной связаться","contact"],
-    ["cv / resume","открыть страницу резюме","cv"],
+    ["contact","как со мной связаться","contact"],
+    ["cv","открыть страницу резюме","cv"],
     ["neofetch","карточка с информацией о системе","neofetch"],
     ["whoami","немного больше, чем нужно, о вас","whoami"],
     ["ls","список файлов","ls"],
     ["cat","вывести файл","cat "],
     ["fortune","случайная мудрость сисадмина","fortune"],
-    ["htop / top","фейковый монитор процессов","htop"],
+    ["htop","фейковый монитор процессов","htop"],
     ["kubectl","заглянуть в игрушечный кластер","kubectl "],
     ["terraform","apply обещает, destroy исполняет","terraform "],
     ["ssh","удалённая сессия —  провести экспресс-скрининг (или узнать, что ещё тут есть)","ssh "],
@@ -1058,13 +1058,13 @@ and SRE practices into reality.`;
     return typeof v === 'function' ? v(...args) : v;
   }
 
-  const COMMANDS = ["about","skills","contact","socials","cv","resume","neofetch","whoami","ls","cat","echo","history","matrix","theme","lang","sudo","fortune","htop","top","kubectl","terraform","ssh","claude","./nikita.sh","clear","help","exit","logout"];
+  const COMMANDS = ["about","skills","contact","cv","neofetch","whoami","ls","cat","echo","history","matrix","theme","lang","sudo","fortune","htop","kubectl","terraform","ssh","claude","./nikita.sh","clear","help","exit","logout"];
 
   const POD_NAMES = ["cat-deployment-7f9d8c-x2m4q","condensed-milk-store-0","sre-sanity-canary","deploy-friday-afternoon"];
 
   function getArgCandidates(base, remainderLower){
     switch(base){
-      case "cat": return ["about.txt","skills.txt","socials.txt","cv.html","nikita.sh"];
+      case "cat": return ["about.txt","skills.txt","contact.txt","cv.html","nikita.sh"];
       case "theme": return ["green","amber","cyan"];
       case "matrix": return ["on","off"];
       case "lang": return ["ru","en"];
@@ -1409,7 +1409,7 @@ and SRE practices into reality.`;
         printLine(sk);
         break;
       }
-      case "contact": case "socials": {
+      case "contact": {
         let sc = `<div class="links">`;
         SOCIALS.forEach(([label,href])=>{
           sc += `<a href="${href}" target="_blank" rel="noopener">${label}</a>`;
@@ -1418,7 +1418,7 @@ and SRE practices into reality.`;
         printLine(sc);
         break;
       }
-      case "cv": case "resume": {
+      case "cv": {
         printLine(t('openingCv'));
         setTimeout(()=>{ window.location.href = "cv.html"; }, 400);
         break;
@@ -1432,13 +1432,13 @@ and SRE practices into reality.`;
         break;
       }
       case "ls": {
-        printLine(`about.txt   skills.txt   socials.txt   cv.html   <span class="accent">nikita.sh</span>`);
+        printLine(`about.txt   skills.txt   contact.txt   cv.html   <span class="accent">nikita.sh</span>`);
         break;
       }
       case "cat": {
         if(arg === "about.txt") { ABOUT().split("\n").forEach(l=>printLine(l||"&nbsp;")); }
         else if(arg === "skills.txt") { SKILLS().forEach(([k,v])=>printLine(`<span class="accent">${k}:</span> ${v}`)); }
-        else if(arg === "socials.txt") { SOCIALS.forEach(([l,h,tt])=>printLine(`<span class="accent">${l}:</span> <a href="${h}" target="_blank" rel="noopener">${tt}</a>`)); }
+        else if(arg === "contact.txt") { SOCIALS.forEach(([l,h,tt])=>printLine(`<span class="accent">${l}:</span> <a href="${h}" target="_blank" rel="noopener">${tt}</a>`)); }
         else if(arg === "cv.html") { printLine(t('catNotText')); }
         else if(arg === "nikita.sh" || arg === "./nikita.sh") {
           const lines = lang === 'ru' ? [
@@ -1589,7 +1589,7 @@ and SRE practices into reality.`;
         }
         break;
       }
-      case "htop": case "top": {
+      case "htop": {
         await enterHtopMode();
         break;
       }
