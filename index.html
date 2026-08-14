@@ -746,7 +746,7 @@ and SRE practices into reality.`;
     ["ls","list files","ls"],
     ["cat","print a file","cat "],
     ["fortune","random sysadmin wisdom","fortune"],
-    ["htop","fake process monitor","htop"],
+    ["top","fake process monitor","top"],
     ["kubectl","peek at a pretend cluster","kubectl "],
     ["terraform","apply optimism, destroy everything","terraform "],
     ["ssh","remote login — skip the screening call (or find out what else is out there)","ssh "],
@@ -767,7 +767,7 @@ and SRE practices into reality.`;
     ["ls","список файлов","ls"],
     ["cat","вывести файл","cat "],
     ["fortune","случайная мудрость сисадмина","fortune"],
-    ["htop","фейковый монитор процессов","htop"],
+    ["top","фейковый монитор процессов","top"],
     ["kubectl","заглянуть в игрушечный кластер","kubectl "],
     ["terraform","apply обещает, destroy исполняет","terraform "],
     ["ssh","удалённая сессия —  провести экспресс-скрининг (или узнать, что ещё тут есть)","ssh "],
@@ -846,7 +846,7 @@ and SRE practices into reality.`;
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
-  function htopTable(){
+  function topTable(){
     const H = lang === 'ru' ? ["PID","КОМАНДА","CPU%","MEM%","СТАТУС"] : ["PID","CMD","CPU%","MEM%","STATUS"];
     const running = lang === 'ru' ? "работает" : "running";
     const sleeping = lang === 'ru' ? "ожидание" : "sleeping";
@@ -1058,7 +1058,7 @@ and SRE practices into reality.`;
     return typeof v === 'function' ? v(...args) : v;
   }
 
-  const COMMANDS = ["about","skills","contact","cv","neofetch","whoami","ls","cat","echo","history","matrix","theme","lang","sudo","fortune","htop","kubectl","terraform","ssh","claude","./nikita.sh","clear","help","exit","logout"];
+  const COMMANDS = ["about","skills","contact","cv","neofetch","whoami","ls","cat","echo","history","matrix","theme","lang","sudo","fortune","top","kubectl","terraform","ssh","claude","./nikita.sh","clear","help","exit","logout"];
 
   const POD_NAMES = ["cat-deployment-7f9d8c-x2m4q","condensed-milk-store-0","sre-sanity-canary","deploy-friday-afternoon"];
 
@@ -1115,7 +1115,7 @@ and SRE practices into reality.`;
       const raw = cmdInput.value;
       let items;
 
-      if(mode === 'htop'){
+      if(mode === 'top'){
         items = [{label: lang === 'ru' ? 'q — выход' : 'q — quit', value:'q'}];
       } else if(mode === 'ssh'){
         const cmds = [...PERSONAS[sshPersonaKey].qa().map(q => q.cmd), 'exit'];
@@ -1147,7 +1147,7 @@ and SRE practices into reality.`;
   function applyChipValue(value){
     cmdInput.value = value;
 
-    if(mode === 'ssh' || mode === 'htop'){
+    if(mode === 'ssh' || mode === 'top'){
       cmdInput.dispatchEvent(new KeyboardEvent('keydown', {key:'Enter'}));
       return;
     }
@@ -1172,15 +1172,15 @@ and SRE practices into reality.`;
     }
   }
 
-  /* ---------- shell mode (normal | recruiter | htop) ---------- */
+  /* ---------- shell mode (normal | recruiter | top) ---------- */
   let mode = 'shell';
   let sshPersonaKey = null;
   let sshFailCount = 0;
-  let htopInterval = null;
-  let htopContainerEl = null;
+  let topInterval = null;
+  let topContainerEl = null;
   function psHTML(){
     if(mode === 'ssh') return `${PERSONAS[sshPersonaKey].host} <span class="path">~</span> $`;
-    if(mode === 'htop') return `<span class="dim">${lang === 'ru' ? '(htop — q для выхода)' : '(htop — q to quit)'}</span>`;
+    if(mode === 'top') return `<span class="dim">${lang === 'ru' ? '(top — q для выхода)' : '(top — q to quit)'}</span>`;
     return `guest@nikita.sh <span class="path">~</span> $`;
   }
   function updatePromptUI(){
@@ -1189,8 +1189,8 @@ and SRE practices into reality.`;
     const title = document.querySelector('.term-title');
     if(title) title.textContent = mode === 'ssh'
       ? `${PERSONAS[sshPersonaKey].host} — ssh — 80×24`
-      : mode === 'htop'
-        ? 'guest@nikita.sh — htop — 80×24'
+      : mode === 'top'
+        ? 'guest@nikita.sh — top — 80×24'
         : 'guest@nikita.sh — bash — 80×24';
   }
 
@@ -1319,35 +1319,35 @@ and SRE practices into reality.`;
     }
   }
 
-  function refreshHtopView(){
-    htopContainerEl = printLine(htopTable());
+  function refreshTopView(){
+    topContainerEl = printLine(topTable());
   }
 
-  async function enterHtopMode(){
-    mode = 'htop';
+  async function enterTopMode(){
+    mode = 'top';
     updatePromptUI();
-    refreshHtopView();
+    refreshTopView();
     printLine(lang === 'ru'
       ? `<span class="dim">нажмите <span class="accent">q</span> или введите <span class="accent">exit</span>, чтобы выйти</span>`
       : `<span class="dim">press <span class="accent">q</span> or type <span class="accent">exit</span> to quit</span>`);
-    htopInterval = setInterval(()=>{
-      if(htopContainerEl) htopContainerEl.innerHTML = htopTable();
+    topInterval = setInterval(()=>{
+      if(topContainerEl) topContainerEl.innerHTML = topTable();
     }, 1200);
   }
 
-  function exitHtopMode(){
-    if(htopInterval){ clearInterval(htopInterval); htopInterval = null; }
-    htopContainerEl = null;
+  function exitTopMode(){
+    if(topInterval){ clearInterval(topInterval); topInterval = null; }
+    topContainerEl = null;
     mode = 'shell';
     updatePromptUI();
-    printLine(lang === 'ru' ? 'вышли из htop.' : 'exited htop.');
+    printLine(lang === 'ru' ? 'вышли из top.' : 'exited top.');
   }
 
-  async function runHtopCommand(raw){
+  async function runTopCommand(raw){
     const cmd = raw.trim().toLowerCase();
     if(raw.trim()) { history.push(raw); hIndex = history.length; }
     if(cmd === 'q' || cmd === 'exit' || cmd === 'quit'){
-      exitHtopMode();
+      exitTopMode();
     } else {
       printLine(lang === 'ru'
         ? `нажмите <span class="accent">q</span> или введите <span class="accent">exit</span>, чтобы выйти`
@@ -1366,8 +1366,8 @@ and SRE practices into reality.`;
       await runPersonaCommand(raw);
       return;
     }
-    if(mode === 'htop'){
-      await runHtopCommand(raw);
+    if(mode === 'top'){
+      await runTopCommand(raw);
       return;
     }
 
@@ -1589,8 +1589,8 @@ and SRE practices into reality.`;
         }
         break;
       }
-      case "htop": {
-        await enterHtopMode();
+      case "top": {
+        await enterTopMode();
         break;
       }
       case "kubectl": {
@@ -1764,7 +1764,7 @@ and SRE practices into reality.`;
       if(busy) return;
       inputRow.remove();
       body.innerHTML = "";
-      if(mode === 'htop') refreshHtopView();
+      if(mode === 'top') refreshTopView();
       mountInput();
       return;
     }
@@ -1772,10 +1772,10 @@ and SRE practices into reality.`;
     if(isCtrlC){
       e.preventDefault();
       if(busy) return;
-      if(mode === 'htop'){
+      if(mode === 'top'){
         if(cmdInput.value === ''){
           inputRow.remove();
-          exitHtopMode();
+          exitTopMode();
           mountInput();
         } else {
           cmdInput.value = "";
@@ -1811,11 +1811,11 @@ and SRE practices into reality.`;
       return;
     }
 
-    if(mode === 'htop'){
+    if(mode === 'top'){
       if((e.key === 'q' || e.key === 'Q') && cmdInput.value === ''){
         e.preventDefault();
         inputRow.remove();
-        exitHtopMode();
+        exitTopMode();
         mountInput();
         return;
       }
