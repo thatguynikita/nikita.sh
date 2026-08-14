@@ -391,6 +391,122 @@
 
   /* ================= boot sequence ================= */
   const bootEl = document.getElementById('boot');
+  function pick(arr){ return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function detectClient(){
+    const ua = navigator.userAgent || '';
+
+    let os = 'an unknown OS';
+    if(/windows/i.test(ua)) os = 'Windows';
+    else if(/iphone|ipad|ipod/i.test(ua)) os = 'iOS';
+    else if(/mac os x|macintosh/i.test(ua)) os = 'macOS';
+    else if(/android/i.test(ua)) os = 'Android';
+    else if(/cros/i.test(ua)) os = 'ChromeOS';
+    else if(/linux/i.test(ua)) os = 'Linux';
+
+    let browser = 'a mystery browser';
+    if(/crios/i.test(ua)) browser = 'Chrome';
+    else if(/fxios/i.test(ua)) browser = 'Firefox';
+    else if(/edg\//i.test(ua)) browser = 'Edge';
+    else if(/opr\//i.test(ua) || /opera/i.test(ua)) browser = 'Opera';
+    else if(/samsungbrowser/i.test(ua)) browser = 'Samsung Internet';
+    else if(/firefox/i.test(ua)) browser = 'Firefox';
+    else if(/chrome/i.test(ua)) browser = 'Chrome';
+    else if(/safari/i.test(ua)) browser = 'Safari';
+
+    return { browser, os };
+  }
+
+  function detectTimezone(){
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone || 'an unknown timezone';
+    } catch(e){
+      return 'an unknown timezone';
+    }
+  }
+
+  function timeQuip(hour){
+    const bucketsEN = [
+      { max:5, jokes: [
+        "still awake? respect, but also concerning",
+        "it's 3am somewhere, and unfortunately it might be here",
+        "the machines don't sleep and apparently neither do you",
+      ]},
+      { max:8, jokes: [
+        "up early, or never went to bed — hard to say which",
+        "the extremely online early bird",
+      ]},
+      { max:12, jokes: [
+        "reasonable hours, very responsible of you",
+        "productive morning energy, I respect it",
+      ]},
+      { max:14, jokes: [
+        "lunch break browsing, a classic",
+        "prime procrastination window",
+      ]},
+      { max:18, jokes: [
+        "the 3pm slump, browsing as a coping mechanism",
+        "afternoon energy, holding strong",
+      ]},
+      { max:22, jokes: [
+        "evening browsing, the good stuff",
+        "prime scrolling hours, no shame in it",
+      ]},
+      { max:24, jokes: [
+        "should probably be asleep by now",
+        "one more tab before bed, sure",
+      ]},
+    ];
+    const bucketsRU = [
+      { max:5, jokes: [
+        "всё ещё не спите? уважаю, но немного тревожно",
+        "где-то сейчас 3 ночи, и, кажется, как раз здесь",
+        "машины не спят, и вы, похоже, тоже",
+      ]},
+      { max:8, jokes: [
+        "рано встали — или вообще не ложились, поди разбери",
+        "ранняя пташка на максималках",
+      ]},
+      { max:12, jokes: [
+        "вполне разумное время, очень ответственно с вашей стороны",
+        "продуктивная утренняя энергия, уважаю",
+      ]},
+      { max:14, jokes: [
+        "обеденный перерыв за терминалом, классика",
+        "идеальное окно для прокрастинации",
+      ]},
+      { max:18, jokes: [
+        "тот самый послеобеденный спад, браузинг как способ пережить его",
+        "дневная энергия ещё держится",
+      ]},
+      { max:22, jokes: [
+        "вечерний браузинг, самое время",
+        "прайм-тайм для скроллинга, ничего постыдного",
+      ]},
+      { max:24, jokes: [
+        "по идее, уже пора спать",
+        "ну ещё одна вкладка перед сном, конечно",
+      ]},
+    ];
+    const buckets = lang === 'ru' ? bucketsRU : bucketsEN;
+    const bucket = buckets.find(b => hour < b.max) || buckets[buckets.length - 1];
+    return pick(bucket.jokes);
+  }
+
+  function whoamiHTML(){
+    const { browser, os } = detectClient();
+    const tz = detectTimezone();
+    const tzQuip = timeQuip(new Date().getHours());
+    const L = lang === 'ru'
+      ? { user:'Пользователь', browser:'Браузер', os:'ОС', tz:'Часовой пояс' }
+      : { user:'User', browser:'Browser', os:'OS', tz:'Timezone' };
+    let html = `<div><span class="accent">${L.user}:</span> guest</div>`;
+    html += `<div><span class="accent">${L.browser}:</span> ${browser}</div>`;
+    html += `<div><span class="accent">${L.os}:</span> ${os}</div>`;
+    html += `<div><span class="accent">${L.tz}:</span> ${tz} <span class="dim">— ${tzQuip}</span></div>`;
+    return html;
+  }
+
   const bootLines = [
     "nikita.sh boot sequence — kernel 6.6.0-sre",
     "[  OK  ] mounted /dev/coffee",
@@ -860,7 +976,6 @@ and SRE practices into reality.`;
   const UI = {
     en: {
       availableCommands: "Available commands:",
-      whoami: `<span class="accent">guest</span> — viewing the terminal of <span class="glow">Nikita Chernozipunnikov</span>, DevOps/SRE.`,
       openingCv: `opening <a href="cv.html" class="glow">cv.html</a> ...`,
       launchingGame: `launching <span class="glow">cat.nikita.sh</span> in a sandboxed CRT window...`,
       catNotText: `cat: cv.html: not a text file — use <span class="glow">cv</span> to open it instead`,
@@ -882,7 +997,6 @@ and SRE practices into reality.`;
     },
     ru: {
       availableCommands: "Доступные команды:",
-      whoami: `<span class="accent">гость</span> — вы смотрите терминал <span class="glow">Никиты Чернозипунникова</span>, DevOps/SRE.`,
       openingCv: `открываю <a href="cv.html" class="glow">cv.html</a> ...`,
       launchingGame: `запускаю <span class="glow">cat.nikita.sh</span> в песочнице CRT-режима...`,
       catNotText: `cat: cv.html: не текстовый файл — используйте <span class="glow">cv</span>, чтобы открыть его`,
@@ -1239,7 +1353,7 @@ and SRE practices into reality.`;
         break;
       }
       case "whoami": {
-        printLine(t('whoami'));
+        printLine(whoamiHTML());
         break;
       }
       case "skills": {
