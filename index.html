@@ -645,6 +645,7 @@
 
   const THEME_STORAGE_KEY = 'nikita.sh:theme';
   const LANG_STORAGE_KEY = 'nikita.sh:lang';
+  const MATRIX_STORAGE_KEY = 'nikita.sh:matrix';
   try {
     const storedLang = localStorage.getItem(LANG_STORAGE_KEY);
     if(storedLang === 'ru' || storedLang === 'en'){
@@ -655,6 +656,13 @@
   try {
     const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
     if(storedTheme) setTheme(storedTheme);
+  } catch(e) {}
+  try {
+    const storedMatrix = localStorage.getItem(MATRIX_STORAGE_KEY);
+    if(storedMatrix === 'off'){
+      matrixOn = false;
+      canvas.classList.add('off');
+    }
   } catch(e) {}
 
   /* ================= now playing (lives inside neofetch) ================= */
@@ -1748,8 +1756,14 @@ and SRE practices into reality.`;
         break;
       }
       case "matrix": {
-        if(arg === "off"){ matrixOn = false; canvas.classList.add('off'); printLine(t('matrixOff')); }
-        else if(arg === "on"){ matrixOn = true; canvas.classList.remove('off'); printLine(t('matrixOn')); }
+        if(arg === "off"){
+          matrixOn = false; canvas.classList.add('off'); printLine(t('matrixOff'));
+          try { localStorage.setItem(MATRIX_STORAGE_KEY, 'off'); } catch(e) {}
+        }
+        else if(arg === "on"){
+          matrixOn = true; canvas.classList.remove('off'); printLine(t('matrixOn'));
+          try { localStorage.setItem(MATRIX_STORAGE_KEY, 'on'); } catch(e) {}
+        }
         else { printLine(t('matrixUsage')); }
         break;
       }
