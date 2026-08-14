@@ -601,6 +601,16 @@
   }
   function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
 
+  // Plays a list of {text, delay, typed, cls} steps in order.
+  // delay: ms to wait before this step (default 0). typed: stream via typeLine instead of printLine.
+  async function playSequence(steps){
+    for(const step of steps){
+      if(step.delay) await sleep(step.delay);
+      if(step.typed) await typeLine(step.text, step.cls);
+      else printLine(step.text, step.cls);
+    }
+  }
+
   const NEOFETCH = `     ░░░░░
   ░░▒▓▓▓▓▓▒░░
  ░▒▒▓▓▓●▓▓▓▒▒░
@@ -859,10 +869,7 @@ and SRE practices into reality.`;
       ["5","kubernetes-cluster",(15+Math.random()*15).toFixed(1),(10+Math.random()*10).toFixed(1),running],
       ["6","dreams_of_vacation","0.0","0.0",zombie],
     ];
-    let html = `<table class="tbl"><tr>` + H.map(h=>`<td class="accent">${h}</td>`).join("") + `</tr>`;
-    procs.forEach(p=>{ html += `<tr>` + p.map(v=>`<td>${v}</td>`).join("") + `</tr>`; });
-    html += `</table>`;
-    return html;
+    return tableHTML(H, procs);
   }
 
   function kubectlPods(){
@@ -874,10 +881,7 @@ and SRE practices into reality.`;
       ["sre-sanity-canary","1/1",running,lang==='ru'?"еле-еле":"just barely"],
       ["deploy-friday-afternoon","0/1","Evicted","2m"],
     ];
-    let html = `<table class="tbl"><tr>` + H.map(h=>`<td class="accent">${h}</td>`).join("") + `</tr>`;
-    pods.forEach(p=>{ html += `<tr>` + p.map(v=>`<td>${v}</td>`).join("") + `</tr>`; });
-    html += `</table>`;
-    return html;
+    return tableHTML(H, pods);
   }
 
   function describePod(name){
@@ -1093,6 +1097,22 @@ and SRE practices into reality.`;
     return escapeHtml(s).replace(/"/g, '&quot;');
   }
 
+  // Header row + plain-value rows, e.g. process tables, pod lists.
+  function tableHTML(headerRow, dataRows){
+    let html = `<table class="tbl"><tr>` + headerRow.map(h=>`<td class="accent">${h}</td>`).join("") + `</tr>`;
+    dataRows.forEach(row => { html += `<tr>` + row.map(v=>`<td>${v}</td>`).join("") + `</tr>`; });
+    html += `</table>`;
+    return html;
+  }
+
+  // Two-column key/value table with an accent-styled key column, no header row.
+  function kvTableHTML(pairs){
+    let html = `<table class="tbl">`;
+    pairs.forEach(([k,v]) => { html += `<tr><td class="accent">${k}</td><td>${v}</td></tr>`; });
+    html += `</table>`;
+    return html;
+  }
+
   function defaultChips(){
     const nextLang = lang === 'ru' ? 'en' : 'ru';
     return [
@@ -1223,10 +1243,8 @@ and SRE practices into reality.`;
   async function sudoRmRfPanic(){
     document.body.classList.add('panic');
     const paths = ["/bin","/boot","/dev","/etc","/home/guest","/lib","/opt","/proc","/root","/sbin","/srv","/sys","/usr","/var","/home/guest/.bashrc","/home/guest/dreams"];
-    for(const p of paths){
-      printLine(`<span class="rm-line">removing ${p} ...</span>`);
-      await sleep(65);
-    }
+    await playSequence(paths.map((p, i) => ({ text: `<span class="rm-line">removing ${p} ...</span>`, delay: i === 0 ? 0 : 65 })));
+    await sleep(65);
     await sleep(300);
     body.innerHTML = "";
     await sleep(650);
@@ -1256,10 +1274,8 @@ and SRE practices into reality.`;
       "authenticating...",
       "access granted.",
     ];
-    for(const l of lines){
-      printLine(`<span class="dim">${l}</span>`);
-      await sleep(260);
-    }
+    await playSequence(lines.map((l, i) => ({ text: `<span class="dim">${l}</span>`, delay: i === 0 ? 0 : 260 })));
+    await sleep(260);
     await sleep(150);
   }
 
@@ -1305,11 +1321,13 @@ and SRE practices into reality.`;
     const normalized = lc.replace(/^ask\s+/, '').trim();
     const item = qa.find(q => q.cmd === normalized);
     if(item){
-      printLine(`<span class="accent">${item.q}</span>`);
-      await typeLine(item.a);
-      printLine(lang === 'ru'
-        ? `<span class="dim">задайте другой вопрос, или введите "exit"</span>`
-        : `<span class="dim">ask another question, or type "exit"</span>`);
+      await playSequence([
+        { text: `<span class="accent">${item.q}</span>` },
+        { text: item.a, typed: true },
+        { text: lang === 'ru'
+            ? `<span class="dim">задайте другой вопрос, или введите "exit"</span>`
+            : `<span class="dim">ask another question, or type "exit"</span>` },
+      ]);
     } else if(lc === 'help' || lc === ''){
       printLine(personaMenuHTML(sshPersonaKey));
     } else {
@@ -1403,10 +1421,7 @@ and SRE practices into reality.`;
         break;
       }
       case "skills": {
-        let sk = `<table class="tbl">`;
-        SKILLS().forEach(([k,v])=>{ sk += `<tr><td class="accent">${k}</td><td>${v}</td></tr>`; });
-        sk += `</table>`;
-        printLine(sk);
+        printLine(kvTableHTML(SKILLS()));
         break;
       }
       case "contact": {
@@ -1530,61 +1545,55 @@ and SRE practices into reality.`;
             ? `<span class="dim">с этим сайтом у меня история коммитов длиннее, чем с большинством моих реальных отношений</span>`
             : `<span class="dim">this website has a longer commit history with me than most of my actual relationships</span>`);
         } else if(al === '--confess' || al === 'confess'){
-          await sleep(900);
-          await typeLine(lang === 'ru'
-            ? 'да — этот терминал был собран с помощью ИИ (привет, это я).'
-            : 'yes — this terminal was built by asking an AI (hi, that\'s me).');
+          await playSequence([
+            { text: lang === 'ru'
+                ? 'да — этот терминал был собран с помощью ИИ (привет, это я).'
+                : 'yes — this terminal was built by asking an AI (hi, that\'s me).', delay: 900, typed: true },
+          ]);
         } else {
           const prompt = a.replace(/^["'](.*)["']$/, '$1');
           const pl = prompt.toLowerCase();
           if(pl === 'add light theme'){
-            await sleep(750);
-            await typeLine(lang === 'ru' ? 'Проверю текущую систему тем.' : "I'll take a look at the current theming setup.");
-            await sleep(200);
-            printLine(`<span class="dim"> ⎿  Read index.html</span>`);
-            await sleep(700);
-            await typeLine(lang === 'ru'
-              ? 'Нашёл — у этого сайта нет светлой темы. Никогда не было. И не будет.'
-              : "Found it — this site doesn't have a light theme. It never has. It never will.");
-            await sleep(350);
-            await typeLine(lang === 'ru'
-              ? 'Могу добавить, но хочу отметить — коту это может не понравиться.'
-              : "I could add one, but I'd like to flag it may upset the cat.");
-            await sleep(350);
-            await typeLine(lang === 'ru' ? 'Помечаю как won\'t-fix. Что-нибудь ещё?' : "Marking as won't-fix. Anything else?");
+            await playSequence([
+              { text: lang === 'ru' ? 'Проверю текущую систему тем.' : "I'll take a look at the current theming setup.", delay: 750, typed: true },
+              { text: `<span class="dim"> ⎿  Read index.html</span>`, delay: 200 },
+              { text: lang === 'ru'
+                  ? 'Нашёл — у этого сайта нет светлой темы. Никогда не было. И не будет.'
+                  : "Found it — this site doesn't have a light theme. It never has. It never will.", delay: 700, typed: true },
+              { text: lang === 'ru'
+                  ? 'Могу добавить, но хочу отметить — коту это может не понравиться.'
+                  : "I could add one, but I'd like to flag it may upset the cat.", delay: 350, typed: true },
+              { text: lang === 'ru' ? 'Помечаю как won\'t-fix. Что-нибудь ещё?' : "Marking as won't-fix. Anything else?", delay: 350, typed: true },
+            ]);
           } else if(pl === 'fix the bug'){
-            await sleep(750);
-            printLine(`<span class="dim"> ⎿  Searched for "bug"</span>`);
-            await sleep(700);
-            await typeLine(lang === 'ru'
-              ? 'Багов нет. Багов никогда не было. Я проверил. Дважды.'
-              : 'There is no bug. There has never been a bug. I checked. Twice.');
+            await playSequence([
+              { text: `<span class="dim"> ⎿  Searched for "bug"</span>`, delay: 750 },
+              { text: lang === 'ru'
+                  ? 'Багов нет. Багов никогда не было. Я проверил. Дважды.'
+                  : 'There is no bug. There has never been a bug. I checked. Twice.', delay: 700, typed: true },
+            ]);
           } else if(pl === 'add tests'){
-            await sleep(750);
-            printLine(`<span class="dim"> ⎿  Searched for "test"</span>`);
-            await sleep(700);
-            await typeLine(lang === 'ru'
-              ? 'Найдено 0 тестов. Это весьма тревожно конечно, либо смелое дизайн-решение.'
-              : 'Found 0 tests. This is either very concerning or a bold design decision.');
-            await sleep(350);
-            await typeLine(lang === 'ru'
-              ? 'Остановлюсь на «смелом дизайн-решении» и пойду дальше.'
-              : 'I\'m going to go with "bold design decision" and move on.');
+            await playSequence([
+              { text: `<span class="dim"> ⎿  Searched for "test"</span>`, delay: 750 },
+              { text: lang === 'ru'
+                  ? 'Найдено 0 тестов. Это весьма тревожно конечно, либо смелое дизайн-решение.'
+                  : 'Found 0 tests. This is either very concerning or a bold design decision.', delay: 700, typed: true },
+              { text: lang === 'ru'
+                  ? 'Остановлюсь на «смелом дизайн-решении» и пойду дальше.'
+                  : 'I\'m going to go with "bold design decision" and move on.', delay: 350, typed: true },
+            ]);
           } else {
-            await sleep(750);
-            printLine(`<span class="dim"> ⎿  Read index.html</span>`);
-            await sleep(700);
-            await typeLine(lang === 'ru' ? 'Понял. Уже работаю над этим.' : 'Got it. Working on that now.');
-            await sleep(400);
-            printLine(`...`);
-            await sleep(600);
-            await typeLine(lang === 'ru'
-              ? 'На самом деле это может занять больше времени чем ожидалось. Добавляю в список.'
-              : 'Actually, this might take longer than expected. Adding it to the list.');
-            await sleep(350);
-            await typeLine(lang === 'ru'
-              ? '(список длинный. список всегда длинный.)'
-              : '(the list is long. the list is always long.)', 'dim');
+            await playSequence([
+              { text: `<span class="dim"> ⎿  Read index.html</span>`, delay: 750 },
+              { text: lang === 'ru' ? 'Понял. Уже работаю над этим.' : 'Got it. Working on that now.', delay: 700, typed: true },
+              { text: `...`, delay: 400 },
+              { text: lang === 'ru'
+                  ? 'На самом деле это может занять больше времени чем ожидалось. Добавляю в список.'
+                  : 'Actually, this might take longer than expected. Adding it to the list.', delay: 600, typed: true },
+              { text: lang === 'ru'
+                  ? '(список длинный. список всегда длинный.)'
+                  : '(the list is long. the list is always long.)', delay: 350, typed: true, cls: 'dim' },
+            ]);
           }
         }
         break;
@@ -1624,18 +1633,18 @@ and SRE practices into reality.`;
       case "terraform": {
         const a = arg.trim().toLowerCase();
         if(a === 'apply'){
-          printLine(lang === 'ru' ? `<span class="dim">Terraform выполнит следующие действия:</span>` : `<span class="dim">Terraform will perform the following actions:</span>`);
-          printLine(`  <span class="amber">~</span> resource "aws_instance" "sre_sleep_schedule" { hours = 0 -&gt; 8 }`);
-          printLine(`  <span style="color:var(--red)">-</span> resource "personal_time" "weekend" {}`);
-          printLine(`  <span class="glow">+</span> resource "incident" "unplanned" { severity = "sev1" }`);
-          await sleep(350);
-          printLine(lang === 'ru'
-            ? `<span class="amber">Это уничтожит твои выходные. Только "yes" будет принято для подтверждения.</span>`
-            : `<span class="amber">This will destroy your weekend. Only 'yes' will be accepted to approve.</span>`);
-          await sleep(550);
-          printLine(lang === 'ru'
-            ? `<span class="dim">Enter a value: (тайм-аут) — apply отменён.</span>`
-            : `<span class="dim">Enter a value: (timed out) — apply cancelled.</span>`);
+          await playSequence([
+            { text: lang === 'ru' ? `<span class="dim">Terraform выполнит следующие действия:</span>` : `<span class="dim">Terraform will perform the following actions:</span>` },
+            { text: `  <span class="amber">~</span> resource "aws_instance" "sre_sleep_schedule" { hours = 0 -&gt; 8 }` },
+            { text: `  <span style="color:var(--red)">-</span> resource "personal_time" "weekend" {}` },
+            { text: `  <span class="glow">+</span> resource "incident" "unplanned" { severity = "sev1" }` },
+            { text: lang === 'ru'
+                ? `<span class="amber">Это уничтожит твои выходные. Только "yes" будет принято для подтверждения.</span>`
+                : `<span class="amber">This will destroy your weekend. Only 'yes' will be accepted to approve.</span>`, delay: 350 },
+            { text: lang === 'ru'
+                ? `<span class="dim">Enter a value: (тайм-аут) — apply отменён.</span>`
+                : `<span class="dim">Enter a value: (timed out) — apply cancelled.</span>`, delay: 550 },
+          ]);
         } else if(a === 'destroy'){
           const resources = [
             {addr:'condensed_milk_reserve.cat_stash', block:'resource "condensed_milk_reserve" "cat_stash" { cans = 30 }', id:'cans-0030', t:2},
@@ -1668,22 +1677,19 @@ and SRE practices into reality.`;
 
           document.body.classList.add('panic-amber');
           await sleep(200);
-          for(let i = 0; i < resources.length; i++){
-            const r = resources[i];
+          const destroySteps = [];
+          resources.forEach((r, i) => {
             const isLast = i === resources.length - 1;
-            printLine(`<span class="dim">${r.addr}: Destroying... [id=${r.id}]</span>`);
+            destroySteps.push({ text: `<span class="dim">${r.addr}: Destroying... [id=${r.id}]</span>`, delay: i === 0 ? 0 : 110 });
             if(isLast){
-              await sleep(420);
-              printLine(`<span class="dim">${r.addr}: Still destroying... [id=${r.id}, 10s elapsed]</span>`);
-              await sleep(420);
-              printLine(`<span class="dim">${r.addr}: Still destroying... [id=${r.id}, 20s elapsed]</span>`);
-              await sleep(380);
+              destroySteps.push({ text: `<span class="dim">${r.addr}: Still destroying... [id=${r.id}, 10s elapsed]</span>`, delay: 420 });
+              destroySteps.push({ text: `<span class="dim">${r.addr}: Still destroying... [id=${r.id}, 20s elapsed]</span>`, delay: 420 });
+              destroySteps.push({ text: `<span class="dim">${r.addr}: Destruction complete after ${r.t}s</span>`, delay: 380 });
             } else {
-              await sleep(160);
+              destroySteps.push({ text: `<span class="dim">${r.addr}: Destruction complete after ${r.t}s</span>`, delay: 160 });
             }
-            printLine(`<span class="dim">${r.addr}: Destruction complete after ${r.t}s</span>`);
-            if(!isLast) await sleep(110);
-          }
+          });
+          await playSequence(destroySteps);
           document.body.classList.remove('panic-amber');
 
           printLine(`<span class="amber">Destroy complete! Resources: ${resources.length} destroyed.</span>`);
@@ -1714,11 +1720,7 @@ and SRE practices into reality.`;
             await enterPersonaMode(personaKey);
           } else {
             sshFailCount++;
-            const seq = sshFailureSequence(target, sshFailCount);
-            for(const line of seq){
-              if(line.delay) await sleep(line.delay);
-              printLine(line.text);
-            }
+            await playSequence(sshFailureSequence(target, sshFailCount));
           }
         }
         break;
