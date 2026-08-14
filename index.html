@@ -1009,19 +1009,6 @@ and SRE practices into reality.`;
     ];
   }
 
-  const ALIASES = {
-    "справка":"help", "помощь":"help",
-    "кто":"whoami",
-    "обо":"about", "обомне":"about",
-    "навыки":"skills",
-    "контакты":"contact", "связь":"contact",
-    "резюме":"cv",
-    "игра":"game", "играть":"game",
-    "очистить":"clear", "чистить":"clear",
-    "выход":"exit", "выйти":"exit",
-    "язык":"lang",
-  };
-
   const UI = {
     en: {
       availableCommands: "Available commands:",
@@ -1390,7 +1377,7 @@ and SRE practices into reality.`;
     const [base, ...rest] = cmd.split(/\s+/);
     const arg = rest.join(" ");
     const rawB = base.toLowerCase();
-    const b = ALIASES[rawB] || rawB;
+    const b = rawB;
 
     switch(b){
       case "help": {
