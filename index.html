@@ -461,7 +461,7 @@
       { max:5, jokes: [
         "всё ещё не спишь? уважаю, но немного тревожно",
         "где-то сейчас 3 ночи и, кажется, как раз здесь",
-        "машины не спят и вы похоже тоже",
+        "машины не спят и ты похоже тоже",
       ]},
       { max:8, jokes: [
         "рано встал или вообще не ложился, поди разбери",
@@ -763,14 +763,14 @@ and SRE practices into reality.`;
     ["contact","как со мной связаться","contact"],
     ["cv","открыть страницу резюме","cv"],
     ["neofetch","карточка с информацией о системе","neofetch"],
-    ["whoami","немного больше, чем нужно, о вас","whoami"],
+    ["whoami","узнать о себе немного больше","whoami"],
     ["ls","список файлов","ls"],
     ["cat","вывести файл","cat "],
     ["fortune","случайная мудрость сисадмина","fortune"],
     ["top","фейковый монитор процессов","top"],
     ["kubectl","заглянуть в игрушечный кластер","kubectl "],
     ["terraform","apply обещает, destroy исполняет","terraform "],
-    ["ssh","удалённая сессия —  провести экспресс-скрининг (или узнать, что ещё тут есть)","ssh "],
+    ["ssh","удалённая сессия — провести экспресс-скрининг (или узнать, что ещё тут есть)","ssh "],
     ["claude","спросить у ИИ","claude "],
     ["theme","сменить цвет терминала","theme "],
     ["matrix","вкл/выкл фоновый дождь из символов","matrix "],
@@ -1235,8 +1235,8 @@ and SRE practices into reality.`;
       ? `<span class="amber">...шутка. но неплохая попытка.</span>`
       : `<span class="amber">...just kidding. nice try though.</span>`);
     printLine(lang === 'ru'
-      ? `<span class="dim">(ничего не пострадало — это статичный сайт, вы в браузере, а не на моём сервере)</span>`
-      : `<span class="dim">(nothing was harmed — this is a static site, you're in a browser, not my server)</span>`);
+      ? `<span class="dim">(ничего не пострадало — это статичный сайт, ты в браузере, а не на реальном сервере)</span>`
+      : `<span class="dim">(nothing was harmed — this is a static site, you're in a browser, not a real server)</span>`);
     printLine(t('sudo'));
   }
 
@@ -1630,7 +1630,7 @@ and SRE practices into reality.`;
           printLine(`  <span class="glow">+</span> resource "incident" "unplanned" { severity = "sev1" }`);
           await sleep(350);
           printLine(lang === 'ru'
-            ? `<span class="amber">Это уничтожит ваши выходные. Только "yes" будет принято для подтверждения.</span>`
+            ? `<span class="amber">Это уничтожит твои выходные. Только "yes" будет принято для подтверждения.</span>`
             : `<span class="amber">This will destroy your weekend. Only 'yes' will be accepted to approve.</span>`);
           await sleep(550);
           printLine(lang === 'ru'
