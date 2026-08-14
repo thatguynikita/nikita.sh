@@ -552,16 +552,16 @@
       const isTitle = li === 0;
       const isBlank = bootLines[li] === "";
       li++;
-      const delay = isTitle ? 550 : isBlank ? 300 : 500;
+      const delay = isTitle ? 380 : isBlank ? 150 : 260;
       setTimeout(typeBoot, delay);
     } else {
       setTimeout(()=>{
         bootEl.classList.add('hidden');
         startTerminal();
-      }, 700);
+      }, 400);
     }
   }
-  setTimeout(typeBoot, 250);
+  setTimeout(typeBoot, 150);
 
   /* ================= game overlay ================= */
   const gameOverlay = document.getElementById('gameOverlay');
@@ -1107,7 +1107,7 @@ and SRE practices into reality.`;
       case "theme": return ["green","amber","cyan"];
       case "matrix": return ["on","off"];
       case "lang": return ["ru","en"];
-      case "sudo": return ["rm -rf /","./nikita.sh"];
+      case "sudo": return ["./nikita.sh"];
       case "ssh": return Object.values(PERSONAS).map(p => p.host);
       case "terraform": return ["apply","destroy"];
       case "claude": return ["log --oneline","--confess","\"add light theme\"","\"fix the bug\"","\"add tests\""];
@@ -1338,6 +1338,27 @@ and SRE practices into reality.`;
     root.setProperty('--border', `${t.fg}47`);
     root.setProperty('--glow', `0 0 4px ${t.fg}, 0 0 12px ${t.fg}88, 0 0 24px ${t.fg}44`);
     return true;
+  }
+
+  function isCatastrophicRm(normalized){
+    if(!normalized.startsWith('rm ')) return false;
+    const tokens = normalized.slice(3).trim().split(/\s+/).filter(Boolean);
+    let hasR = false, hasF = false;
+    const targets = [];
+    for(const tok of tokens){
+      if(tok === '--recursive'){ hasR = true; continue; }
+      if(tok === '--force'){ hasF = true; continue; }
+      if(tok === '--no-preserve-root'){ continue; }
+      if(/^-[rf]+$/.test(tok)){
+        if(tok.includes('r')) hasR = true;
+        if(tok.includes('f')) hasF = true;
+        continue;
+      }
+      targets.push(tok);
+    }
+    if(!hasR || !hasF) return false;
+    const dangerous = new Set(['/', '/*', '~', '/home', '.']);
+    return targets.length === 1 && dangerous.has(targets[0]);
   }
 
   async function sudoRmRfPanic(){
@@ -1600,6 +1621,16 @@ and SRE practices into reality.`;
         printLine(`/home/guest`);
         break;
       }
+      case "rm": {
+        const target = arg.trim();
+        if(!target){
+          printLine(`rm: missing operand`);
+        } else {
+          const filename = target.split(/\s+/).pop();
+          printLine(`rm: cannot remove '${escapeHtml(filename)}': Permission denied`);
+        }
+        break;
+      }
       case "hostname": {
         printLine(`nikita.sh`);
         break;
@@ -1710,6 +1741,7 @@ and SRE practices into reality.`;
           "alias w='w'",
           "alias ps='ps aux'",
           "alias env='env'",
+          "alias rm='rm -i'",
         ].forEach(line => printLine(line));
         break;
       }
@@ -1741,7 +1773,7 @@ and SRE practices into reality.`;
       }
       case "sudo": {
         const normalized = arg.trim().toLowerCase().replace(/\s+/g,' ');
-        if(/^rm -rf \/\*?$/.test(normalized)){
+        if(isCatastrophicRm(normalized)){
           await sudoRmRfPanic();
         } else if(normalized === 'game' || normalized === './nikita.sh'){
           printLine(t('launchingGame'));
