@@ -529,14 +529,14 @@
 
   const bootLines = [
     "nikita.sh boot sequence — kernel 6.6.0-sre",
+    "[  OK  ] loaded module: eleven_years_of_uptime.ko",
     '<span class="rm-line">[FAILED] mounted /dev/motivation: not found</span>',
     "[  OK  ] mounted /dev/coffee instead",
     "[  OK  ] started ssh-agent.service",
     "[  OK  ] started kubernetes-cluster.service",
-    "[  OK  ] started ai-assistant.service",
-    "[  OK  ] loaded module: eleven_years_of_uptime.ko",
-    "[  OK  ] started recruiter-inbox.service (0 unread)",
     '<span class="amber">[ WARN ] condensed-milk-reserve.service: critically low (cat notified, unimpressed)</span>',
+    "[  OK  ] started ai-assistant.service",
+    "[  OK  ] started recruiter-inbox.service (1125 unread)",
     "[  OK  ] on-call pager silenced (for now)",
     "",
     "access granted — welcome, guest",
@@ -1264,10 +1264,9 @@ and SRE practices into reality.`;
     document.body.classList.add('panic');
     const paths = ["/bin","/boot","/dev","/etc","/home/guest","/lib","/opt","/proc","/root","/sbin","/srv","/sys","/usr","/var","/home/guest/.bashrc","/home/guest/dreams"];
     await playSequence(paths.map((p, i) => ({ text: `<span class="rm-line">removing ${p} ...</span>`, delay: i === 0 ? 0 : 300 })));
-    await sleep(65);
-    await sleep(300);
+    await sleep(1000);
     body.innerHTML = "";
-    await sleep(650);
+    await sleep(1500);
     document.body.classList.remove('panic');
     printLine(lang === 'ru'
       ? `<span class="amber">...шутка. но неплохая попытка.</span>`
@@ -1683,13 +1682,13 @@ and SRE practices into reality.`;
           printLine(lang === 'ru' ? `<span class="dim">Terraform уничтожит:</span>` : `<span class="dim">Terraform will destroy:</span>`);
           for(const r of resources){
             printLine(`  <span style="color:var(--red)">-</span> ${r.block}`);
-            await sleep(70);
+            await sleep(400);
           }
           printLine(`<span class="amber">Plan: 0 to add, 0 to change, ${resources.length} to destroy.</span>`);
           printLine(lang === 'ru'
             ? `Вы действительно хотите уничтожить все ресурсы? Только "yes" будет принято для подтверждения.`
             : `Do you really want to destroy all resources? Only 'yes' will be accepted to approve.`);
-          await sleep(2000);
+          await sleep(2500);
           printLine(lang === 'ru'
             ? `<span class="dim">Enter a value: <span class="glow">yes</span> (терминал ответил за вас)</span>`
             : `<span class="dim">Enter a value: <span class="glow">yes</span> (the terminal answered for you)</span>`);
@@ -1700,13 +1699,13 @@ and SRE practices into reality.`;
           const destroySteps = [];
           resources.forEach((r, i) => {
             const isLast = i === resources.length - 1;
-            destroySteps.push({ text: `<span class="dim">${r.addr}: Destroying... [id=${r.id}]</span>`, delay: i === 0 ? 0 : 500 });
+            destroySteps.push({ text: `<span class="dim">${r.addr}: Destroying... [id=${r.id}]</span>`, delay: i === 0 ? 0 : 400 });
             if(isLast){
-              destroySteps.push({ text: `<span class="dim">${r.addr}: Still destroying... [id=${r.id}, 10s elapsed]</span>`, delay: 700 });
-              destroySteps.push({ text: `<span class="dim">${r.addr}: Still destroying... [id=${r.id}, 20s elapsed]</span>`, delay: 700 });
-              destroySteps.push({ text: `<span class="dim">${r.addr}: Destruction complete after ${r.t}s</span>`, delay: 1000 });
+              destroySteps.push({ text: `<span class="dim">${r.addr}: Still destroying... [id=${r.id}, 10s elapsed]</span>`, delay: 500 });
+              destroySteps.push({ text: `<span class="dim">${r.addr}: Still destroying... [id=${r.id}, 20s elapsed]</span>`, delay: 500 });
+              destroySteps.push({ text: `<span class="dim">${r.addr}: Destruction complete after ${r.t}s</span>`, delay: 350 });
             } else {
-              destroySteps.push({ text: `<span class="dim">${r.addr}: Destruction complete after ${r.t}s</span>`, delay: 1000 });
+              destroySteps.push({ text: `<span class="dim">${r.addr}: Destruction complete after ${r.t}s</span>`, delay: 350 });
             }
           });
           await playSequence(destroySteps);
