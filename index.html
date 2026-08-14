@@ -459,16 +459,16 @@
     ];
     const bucketsRU = [
       { max:5, jokes: [
-        "всё ещё не спите? уважаю, но немного тревожно",
-        "где-то сейчас 3 ночи, и, кажется, как раз здесь",
-        "машины не спят, и вы, похоже, тоже",
+        "всё ещё не спишь? уважаю, но немного тревожно",
+        "где-то сейчас 3 ночи и, кажется, как раз здесь",
+        "машины не спят и вы похоже тоже",
       ]},
       { max:8, jokes: [
-        "рано встали — или вообще не ложились, поди разбери",
+        "рано встал или вообще не ложился, поди разбери",
         "ранняя пташка на максималках",
       ]},
       { max:12, jokes: [
-        "вполне разумное время, очень ответственно с вашей стороны",
+        "вполне разумное время, очень ответственно с твоей стороны",
         "продуктивная утренняя энергия, уважаю",
       ]},
       { max:14, jokes: [
@@ -477,7 +477,7 @@
       ]},
       { max:18, jokes: [
         "тот самый послеобеденный спад, браузинг как способ пережить его",
-        "дневная энергия ещё держится",
+        "послеобеденная энергия ещё держится",
       ]},
       { max:22, jokes: [
         "вечерний браузинг, самое время",
@@ -665,7 +665,7 @@
       ? { name:"Имя", role:"Должность", uptime:"Стаж", shell:"Оболочка", stack:"Стек", status:"Статус", playing:"Играет",
           nameVal:"Никита Чернозипунников",
           roleVal:"DevOps / SRE", uptimeVal:"11+ лет в проде", stackVal:"AWS · OpenStack · Kubernetes · Linux",
-          statusVal:"в творческом отпуске (пейджер выключен)" }
+          statusVal:"в творческом отпуске (алерты замьючены)" }
       : { name:"Name", role:"Role", uptime:"Uptime", shell:"Shell", stack:"Stack", status:"Status", playing:"Playing",
           nameVal:"Nikita Chernozipunnikov",
           roleVal:"DevOps / SRE", uptimeVal:"11+ years in production", stackVal:"AWS · OpenStack · Kubernetes · Linux",
@@ -735,7 +735,7 @@ and SRE practices into reality.`;
   ];
 
   const HELP_EN = [
-    ["about","who is nikita","about"],
+    ["about","who the hell is nikita","about"],
     ["skills","tech stack","skills"],
     ["contact / socials","ways to reach me","contact"],
     ["cv / resume","open CV page","cv"],
@@ -756,7 +756,7 @@ and SRE practices into reality.`;
   ];
 
   const HELP_RU = [
-    ["about","кто такой никита","about"],
+    ["about","кто такой вообще этот никита","about"],
     ["skills","технологический стек","skills"],
     ["contact / socials","как со мной связаться","contact"],
     ["cv / resume","открыть страницу резюме","cv"],
@@ -781,7 +781,7 @@ and SRE practices into reality.`;
   /* ---------- easter-egg content ---------- */
   const FORTUNES_EN = [
     "It's always DNS.",
-    "99.9% uptime means 8h46m of downtime a year — you've already used six of them today.",
+    "99.9% uptime means 8h46m of downtime a year — we've already used six of them today.",
     "There is no cloud. It's just someone else's Kubernetes cluster.",
     "Friday deploy energy: high risk, higher regret.",
     "The bug is never in prod. (The bug is in prod.)",
@@ -794,7 +794,6 @@ and SRE practices into reality.`;
     "There's no place like 127.0.0.1.",
     "A distributed system is one where a machine you've never heard of can stop you from doing your job.",
     "Monitoring without alerting is just a very expensive screensaver.",
-    "If it hurts, do it more often.",
     "The best runbook is the one nobody has to read at 3am.",
     "Postmortems: where 'human error' quietly becomes 'process gap'.",
     "Your load balancer doesn't care about your feelings.",
@@ -807,40 +806,37 @@ and SRE practices into reality.`;
     "The rollback button is the most underrated feature in your whole pipeline.",
     "SLOs: the art of promising slightly less than 100%.",
     "A good on-call rotation is invisible. A bad one is a group chat at 2am.",
-    "Latency is just distance with better excuses.",
     "The incident is never really over — it just becomes a Jira ticket nobody assigns.",
     "You don't need more dashboards. You need to read the ones you have.",
   ];
   const FORTUNES_RU = [
     "Это всегда DNS.",
-    "99.9% аптайма — это 8ч46м простоя в год, и шесть из них вы уже потратили сегодня.",
-    "Никакого облака нет. Есть чужой кластер Kubernetes.",
+    "99.9% аптайма — это 8ч46м простоя в год, и шесть из них мы уже потратили сегодня.",
+    "Никакого облака нет. Это просто чей-то кластер Kubernetes.",
     "Энергия пятничного деплоя: высокий риск, ещё более высокое сожаление.",
     "Баг никогда не в проде. (Баг в проде.)",
     "Если следить за пайплайном, он никогда не закончится.",
-    "У меня работает — значит, отгружаем мою машину.",
-    "Chaos engineering — это не баг, это вторник.",
+    "У меня на ноутбуке всё работает — отгружаем ноутбук.",
+    "Chaos engineering: это не баг, это вторник.",
     "Ваша дежурная смена звонила. Она хочет прибавку.",
     "Бэкапы как чистка зубной нитью — все согласны, что это важно, пока не перестают это делать.",
     "Автоматизируй рутину, а потом автоматизируй саму автоматизацию.",
     "Нет места лучше, чем 127.0.0.1.",
     "Распределённая система — это когда неизвестная вам машина мешает вам делать вашу работу.",
     "Мониторинг без алертинга — это просто очень дорогая заставка.",
-    "Если больно — делай это чаще.",
     "Лучший runbook — тот, который никому не приходится читать в три часа ночи.",
     "Постмортемы: там, где «человеческий фактор» незаметно превращается в «пробел в процессе».",
     "Балансировщику нагрузки плевать на ваши чувства.",
-    "Идемпотентность нужна, чтобы повторный запуск не стоил вдвойне.",
-    "Любой «временный» костыль становится постоянным в тот момент, когда он заработал.",
-    "Kubernetes: усложняет простые вещи с 2014 года.",
+    "Идемпотентность нужна, чтобы повторный запуск не обошелся в два раза дороже.",
+    "Любой «временный» костыль становится постоянным в тот момент как он заработал.",
+    "Kubernetes: усложняем простые вещи с 2014 года.",
     "График выглядел нормально, пока кто-то не приблизил масштаб.",
     "Infrastructure as Code — теперь у ваших опечаток есть история версий.",
     "На самом деле ничего не удаляется — оно просто eventually consistent.",
     "Кнопка rollback — самая недооценённая функция во всём пайплайне.",
     "SLO — искусство обещать чуть меньше, чем 100%.",
     "Хорошее дежурство незаметно. Плохое — это групповой чат в два часа ночи.",
-    "Задержка — это просто расстояние с более убедительными оправданиями.",
-    "Инцидент никогда по-настоящему не заканчивается — он просто становится тикетом в Jira, который никому не назначают.",
+    "Инцидент никогда по-настоящему не заканчивается — он просто становится тикетом в Jira который никому не назначают.",
     "Вам не нужно больше дашбордов. Вам нужно читать те, что уже есть.",
   ];
   function fortune(){
@@ -922,7 +918,7 @@ and SRE practices into reality.`;
       },
       "cat-deployment-7f9d8c-x2m4q": {
         status: lang === 'ru' ? "Работает" : "Running",
-        reason: lang === 'ru' ? "полностью мотивирован, сгущёнки: 0/30" : "fully motivated, condensed milk cans: 0/30",
+        reason: lang === 'ru' ? "заряжен на результат, сгущёнки: 0/30" : "fully motivated, condensed milk cans: 0/30",
         restarts: "0",
         events: lang === 'ru' ? [
           "Started — контейнер запущен 11 лет назад",
@@ -951,13 +947,13 @@ and SRE practices into reality.`;
       host: 'recruiter@nikita.sh',
       qa(){
         return lang === 'ru' ? [
-          {cmd:'why', q:"Почему нам стоит вас нанять?", a:"Одиннадцать лет держал прод в рабочем состоянии, пока другие спали. Спокоен в инцидентах, дружу с автоматизацией и беру на себя ответственность."},
+          {cmd:'why', q:"Почему нам стоит вас нанять?", a:"Одиннадцать лет держу прод в рабочем состоянии, чтобы другие могли спать. Спокоен в инцидентах, дружу с автоматизацией и беру на себя ответственность."},
           {cmd:'favorite', q:"Что вам больше всего нравится в DevOps?", a:"Момент, когда шаткая ручная процедура превращается в скучный, надёжный пайплайн — и про неё можно забыть."},
           {cmd:'incident', q:"Расскажите про инцидент, который вы разруливали.", a:"Опустим подробности — кластер лёг в пятницу вечером, а к понедельнику про это уже никто не помнил, кроме постмортема."},
           {cmd:'goals', q:"Что вы ищете в следующей роли?", a:"Команду, где SRE-практики не факультатив, и где можно расти в сторону AI-driven разработки."},
           {cmd:'salary', q:"Ожидания по зарплате?", a:"Обсуждаемо — предлагаю продолжить это через contact, а не в терминальном пасхальном яйце :)"},
         ] : [
-          {cmd:'why', q:"Why should we hire you?", a:"Eleven years of keeping production upright while everyone else slept. Calm in incidents, comfortable with automation, and I take ownership."},
+          {cmd:'why', q:"Why should we hire you?", a:"Eleven years of keeping production upright so everyone else could sleep. Calm in incidents, comfortable with automation, and I take ownership."},
           {cmd:'favorite', q:"What's your favorite part of DevOps?", a:"The moment a shaky manual process turns into a boring, reliable pipeline — and everyone can forget it exists."},
           {cmd:'incident', q:"Tell me about an incident you handled.", a:"Skipping the gory details — a cluster went down on a Friday night, and by Monday nobody remembered it except the postmortem doc."},
           {cmd:'goals', q:"What are you looking for next?", a:"A team where SRE practices aren't optional, with room to grow toward AI-driven development."},
@@ -1044,7 +1040,7 @@ and SRE practices into reality.`;
       loggingOut: "logging out...",
       connClosed: "connection to nikita.sh closed.",
       notFound: (b)=>`command not found: <span class="accent">${b}</span> — type <span class="glow">help</span> for a list of commands`,
-      welcome: "Welcome to my terminal. Type 'help' to see what's available.",
+      welcome: "Welcome to this fake terminal. Type 'help' to see what's available.",
     },
     ru: {
       availableCommands: "Доступные команды:",
@@ -1065,7 +1061,7 @@ and SRE practices into reality.`;
       loggingOut: "выхожу из системы...",
       connClosed: "соединение с nikita.sh закрыто.",
       notFound: (b)=>`команда не найдена: <span class="accent">${b}</span> — введите <span class="glow">help</span> для списка команд`,
-      welcome: "Добро пожаловать в мой терминал. Введите «help», чтобы увидеть список команд.",
+      welcome: "Добро пожаловать в этот игрушечный терминал. Введите «help», чтобы увидеть список команд.",
     },
   };
   function t(key, ...args){
@@ -1247,7 +1243,7 @@ and SRE practices into reality.`;
     await sleep(650);
     document.body.classList.remove('panic');
     printLine(lang === 'ru'
-      ? `<span class="amber">...шучу. неплохая попытка.</span>`
+      ? `<span class="amber">...шутка. но неплохая попытка.</span>`
       : `<span class="amber">...just kidding. nice try though.</span>`);
     printLine(lang === 'ru'
       ? `<span class="dim">(ничего не пострадало — это статичный сайт, вы в браузере, а не на моём сервере)</span>`
@@ -1343,8 +1339,8 @@ and SRE practices into reality.`;
     updatePromptUI();
     refreshHtopView();
     printLine(lang === 'ru'
-      ? `<span class="dim">обновление в реальном времени — нажмите <span class="accent">q</span> или введите <span class="accent">exit</span>, чтобы выйти</span>`
-      : `<span class="dim">refreshing live — press <span class="accent">q</span> or type <span class="accent">exit</span> to quit</span>`);
+      ? `<span class="dim">нажмите <span class="accent">q</span> или введите <span class="accent">exit</span>, чтобы выйти</span>`
+      : `<span class="dim">press <span class="accent">q</span> or type <span class="accent">exit</span> to quit</span>`);
     htopInterval = setInterval(()=>{
       if(htopContainerEl) htopContainerEl.innerHTML = htopTable();
     }, 1200);
@@ -1458,16 +1454,16 @@ and SRE practices into reality.`;
         else if(arg === "nikita.sh" || arg === "./nikita.sh") {
           const lines = lang === 'ru' ? [
             `#!/bin/bash`,
-            `# nikita.sh — не читай, просто запусти`,
+            `# nikita.sh — ой, да не читай, просто запусти`,
             `# см. также: <a href="https://cat.nikita.sh" target="_blank" rel="noopener">cat.nikita.sh</a>`,
-            `# заметка: chmod — это ложь, понадобится sudo`,
+            `# заметка: понадобится sudo`,
             `echo "открываю маленький сюрприз..."`,
             `xdg-open https://cat.nikita.sh 2&gt;/dev/null`,
           ] : [
             `#!/bin/bash`,
             `# nikita.sh — don't read it, just run it`,
             `# see also: <a href="https://cat.nikita.sh" target="_blank" rel="noopener">cat.nikita.sh</a>`,
-            `# note: chmod is a lie, you'll need sudo`,
+            `# note: you'll need sudo`,
             `echo "opening a little surprise..."`,
             `xdg-open https://cat.nikita.sh 2&gt;/dev/null`,
           ];
@@ -1534,7 +1530,7 @@ and SRE practices into reality.`;
         } else if(al === 'log --oneline' || al === 'log'){
           const commits = [
             ['a1b2c3d', lang === 'ru' ? 'fix: курсор появлялся на пиксель правее на пустой строке' : 'fix: cursor was one pixel to the right on empty line'],
-            ['e4f5g6h', lang === 'ru' ? 'feat: закрыть игру за sudo, ведь системы разрешений это забавно' : 'feat: sudo-gate the game, because permission systems are funny'],
+            ['e4f5g6h', lang === 'ru' ? 'feat: спрятать игру за sudo, ведь системы пермиссий это так весело' : 'feat: sudo-gate the game, because permission systems are so funny'],
             ['h7i8j9k', lang === 'ru' ? 'fix: клавиатура на android перепутала первую введённую букву (опять)' : 'fix: android keyboard scrambled the first typed letter (again)'],
             ['k1l2m3n', lang === 'ru' ? 'feat: фейковые ошибки ssh, с проламыванием четвёртой стены' : 'feat: fake ssh failures, with a fourth-wall break'],
             ['n4o5p6q', lang === 'ru' ? 'revert: пользователь попросил менее вежливо в этот раз :(' : 'revert: user asked less nicely this time :('],
@@ -1546,13 +1542,13 @@ and SRE practices into reality.`;
             : `<span class="dim">this website has a longer commit history with me than most of my actual relationships</span>`);
         } else if(al === '--confess' || al === 'confess'){
           await typeLine(lang === 'ru'
-            ? 'да — этот терминал целиком построен с помощью ИИ (привет, это я).'
-            : 'yes — this entire terminal was built by asking an AI (hi, that\'s me).');
+            ? 'да — этот терминал построен с помощью ИИ (привет, это я).'
+            : 'yes — this terminal was built by asking an AI (hi, that\'s me).');
         } else {
           const prompt = a.replace(/^["'](.*)["']$/, '$1');
           const pl = prompt.toLowerCase();
           if(pl === 'add light mode'){
-            printLine(lang === 'ru' ? 'Посмотрю на текущую систему тем.' : "I'll take a look at the current theming setup.");
+            printLine(lang === 'ru' ? 'Проверю текущую систему тем.' : "I'll take a look at the current theming setup.");
             await sleep(400);
             printLine(`<span class="dim"> ⎿  Read index.html</span>`);
             await sleep(350);
@@ -1589,7 +1585,7 @@ and SRE practices into reality.`;
             printLine(`...`);
             await sleep(400);
             printLine(lang === 'ru'
-              ? 'На самом деле это может занять больше времени, чем ожидалось. Добавляю в список.'
+              ? 'На самом деле это может занять больше времени чем ожидалось. Добавляю в список.'
               : 'Actually, this might take longer than expected. Adding it to the list.');
             await sleep(300);
             printLine(lang === 'ru'
@@ -1698,15 +1694,15 @@ and SRE practices into reality.`;
 
           printLine(`<span class="amber">Destroy complete! Resources: ${resources.length} destroyed.</span>`);
           printLine(lang === 'ru'
-            ? `<span class="dim">(Покойтесь с миром, выходные. остальное вы, как ни странно, почти не заметите.)</span>`
-            : `<span class="dim">(RIP weekend. the rest, somehow, you'll barely notice.)</span>`);
+            ? `<span class="dim">(покойтесь с миром, выходные.)</span>`
+            : `<span class="dim">(RIP weekend.)</span>`);
         } else if(!a){
           printLine(lang === 'ru' ? 'использование: terraform &lt;subcommand&gt;' : 'usage: terraform <subcommand>');
           printLine(lang === 'ru'
             ? 'доступные подкоманды: <span class="glow">apply</span>, <span class="glow">destroy</span>'
             : 'available subcommands: <span class="glow">apply</span>, <span class="glow">destroy</span>');
         } else {
-          printLine(lang === 'ru' ? `terraform: неизвестная субкоманда "${escapeHtml(arg)}"` : `terraform: unknown subcommand "${escapeHtml(arg)}"`);
+          printLine(lang === 'ru' ? `terraform: неизвестная подкоманда "${escapeHtml(arg)}"` : `terraform: unknown subcommand "${escapeHtml(arg)}"`);
         }
         break;
       }
