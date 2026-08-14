@@ -533,11 +533,10 @@
     "[  OK  ] mounted /dev/coffee instead",
     "[  OK  ] started ssh-agent.service",
     "[  OK  ] started kubernetes-cluster.service",
-    "[  OK  ] started ai-pair-programming.service",
+    "[  OK  ] started ai-assistant.service",
     "[  OK  ] loaded module: eleven_years_of_uptime.ko",
-    "[  OK  ] started recruiter-inbox.service (0 unread, allegedly)",
+    "[  OK  ] started recruiter-inbox.service (0 unread)",
     '<span class="amber">[ WARN ] condensed-milk-reserve.service: critically low (cat notified, unimpressed)</span>',
-    "[  OK  ] started condensed-milk-heist.service (cat: 0/30 cans, fully motivated)",
     "[  OK  ] on-call pager silenced (for now)",
     "",
     "access granted — welcome, guest",
@@ -552,7 +551,7 @@
       const isTitle = li === 0;
       const isBlank = bootLines[li] === "";
       li++;
-      const delay = isTitle ? 550 : isBlank ? 300 : 380;
+      const delay = isTitle ? 550 : isBlank ? 300 : 500;
       setTimeout(typeBoot, delay);
     } else {
       setTimeout(()=>{
@@ -768,7 +767,7 @@ and SRE practices into reality.`;
   ];
 
   const HELP_EN = [
-    ["about","who the hell is nikita","about"],
+    ["about","who is that guy nikita anyway","about"],
     ["skills","tech stack","skills"],
     ["contact","ways to reach me","contact"],
     ["cv","open CV page","cv"],
@@ -781,7 +780,7 @@ and SRE practices into reality.`;
     ["kubectl","peek at a pretend cluster","kubectl "],
     ["terraform","apply optimism, destroy everything","terraform "],
     ["ssh","remote login — skip the screening call (or find out what else is out there)","ssh "],
-    ["claude","ask an AI","claude "],
+    ["claude","ask an AI assistant","claude "],
     ["theme","change terminal color","theme "],
     ["matrix","toggle background rain","matrix "],
     ["lang","switch output language","lang "],
@@ -802,7 +801,7 @@ and SRE practices into reality.`;
     ["kubectl","заглянуть в игрушечный кластер","kubectl "],
     ["terraform","apply обещает, destroy исполняет","terraform "],
     ["ssh","удалённая сессия — провести экспресс-скрининг (или узнать, что ещё тут есть)","ssh "],
-    ["claude","спросить у ИИ","claude "],
+    ["claude","спросить у ИИ ассистента","claude "],
     ["theme","сменить цвет терминала","theme "],
     ["matrix","вкл/выкл фоновый дождь из символов","matrix "],
     ["lang","сменить язык вывода","lang "],
@@ -1264,7 +1263,7 @@ and SRE practices into reality.`;
   async function sudoRmRfPanic(){
     document.body.classList.add('panic');
     const paths = ["/bin","/boot","/dev","/etc","/home/guest","/lib","/opt","/proc","/root","/sbin","/srv","/sys","/usr","/var","/home/guest/.bashrc","/home/guest/dreams"];
-    await playSequence(paths.map((p, i) => ({ text: `<span class="rm-line">removing ${p} ...</span>`, delay: i === 0 ? 0 : 65 })));
+    await playSequence(paths.map((p, i) => ({ text: `<span class="rm-line">removing ${p} ...</span>`, delay: i === 0 ? 0 : 300 })));
     await sleep(65);
     await sleep(300);
     body.innerHTML = "";
@@ -1569,7 +1568,7 @@ and SRE practices into reality.`;
           await playSequence([
             { text: lang === 'ru'
                 ? 'да — этот терминал был собран с помощью ИИ (привет, это я).'
-                : 'yes — this terminal was built by asking an AI (hi, that\'s me).', delay: 900, typed: true },
+                : 'yes — this terminal was built by asking an AI (hi, that\'s me).', delay: 500, typed: true },
           ]);
         } else {
           const prompt = a.replace(/^["'](.*)["']$/, '$1');
@@ -1661,10 +1660,10 @@ and SRE practices into reality.`;
             { text: `  <span class="glow">+</span> resource "incident" "unplanned" { severity = "sev1" }` },
             { text: lang === 'ru'
                 ? `<span class="amber">Это уничтожит твои выходные. Только "yes" будет принято для подтверждения.</span>`
-                : `<span class="amber">This will destroy your weekend. Only 'yes' will be accepted to approve.</span>`, delay: 350 },
+                : `<span class="amber">This will destroy your weekend. Only 'yes' will be accepted to approve.</span>`, delay: 500 },
             { text: lang === 'ru'
                 ? `<span class="dim">Enter a value: (тайм-аут) — apply отменён.</span>`
-                : `<span class="dim">Enter a value: (timed out) — apply cancelled.</span>`, delay: 550 },
+                : `<span class="dim">Enter a value: (timed out) — apply cancelled.</span>`, delay: 2000 },
           ]);
         } else if(a === 'destroy'){
           const resources = [
@@ -1680,7 +1679,7 @@ and SRE practices into reality.`;
           printLine(lang === 'ru'
             ? `<span class="dim">Acquiring state lock (это может занять некоторое время)...</span>`
             : `<span class="dim">Acquiring state lock (this may take a few moments)...</span>`);
-          await sleep(320);
+          await sleep(1500);
           printLine(lang === 'ru' ? `<span class="dim">Terraform уничтожит:</span>` : `<span class="dim">Terraform will destroy:</span>`);
           for(const r of resources){
             printLine(`  <span style="color:var(--red)">-</span> ${r.block}`);
@@ -1690,24 +1689,24 @@ and SRE practices into reality.`;
           printLine(lang === 'ru'
             ? `Вы действительно хотите уничтожить все ресурсы? Только "yes" будет принято для подтверждения.`
             : `Do you really want to destroy all resources? Only 'yes' will be accepted to approve.`);
-          await sleep(500);
+          await sleep(2000);
           printLine(lang === 'ru'
             ? `<span class="dim">Enter a value: <span class="glow">yes</span> (терминал ответил за вас)</span>`
             : `<span class="dim">Enter a value: <span class="glow">yes</span> (the terminal answered for you)</span>`);
-          await sleep(1400);
+          await sleep(1500);
 
           document.body.classList.add('panic-amber');
           await sleep(200);
           const destroySteps = [];
           resources.forEach((r, i) => {
             const isLast = i === resources.length - 1;
-            destroySteps.push({ text: `<span class="dim">${r.addr}: Destroying... [id=${r.id}]</span>`, delay: i === 0 ? 0 : 110 });
+            destroySteps.push({ text: `<span class="dim">${r.addr}: Destroying... [id=${r.id}]</span>`, delay: i === 0 ? 0 : 500 });
             if(isLast){
-              destroySteps.push({ text: `<span class="dim">${r.addr}: Still destroying... [id=${r.id}, 10s elapsed]</span>`, delay: 420 });
-              destroySteps.push({ text: `<span class="dim">${r.addr}: Still destroying... [id=${r.id}, 20s elapsed]</span>`, delay: 420 });
-              destroySteps.push({ text: `<span class="dim">${r.addr}: Destruction complete after ${r.t}s</span>`, delay: 380 });
+              destroySteps.push({ text: `<span class="dim">${r.addr}: Still destroying... [id=${r.id}, 10s elapsed]</span>`, delay: 700 });
+              destroySteps.push({ text: `<span class="dim">${r.addr}: Still destroying... [id=${r.id}, 20s elapsed]</span>`, delay: 700 });
+              destroySteps.push({ text: `<span class="dim">${r.addr}: Destruction complete after ${r.t}s</span>`, delay: 1000 });
             } else {
-              destroySteps.push({ text: `<span class="dim">${r.addr}: Destruction complete after ${r.t}s</span>`, delay: 160 });
+              destroySteps.push({ text: `<span class="dim">${r.addr}: Destruction complete after ${r.t}s</span>`, delay: 1000 });
             }
           });
           await playSequence(destroySteps);
