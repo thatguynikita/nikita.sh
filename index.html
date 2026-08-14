@@ -1189,6 +1189,12 @@ and SRE practices into reality.`;
     return ` ${timeStr} up ${upStr},  1 user,  load average: ${load()}, ${load()}, ${load()}`;
   }
 
+  function formatNowDateTime(){
+    const now = new Date();
+    const pad = (n)=>String(n).padStart(2,'0');
+    return `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  }
+
   function defaultChips(){
     const nextLang = lang === 'ru' ? 'en' : 'ru';
     return [
@@ -1623,6 +1629,72 @@ and SRE practices into reality.`;
         bootLines.forEach(line => printLine(line));
         break;
       }
+      case "who": {
+        printLine(`guest    pts/0        ${formatNowDateTime()} (your browser)`);
+        printLine(`nikita   pts/1        2019-03-11 03:14 (still fixing prod)`);
+        break;
+      }
+      case "w": {
+        printLine(formatUptimeLine().replace('1 user', '2 users'));
+        printLine(tableHTML(
+          ["USER","TTY","FROM","LOGIN@","IDLE","WHAT"],
+          [
+            ["guest","pts/0","your browser",formatNowDateTime().split(' ')[1],"0.00s","-ssh recruiter@nikita.sh"],
+            ["nikita","pts/1","still fixing prod","2019-03-11","6y","vim"],
+          ]
+        ));
+        break;
+      }
+      case "ps": {
+        printLine(tableHTML(
+          ["USER","PID","%CPU","%MEM","COMMAND"],
+          [
+            ["guest","1","0.1","0.2","/sbin/init"],
+            ["nikita","42","12.4","3.1","coffee.service"],
+            ["nikita","88","87.2","41.0","cat_herder.py"],
+            ["nikita","101","95.0","8.4","on_call_anxiety"],
+            ["nikita","137","1.2","0.5","condensed_milk_watch"],
+            ["nikita","256","23.9","18.7","kubernetes-cluster"],
+            ["nikita","404","0.0","0.0","dreams_of_vacation &lt;defunct&gt;"],
+            ["guest","999","0.0","0.1","ps aux"],
+          ]
+        ));
+        break;
+      }
+      case "env": case "printenv": {
+        [
+          "SHELL=/bin/bash",
+          "TERM=xterm-256color",
+          "USER=guest",
+          "HOME=/home/guest",
+          "LANG=en_US.UTF-8",
+          "PWD=/home/guest",
+          "COFFEE_LEVEL=critical",
+          "ON_CALL=true",
+          "SLEEP_DEBT=considerable",
+          "IMPOSTOR_SYNDROME=1",
+          "PATH=/usr/local/bin:/usr/bin:/bin:/home/nikita/regrets",
+        ].forEach(line => printLine(line));
+        break;
+      }
+      case "alias": {
+        [
+          "alias ll='ls -l'",
+          "alias pwd='pwd'",
+          "alias hostname='hostname'",
+          "alias uname='uname -a'",
+          "alias id='id'",
+          "alias df='df -h'",
+          "alias free='free -h'",
+          "alias uptime='uptime'",
+          "alias dmesg='dmesg'",
+          "alias who='who'",
+          "alias w='w'",
+          "alias ps='ps aux'",
+          "alias env='env'",
+        ].forEach(line => printLine(line));
+        break;
+      }
       case "matrix": {
         if(arg === "off"){ matrixOn = false; canvas.classList.add('off'); printLine(t('matrixOff')); }
         else if(arg === "on"){ matrixOn = true; canvas.classList.remove('off'); printLine(t('matrixOn')); }
@@ -1671,6 +1743,7 @@ and SRE practices into reality.`;
             : 'usage: claude "&lt;prompt&gt;" &nbsp;|&nbsp; claude log --oneline &nbsp;|&nbsp; claude --confess');
         } else if(al === 'log --oneline' || al === 'log'){
           const commits = [
+            ['t3u4v5w', lang === 'ru' ? "feat: спрятал пару лишних команд, никому не сказал" : "feat: hid a few extra commands, didn't tell anyone"],
             ['a1b2c3d', lang === 'ru' ? 'fix: курсор появлялся на пиксель правее на пустой строке' : 'fix: cursor was one pixel to the right on empty line'],
             ['e4f5g6h', lang === 'ru' ? 'feat: спрятать игру за sudo, ведь системы пермиссий это так весело' : 'feat: sudo-gate the game, because permission systems are so funny'],
             ['h7i8j9k', lang === 'ru' ? 'fix: клавиатура на android перепутала первую введённую букву (опять)' : 'fix: android keyboard scrambled the first typed letter (again)'],
@@ -1898,6 +1971,17 @@ and SRE practices into reality.`;
     const isCtrlC = (e.ctrlKey || e.metaKey) && (e.code === 'KeyC' || e.key === 'c' || e.key === 'C' || e.key === 'с' || e.key === 'С');
     const isCtrlW = (e.ctrlKey || e.metaKey) && (e.code === 'KeyW' || e.key === 'w' || e.key === 'W' || e.key === 'ц' || e.key === 'Ц');
     const isCtrlL = (e.ctrlKey || e.metaKey) && (e.code === 'KeyL' || e.key === 'l' || e.key === 'L' || e.key === 'д' || e.key === 'Д');
+    const isCtrlD = (e.ctrlKey || e.metaKey) && (e.code === 'KeyD' || e.key === 'd' || e.key === 'D' || e.key === 'в' || e.key === 'В');
+
+    if(isCtrlD){
+      e.preventDefault();
+      if(busy) return;
+      if(cmdInput.value === ''){
+        cmdInput.value = 'exit';
+        cmdInput.dispatchEvent(new KeyboardEvent('keydown', {key:'Enter'}));
+      }
+      return;
+    }
 
     if(isCtrlL){
       e.preventDefault();
