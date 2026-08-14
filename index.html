@@ -1174,6 +1174,21 @@ and SRE practices into reality.`;
     });
   }
 
+  const UPTIME_SINCE = new Date("2026-08-09T20:48:27+03:00");
+  function formatUptimeLine(){
+    const now = new Date();
+    const diffMs = Math.max(0, now.getTime() - UPTIME_SINCE.getTime());
+    const totalMinutes = Math.floor(diffMs / 60000);
+    const days = Math.floor(totalMinutes / 1440);
+    const hours = Math.floor((totalMinutes % 1440) / 60);
+    const minutes = totalMinutes % 60;
+    const pad = (n)=>String(n).padStart(2,'0');
+    const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    const upStr = days > 0 ? `${days} day${days===1?'':'s'}, ${hours}:${pad(minutes)}` : `${hours}:${pad(minutes)}`;
+    const load = () => (Math.random()*1.4 + 0.05).toFixed(2);
+    return ` ${timeStr} up ${upStr},  1 user,  load average: ${load()}, ${load()}, ${load()}`;
+  }
+
   function defaultChips(){
     const nextLang = lang === 'ru' ? 'en' : 'ru';
     return [
@@ -1555,6 +1570,53 @@ and SRE practices into reality.`;
       }
       case "history": {
         history.forEach((h,i)=>printLine(`<span class="dim">${(i+1).toString().padStart(3)}</span>  ${escapeHtml(h)}`));
+        break;
+      }
+      case "pwd": {
+        printLine(`/home/guest`);
+        break;
+      }
+      case "hostname": {
+        printLine(`nikita.sh`);
+        break;
+      }
+      case "uname": {
+        if(arg.trim().toLowerCase() === '-a'){
+          printLine(`Linux nikita.sh 6.6.0-sre #1 SMP PREEMPT Sun Aug 9 20:48:27 UTC 2026 x86_64 GNU/Linux`);
+        } else {
+          printLine(`Linux`);
+        }
+        break;
+      }
+      case "id": {
+        printLine(`uid=1000(guest) gid=1000(guest) groups=1000(guest)`);
+        break;
+      }
+      case "df": {
+        printLine(tableHTML(
+          ["Filesystem","Size","Used","Avail","Use%","Mounted on"],
+          [
+            ["/dev/coffee","16G","16G","0","100%","/"],
+            ["overlay","64G","61G","3G","95%","/var/lib/regrets"],
+            ["/dev/condensed-milk","30 cans","30 cans","0","100%","/home/cat"],
+            ["tmpfs","2.0G","1.1M","2.0G","1%","/run"],
+          ]
+        ));
+        break;
+      }
+      case "free": {
+        printLine(tableHTML(
+          ["","total","used","free","shared","buff/cache","available"],
+          [
+            ["Mem:","16Gi","11Gi","512Mi","128Mi","4.3Gi","4.8Gi"],
+            ["Swap:","8.0Gi","7.9Gi","100Mi","","",""],
+          ]
+        ));
+        printLine(`<span class="dim">swap: basically full, much like everything else</span>`);
+        break;
+      }
+      case "uptime": {
+        printLine(formatUptimeLine());
         break;
       }
       case "matrix": {
