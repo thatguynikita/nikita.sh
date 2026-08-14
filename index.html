@@ -309,7 +309,7 @@
   @media (max-width:560px){
     .term-body{font-size:13px; max-height:65vh;}
     .neofetch{column-gap:14px; row-gap:16px;}
-    .nf-art{font-size:10px; padding-bottom:10px; animation-name:nf-breathe-sm;}
+    .nf-art{font-size:10px; padding-bottom:10px; animation-name:nf-breathe-sm; margin-left:auto; margin-right:auto;}
     body{padding:14px 8px 10px;}
     #boot{padding:20px 16px;}
     .game-overlay{padding:8px;}
@@ -1052,7 +1052,7 @@ and SRE practices into reality.`;
       gameDenied: `bash: ./nikita.sh: Permission denied`,
       loggingOut: "logging out...",
       connClosed: "connection to nikita.sh closed.",
-      notFound: (b)=>`command not found: <span class="accent">${b}</span> — this is a fake terminal held together by JavaScript, not a real shell. try <span class="glow">help</span> for what's actually here`,
+      notFound: (b)=>`command not found: <span class="accent">${b}</span> — this is a silly terminal held together by JavaScript, not a real shell. try <span class="glow">help</span> for what's actually here`,
       welcome: "Welcome to my silly terminal. Type 'help' to see what's available.",
     },
     ru: {
@@ -1073,7 +1073,7 @@ and SRE practices into reality.`;
       gameDenied: `bash: ./nikita.sh: отказано в доступе`,
       loggingOut: "выхожу из системы...",
       connClosed: "соединение с nikita.sh закрыто.",
-      notFound: (b)=>`команда не найдена: <span class="accent">${b}</span> — это ненастоящий терминал на JavaScript, а не настоящий шелл. попробуйте <span class="glow">help</span>, чтобы увидеть, что здесь действительно есть`,
+      notFound: (b)=>`команда не найдена: <span class="accent">${b}</span> — это игрушечный терминал на JavaScript, а не настоящий шелл. попробуй <span class="glow">help</span>, чтобы увидеть, что здесь действительно есть`,
       welcome: "Добро пожаловать в мой игрушечный терминал. Введите «help», чтобы увидеть список команд.",
     },
   };
@@ -1082,7 +1082,7 @@ and SRE practices into reality.`;
     return typeof v === 'function' ? v(...args) : v;
   }
 
-  const COMMANDS = ["about","skills","contact","cv","neofetch","whoami","ls","cat","echo","history","matrix","theme","lang","sudo","fortune","top","kubectl","terraform","ssh","claude","./nikita.sh","clear","help","exit","logout"];
+  const COMMANDS = ["about","skills","contact","cv","neofetch","whoami","ls","cat","history","matrix","theme","lang","sudo","fortune","top","kubectl","terraform","ssh","claude","./nikita.sh","clear","help"];
 
   const POD_NAMES = ["cat-deployment-7f9d8c-x2m4q","condensed-milk-store-0","sre-sanity-canary","deploy-friday-afternoon"];
 
@@ -1617,6 +1617,10 @@ and SRE practices into reality.`;
       }
       case "uptime": {
         printLine(formatUptimeLine());
+        break;
+      }
+      case "dmesg": {
+        bootLines.forEach(line => printLine(line));
         break;
       }
       case "matrix": {
