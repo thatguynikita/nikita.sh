@@ -749,7 +749,7 @@ and SRE practices into reality.`;
     ["htop / top","fake process monitor","htop"],
     ["kubectl","peek at a pretend cluster","kubectl "],
     ["terraform","apply optimism, destroy everything","terraform "],
-    ["ssh","talk to a recruiter (or try your luck elsewhere)","ssh "],
+    ["ssh","remote login — skip the screening call (or find out what else is out there)","ssh "],
     ["claude","ask an AI","claude "],
     ["theme","change terminal color","theme "],
     ["matrix","toggle background rain","matrix "],
@@ -770,7 +770,7 @@ and SRE practices into reality.`;
     ["htop / top","фейковый монитор процессов","htop"],
     ["kubectl","заглянуть в игрушечный кластер","kubectl "],
     ["terraform","apply обещает, destroy исполняет","terraform "],
-    ["ssh","поговорить с рекрутером (или попытать удачу в другом месте)","ssh "],
+    ["ssh","удалённая сессия —  провести экспресс-скрининг (или узнать, что ещё тут есть)","ssh "],
     ["claude","спросить у ИИ","claude "],
     ["theme","сменить цвет терминала","theme "],
     ["matrix","вкл/выкл фоновый дождь из символов","matrix "],
@@ -1543,56 +1543,61 @@ and SRE practices into reality.`;
             ? `<span class="dim">с этим сайтом у меня история коммитов длиннее, чем с большинством моих реальных отношений</span>`
             : `<span class="dim">this website has a longer commit history with me than most of my actual relationships</span>`);
         } else if(al === '--confess' || al === 'confess'){
+          await sleep(900);
           await typeLine(lang === 'ru'
-            ? 'да — этот терминал построен с помощью ИИ (привет, это я).'
+            ? 'да — этот терминал был собран с помощью ИИ (привет, это я).'
             : 'yes — this terminal was built by asking an AI (hi, that\'s me).');
         } else {
           const prompt = a.replace(/^["'](.*)["']$/, '$1');
           const pl = prompt.toLowerCase();
           if(pl === 'add light mode'){
-            printLine(lang === 'ru' ? 'Проверю текущую систему тем.' : "I'll take a look at the current theming setup.");
-            await sleep(400);
+            await sleep(750);
+            await typeLine(lang === 'ru' ? 'Проверю текущую систему тем.' : "I'll take a look at the current theming setup.");
+            await sleep(200);
             printLine(`<span class="dim"> ⎿  Read index.html</span>`);
-            await sleep(350);
-            printLine(lang === 'ru'
+            await sleep(700);
+            await typeLine(lang === 'ru'
               ? 'Нашёл — у этого сайта нет светлой темы. Никогда не было. И не будет.'
               : "Found it — this site doesn't have a light mode. It never has. It never will.");
-            await sleep(300);
-            printLine(lang === 'ru'
+            await sleep(350);
+            await typeLine(lang === 'ru'
               ? 'Могу добавить, но хочу отметить — коту это может не понравиться.'
               : "I could add one, but I'd like to flag it may upset the cat.");
-            await sleep(300);
-            printLine(lang === 'ru' ? 'Помечаю как won\'t-fix. Что-нибудь ещё?' : "Marking as won't-fix. Anything else?");
+            await sleep(350);
+            await typeLine(lang === 'ru' ? 'Помечаю как won\'t-fix. Что-нибудь ещё?' : "Marking as won't-fix. Anything else?");
           } else if(pl === 'fix the bug'){
+            await sleep(750);
             printLine(`<span class="dim"> ⎿  Searched for "bug"</span>`);
-            await sleep(400);
-            printLine(lang === 'ru'
+            await sleep(700);
+            await typeLine(lang === 'ru'
               ? 'Багов нет. Багов никогда не было. Я проверил. Дважды.'
               : 'There is no bug. There has never been a bug. I checked. Twice.');
           } else if(pl === 'add tests'){
+            await sleep(750);
             printLine(`<span class="dim"> ⎿  Searched for "test"</span>`);
-            await sleep(400);
-            printLine(lang === 'ru'
+            await sleep(700);
+            await typeLine(lang === 'ru'
               ? 'Найдено 0 тестов. Это весьма тревожно конечно, либо смелое дизайн-решение.'
               : 'Found 0 tests. This is either very concerning or a bold design decision.');
-            await sleep(300);
-            printLine(lang === 'ru'
+            await sleep(350);
+            await typeLine(lang === 'ru'
               ? 'Остановлюсь на «смелом дизайн-решении» и пойду дальше.'
               : 'I\'m going to go with "bold design decision" and move on.');
           } else {
+            await sleep(750);
             printLine(`<span class="dim"> ⎿  Read index.html</span>`);
+            await sleep(700);
+            await typeLine(lang === 'ru' ? 'Понял. Уже работаю над этим.' : 'Got it. Working on that now.');
             await sleep(400);
-            printLine(lang === 'ru' ? 'Понял. Уже работаю над этим.' : 'Got it. Working on that now.');
-            await sleep(350);
             printLine(`...`);
-            await sleep(400);
-            printLine(lang === 'ru'
+            await sleep(600);
+            await typeLine(lang === 'ru'
               ? 'На самом деле это может занять больше времени чем ожидалось. Добавляю в список.'
               : 'Actually, this might take longer than expected. Adding it to the list.');
-            await sleep(300);
-            printLine(lang === 'ru'
-              ? '<span class="dim">(список длинный. список всегда длинный.)</span>'
-              : '<span class="dim">(the list is long. the list is always long.)</span>');
+            await sleep(350);
+            await typeLine(lang === 'ru'
+              ? '(список длинный. список всегда длинный.)'
+              : '(the list is long. the list is always long.)', 'dim');
           }
         }
         break;
