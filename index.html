@@ -20,6 +20,7 @@
     --fg-dim:#2a9c60;
     --accent:#5ff1ff;
     --amber:#ffb454;
+    --amber-glow:0 0 6px rgba(255,180,84,.6);
     --red:#ff5f56;
     --border:rgba(61,255,138,.28);
     --glow:0 0 4px rgba(61,255,138,.85), 0 0 12px rgba(61,255,138,.45), 0 0 24px rgba(61,255,138,.25);
@@ -172,7 +173,7 @@
   .glow{text-shadow:var(--glow);}
   .dim{color:var(--fg-dim);}
   .accent{color:var(--accent); text-shadow:0 0 6px rgba(95,241,255,.7);}
-  .amber{color:var(--amber); text-shadow:0 0 6px rgba(255,180,84,.6);}
+  .amber{color:var(--amber); text-shadow:var(--amber-glow);}
   a{color:var(--accent);}
   a:hover{text-shadow:0 0 8px var(--accent);}
 
@@ -640,6 +641,20 @@
      ░░░░░</span>`;
 
   let lang = 'en';
+
+  const THEME_STORAGE_KEY = 'nikita.sh:theme';
+  const LANG_STORAGE_KEY = 'nikita.sh:lang';
+  try {
+    const storedLang = localStorage.getItem(LANG_STORAGE_KEY);
+    if(storedLang === 'ru' || storedLang === 'en'){
+      lang = storedLang;
+      document.documentElement.lang = lang;
+    }
+  } catch(e) {}
+  try {
+    const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    if(storedTheme) setTheme(storedTheme);
+  } catch(e) {}
 
   /* ================= now playing (lives inside neofetch) ================= */
   const NP_ENDPOINT = '/now-playing.json';
@@ -1309,15 +1324,18 @@ and SRE practices into reality.`;
   function setTheme(name){
     const root = document.documentElement.style;
     const map = {
-      green:{fg:"#3dff8a",dim:"#2a9c60",accent:"#5ff1ff"},
-      amber:{fg:"#ffb454",dim:"#a06a1f",accent:"#ffe08a"},
-      cyan :{fg:"#5ff1ff",dim:"#2a8a9c",accent:"#3dff8a"},
+      green:{fg:"#3dff8a",dim:"#2a9c60",accent:"#5ff1ff",warn:"#ffb454"},
+      amber:{fg:"#ffb454",dim:"#a06a1f",accent:"#ffe08a",warn:"#5ff1ff"},
+      cyan :{fg:"#5ff1ff",dim:"#2a8a9c",accent:"#3dff8a",warn:"#ffb454"},
     };
     const t = map[name];
     if(!t) return false;
     root.setProperty('--fg', t.fg);
     root.setProperty('--fg-dim', t.dim);
     root.setProperty('--accent', t.accent);
+    root.setProperty('--amber', t.warn);
+    root.setProperty('--amber-glow', `0 0 6px ${t.warn}99`);
+    root.setProperty('--border', `${t.fg}47`);
     root.setProperty('--glow', `0 0 4px ${t.fg}, 0 0 12px ${t.fg}88, 0 0 24px ${t.fg}44`);
     return true;
   }
@@ -1702,7 +1720,10 @@ and SRE practices into reality.`;
         break;
       }
       case "theme": {
-        if(setTheme(arg)) printLine(t('themeSet', arg));
+        if(setTheme(arg)){
+          printLine(t('themeSet', arg));
+          try { localStorage.setItem(THEME_STORAGE_KEY, arg); } catch(e) {}
+        }
         else printLine(t('themeUsage'));
         break;
       }
@@ -1712,6 +1733,7 @@ and SRE practices into reality.`;
           lang = choice;
           document.documentElement.lang = lang;
           printLine(t('langSet'));
+          try { localStorage.setItem(LANG_STORAGE_KEY, choice); } catch(e) {}
         } else {
           printLine(t('langUsage'));
         }
