@@ -192,8 +192,24 @@
   }
 
   .neofetch{display:flex; gap:26px; flex-wrap:wrap; margin:6px 0 14px; white-space:normal;}
-  .nf-art{color:var(--fg); text-shadow:var(--glow); font-size:12px; line-height:1.15; white-space:pre; font-family:'Noto Sans Mono', monospace; font-variant-ligatures:none;}
-  .nf-info{white-space:normal; flex:1 1 240px; min-width:0;}
+  .nf-art{color:var(--fg); text-shadow:var(--glow); font-size:12px; line-height:1.15; white-space:pre; font-family:'JetBrains Mono','Noto Sans Mono', ui-monospace, monospace; font-variant-ligatures:none; transform-origin:50% 55%; animation:nf-breathe 4.4s cubic-bezier(.45,0,.55,1) infinite; padding-bottom:6px;}
+  .nf-art .outline{color:var(--fg-dim); text-shadow:none;}
+  .nf-art .eye{color:var(--accent); text-shadow:0 0 6px rgba(95,241,255,.8);}
+  .nf-art .nose{color:var(--amber); text-shadow:0 0 6px rgba(255,180,84,.7);}
+  @keyframes nf-breathe{
+    0%   { transform:scale(1)     translateY(0);   filter:brightness(1); }
+    42%  { transform:scale(1.045) translateY(-2px); filter:brightness(1.18); }
+    100% { transform:scale(1)     translateY(0);   filter:brightness(1); }
+  }
+  @keyframes nf-breathe-sm{
+    0%   { transform:scale(1)     translateY(0); filter:brightness(1); }
+    42%  { transform:scale(1.02)  translateY(-1px); filter:brightness(1.1); }
+    100% { transform:scale(1)     translateY(0); filter:brightness(1); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .nf-art{animation:none;}
+  }
+  .nf-info{flex:1 1 240px; min-width:0;}
   .nf-info div{margin:1px 0;}
   .nf-key{color:var(--accent); display:inline-block; min-width:82px;}
   .np-row{display:flex; align-items:center; gap:1ch; min-width:0;}
@@ -292,8 +308,8 @@
 
   @media (max-width:560px){
     .term-body{font-size:13px; max-height:65vh;}
-    .neofetch{gap:14px;}
-    .nf-art{font-size:10px;}
+    .neofetch{column-gap:14px; row-gap:16px;}
+    .nf-art{font-size:10px; padding-bottom:10px; animation-name:nf-breathe-sm;}
     body{padding:14px 8px 10px;}
     #boot{padding:20px 16px;}
     .game-overlay{padding:8px;}
@@ -616,13 +632,13 @@
     }
   }
 
-  const NEOFETCH = `     ░░░░░
+  const NEOFETCH = `<span class="outline">     ░░░░░
   ░░▒▓▓▓▓▓▒░░
- ░▒▒▓▓▓●▓▓▓▒▒░
-⋆░▒▓▓●◉◉◉●▓▓▒░⋆
- ░▒▒▓▓▓●▓▓▓▒▒░
+ ░▒▒▓▓▓</span><span class="nose">●</span><span class="outline">▓▓▓▒▒░
+⋆░▒▓▓</span><span class="eye">●◉◉◉●</span><span class="outline">▓▓▒░⋆
+ ░▒▒▓▓▓</span><span class="nose">●</span><span class="outline">▓▓▓▒▒░
   ░░▒▓▓▓▓▓▒░░
-     ░░░░░`;
+     ░░░░░</span>`;
 
   let lang = 'en';
 
@@ -691,7 +707,7 @@
       <div class="nf-art">${NEOFETCH}</div>
       <div class="nf-info">
         <div><span class="nf-key accent">guest</span>@<span class="accent">nikita.sh</span></div>
-        <div class="dim">-----------------</div>
+        <div class="dim">--------------------</div>
         <div><span class="nf-key">${L.name}</span> ${L.nameVal}</div>
         <div><span class="nf-key">${L.role}</span> ${L.roleVal}</div>
         <div><span class="nf-key">${L.uptime}</span> ${L.uptimeVal}</div>
@@ -1038,7 +1054,7 @@ and SRE practices into reality.`;
       loggingOut: "logging out...",
       connClosed: "connection to nikita.sh closed.",
       notFound: (b)=>`command not found: <span class="accent">${b}</span> — type <span class="glow">help</span> for a list of commands`,
-      welcome: "Welcome to this fake terminal. Type 'help' to see what's available.",
+      welcome: "Welcome to my silly terminal. Type 'help' to see what's available.",
     },
     ru: {
       availableCommands: "Доступные команды:",
@@ -1059,7 +1075,7 @@ and SRE practices into reality.`;
       loggingOut: "выхожу из системы...",
       connClosed: "соединение с nikita.sh закрыто.",
       notFound: (b)=>`команда не найдена: <span class="accent">${b}</span> — введите <span class="glow">help</span> для списка команд`,
-      welcome: "Добро пожаловать в этот игрушечный терминал. Введите «help», чтобы увидеть список команд.",
+      welcome: "Добро пожаловать в мой игрушечный терминал. Введите «help», чтобы увидеть список команд.",
     },
   };
   function t(key, ...args){
