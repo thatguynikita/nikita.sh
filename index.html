@@ -1084,7 +1084,7 @@ and SRE practices into reality.`;
       case "sudo": return ["rm -rf /","./nikita.sh"];
       case "ssh": return Object.values(PERSONAS).map(p => p.host);
       case "terraform": return ["apply","destroy"];
-      case "claude": return ["log --oneline","--confess","\"add light mode\"","\"fix the bug\"","\"add tests\""];
+      case "claude": return ["log --oneline","--confess","\"add light theme\"","\"fix the bug\"","\"add tests\""];
       case "kubectl":
         if(remainderLower.startsWith("describe pod")){
           return POD_NAMES.map(n => `describe pod ${n}`);
@@ -1550,7 +1550,7 @@ and SRE practices into reality.`;
         } else {
           const prompt = a.replace(/^["'](.*)["']$/, '$1');
           const pl = prompt.toLowerCase();
-          if(pl === 'add light mode'){
+          if(pl === 'add light theme'){
             await sleep(750);
             await typeLine(lang === 'ru' ? 'Проверю текущую систему тем.' : "I'll take a look at the current theming setup.");
             await sleep(200);
@@ -1558,7 +1558,7 @@ and SRE practices into reality.`;
             await sleep(700);
             await typeLine(lang === 'ru'
               ? 'Нашёл — у этого сайта нет светлой темы. Никогда не было. И не будет.'
-              : "Found it — this site doesn't have a light mode. It never has. It never will.");
+              : "Found it — this site doesn't have a light theme. It never has. It never will.");
             await sleep(350);
             await typeLine(lang === 'ru'
               ? 'Могу добавить, но хочу отметить — коту это может не понравиться.'
