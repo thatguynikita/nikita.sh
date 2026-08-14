@@ -47,7 +47,7 @@
   /* ---------- background matrix rain ---------- */
   #matrix{
     position:fixed; inset:0; width:100%; height:100%;
-    z-index:0; opacity:.16; pointer-events:none;
+    z-index:0; opacity:.24; pointer-events:none;
     transition:opacity .6s ease;
   }
   #matrix.off{opacity:0;}
@@ -383,6 +383,7 @@
   const ctx = canvas.getContext('2d');
   let cols, drops, matrixOn = true;
   const glyphs = "01アイウエオカキクケコサシスセソ$#&+=-<>/\\{}[]";
+  let matrixColor = "#3dff8a";
 
   function resizeMatrix(){
     canvas.width = window.innerWidth;
@@ -395,7 +396,7 @@
     if(matrixOn){
       ctx.fillStyle = "rgba(2,4,3,0.08)";
       ctx.fillRect(0,0,canvas.width,canvas.height);
-      ctx.fillStyle = "#3dff8a";
+      ctx.fillStyle = matrixColor;
       ctx.font = "15px monospace";
       for(let i=0;i<cols;i++){
         const text = glyphs[Math.floor(Math.random()*glyphs.length)];
@@ -1336,6 +1337,7 @@ and SRE practices into reality.`;
     root.setProperty('--amber', t.warn);
     root.setProperty('--amber-glow', `0 0 6px ${t.warn}99`);
     root.setProperty('--border', `${t.fg}47`);
+    matrixColor = t.fg;
     root.setProperty('--glow', `0 0 4px ${t.fg}, 0 0 12px ${t.fg}88, 0 0 24px ${t.fg}44`);
     return true;
   }
