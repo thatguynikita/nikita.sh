@@ -509,12 +509,13 @@
 
   const bootLines = [
     "nikita.sh boot sequence — kernel 6.6.0-sre",
-    "[  OK  ] mounted /dev/coffee",
-    "[  OK  ] started network-administration.service",
+    '<span class="rm-line">[FAILED] mounted /dev/motivation: not found</span>',
+    "[  OK  ] mounted /dev/coffee instead",
+    "[  OK  ] started ssh-agent.service",
     "[  OK  ] started kubernetes-cluster.service",
-    "[  OK  ] started aws-vpc-peering.service",
-    "[  OK  ] started docker.service",
+    "[  OK  ] started ai-pair-programming.service",
     "[  OK  ] loaded module: eleven_years_of_uptime.ko",
+    "[  OK  ] started recruiter-inbox.service (0 unread, allegedly)",
     "[  OK  ] started condensed-milk-heist.service (cat: 0/30 cans, fully motivated)",
     "[  OK  ] on-call pager silenced (for now)",
     "",
@@ -525,7 +526,7 @@
   function typeBoot(){
     if(li < bootLines.length){
       bootHTML += bootLines[li] + "\n";
-      bootEl.textContent = bootHTML;
+      bootEl.innerHTML = bootHTML;
       const isTitle = li === 0;
       const isBlank = bootLines[li] === "";
       li++;
@@ -980,14 +981,14 @@ and SRE practices into reality.`;
         { text:`ssh: повторная попытка (1/3)...`, delay:320 },
         { text:`ssh: повторная попытка (2/3)...`, delay:320 },
         { text:`ssh: connection reset by peer`, delay:320 },
-        { text:`<span class="dim">этого хоста, кажется, не существует. как, всё чаще, и этой сессии.</span>`, delay:380 },
+        { text:`<span class="dim">этого хоста, кажется, не существует. как и этой сессии.</span>`, delay:380 },
       ] : [
         { text:`ssh: connecting to ${h} ...` },
         { text:`ssh: connect to host ${h} port 22: Connection timed out`, delay:380 },
         { text:`ssh: retrying (1/3)...`, delay:320 },
         { text:`ssh: retrying (2/3)...`, delay:320 },
         { text:`ssh: connection reset by peer`, delay:320 },
-        { text:`<span class="dim">this host does not appear to exist. neither, increasingly, does this session.</span>`, delay:380 },
+        { text:`<span class="dim">this host does not appear to exist. neither does this session.</span>`, delay:380 },
       ];
     }
     return lang === 'ru' ? [
