@@ -740,14 +740,14 @@ and SRE practices into reality.`;
     ["contact / socials","ways to reach me","contact"],
     ["cv / resume","open CV page","cv"],
     ["neofetch","system info card","neofetch"],
-    ["whoami","identity check","whoami"],
+    ["whoami","a little too much about you","whoami"],
     ["ls","list files","ls"],
     ["cat","print a file","cat "],
     ["fortune","random sysadmin wisdom","fortune"],
     ["htop / top","fake process monitor","htop"],
     ["kubectl","peek at a pretend cluster","kubectl "],
-    ["terraform","apply or destroy things","terraform "],
-    ["ssh recruiter@nikita.sh","talk to a recruiter","ssh recruiter@nikita.sh"],
+    ["terraform","apply optimism, destroy everything","terraform "],
+    ["ssh","talk to a recruiter (or try your luck elsewhere)","ssh "],
     ["theme","change terminal color","theme "],
     ["matrix","toggle background rain","matrix "],
     ["lang","switch output language","lang "],
@@ -760,14 +760,14 @@ and SRE practices into reality.`;
     ["contact / socials","как со мной связаться","contact"],
     ["cv / resume","открыть страницу резюме","cv"],
     ["neofetch","карточка с информацией о системе","neofetch"],
-    ["whoami","проверка личности","whoami"],
+    ["whoami","немного больше, чем нужно, о вас","whoami"],
     ["ls","список файлов","ls"],
     ["cat","вывести файл","cat "],
     ["fortune","случайная мудрость сисадмина","fortune"],
     ["htop / top","фейковый монитор процессов","htop"],
     ["kubectl","заглянуть в игрушечный кластер","kubectl "],
-    ["terraform","apply или destroy","terraform "],
-    ["ssh recruiter@nikita.sh","поговорить с рекрутером","ssh recruiter@nikita.sh"],
+    ["terraform","apply обещает, destroy исполняет","terraform "],
+    ["ssh","поговорить с рекрутером (или попытать удачу в другом месте)","ssh "],
     ["theme","сменить цвет терминала","theme "],
     ["matrix","вкл/выкл фоновый дождь из символов","matrix "],
     ["lang","сменить язык вывода","lang "],
@@ -944,19 +944,68 @@ and SRE practices into reality.`;
     return html;
   }
 
-  function recruiterQA(){
+  const PERSONAS = {
+    recruiter: {
+      host: 'recruiter@nikita.sh',
+      qa(){
+        return lang === 'ru' ? [
+          {cmd:'why', q:"Почему нам стоит вас нанять?", a:"Одиннадцать лет держал прод в рабочем состоянии, пока другие спали. Спокоен в инцидентах, дружу с автоматизацией и беру на себя ответственность."},
+          {cmd:'favorite', q:"Что вам больше всего нравится в DevOps?", a:"Момент, когда шаткая ручная процедура превращается в скучный, надёжный пайплайн — и про неё можно забыть."},
+          {cmd:'incident', q:"Расскажите про инцидент, который вы разруливали.", a:"Опустим подробности — кластер лёг в пятницу вечером, а к понедельнику про это уже никто не помнил, кроме постмортема."},
+          {cmd:'goals', q:"Что вы ищете в следующей роли?", a:"Команду, где SRE-практики не факультатив, и где можно расти в сторону AI-driven разработки."},
+          {cmd:'salary', q:"Ожидания по зарплате?", a:"Обсуждаемо — предлагаю продолжить это через contact, а не в терминальном пасхальном яйце :)"},
+        ] : [
+          {cmd:'why', q:"Why should we hire you?", a:"Eleven years of keeping production upright while everyone else slept. Calm in incidents, comfortable with automation, and I take ownership."},
+          {cmd:'favorite', q:"What's your favorite part of DevOps?", a:"The moment a shaky manual process turns into a boring, reliable pipeline — and everyone can forget it exists."},
+          {cmd:'incident', q:"Tell me about an incident you handled.", a:"Skipping the gory details — a cluster went down on a Friday night, and by Monday nobody remembered it except the postmortem doc."},
+          {cmd:'goals', q:"What are you looking for next?", a:"A team where SRE practices aren't optional, with room to grow toward AI-driven development."},
+          {cmd:'salary', q:"Salary expectations?", a:"Negotiable — let's actually talk about that via contact instead of a terminal easter egg :)"},
+        ];
+      },
+    },
+  };
+
+  function resolveSSHTarget(target){
+    const t = target.trim().toLowerCase();
+    for(const key in PERSONAS){
+      if(t === key || t === PERSONAS[key].host.toLowerCase()) return key;
+    }
+    return null;
+  }
+
+  function sshFailureSequence(target, count){
+    const h = escapeHtml(target);
+    if(count <= 2){
+      return lang === 'ru' ? [
+        { text:`ssh: подключение к ${h} ...` },
+        { text:`ssh: connect to host ${h} port 22: Connection timed out`, delay:380 },
+        { text:`ssh: повторная попытка (1/3)...`, delay:320 },
+        { text:`ssh: повторная попытка (2/3)...`, delay:320 },
+        { text:`ssh: connection reset by peer`, delay:320 },
+        { text:`<span class="dim">этого хоста, кажется, не существует. как, всё чаще, и этой сессии.</span>`, delay:380 },
+      ] : [
+        { text:`ssh: connecting to ${h} ...` },
+        { text:`ssh: connect to host ${h} port 22: Connection timed out`, delay:380 },
+        { text:`ssh: retrying (1/3)...`, delay:320 },
+        { text:`ssh: retrying (2/3)...`, delay:320 },
+        { text:`ssh: connection reset by peer`, delay:320 },
+        { text:`<span class="dim">this host does not appear to exist. neither, increasingly, does this session.</span>`, delay:380 },
+      ];
+    }
     return lang === 'ru' ? [
-      {cmd:'why', q:"Почему нам стоит вас нанять?", a:"Одиннадцать лет держал прод в рабочем состоянии, пока другие спали. Спокоен в инцидентах, дружу с автоматизацией и беру на себя ответственность."},
-      {cmd:'favorite', q:"Что вам больше всего нравится в DevOps?", a:"Момент, когда шаткая ручная процедура превращается в скучный, надёжный пайплайн — и про неё можно забыть."},
-      {cmd:'incident', q:"Расскажите про инцидент, который вы разруливали.", a:"Опустим подробности — кластер лёг в пятницу вечером, а к понедельнику про это уже никто не помнил, кроме постмортема."},
-      {cmd:'goals', q:"Что вы ищете в следующей роли?", a:"Команду, где SRE-практики не факультатив, и где можно расти в сторону AI-driven разработки."},
-      {cmd:'salary', q:"Ожидания по зарплате?", a:"Обсуждаемо — предлагаю продолжить это через contact, а не в терминальном пасхальном яйце :)"},
+      { text:`ssh: подключение к ${h} ...` },
+      { text:`ssh: connect to host ${h} port 22: Connection timed out`, delay:380 },
+      { text:`<span class="amber">[note]</span> это попытка №${count} подключиться к хосту, которого не существует`, delay:400 },
+      { text:`<span class="amber">[note]</span> впечатляющее упорство, если честно`, delay:400 },
+      { text:`ssh: этого хоста никогда не было. я проверил. дважды.`, delay:450 },
+      { text:`<span class="dim">кстати — может, попробуете: <span class="glow">ssh recruiter@nikita.sh</span></span>`, delay:500 },
     ] : [
-      {cmd:'why', q:"Why should we hire you?", a:"Eleven years of keeping production upright while everyone else slept. Calm in incidents, comfortable with automation, and I take ownership."},
-      {cmd:'favorite', q:"What's your favorite part of DevOps?", a:"The moment a shaky manual process turns into a boring, reliable pipeline — and everyone can forget it exists."},
-      {cmd:'incident', q:"Tell me about an incident you handled.", a:"Skipping the gory details — a cluster went down on a Friday night, and by Monday nobody remembered it except the postmortem doc."},
-      {cmd:'goals', q:"What are you looking for next?", a:"A team where SRE practices aren't optional, with room to grow toward AI-driven development."},
-      {cmd:'salary', q:"Salary expectations?", a:"Negotiable — let's actually talk about that via contact instead of a terminal easter egg :)"},
+      { text:`ssh: connecting to ${h} ...` },
+      { text:`ssh: connect to host ${h} port 22: Connection timed out`, delay:380 },
+      { text:`<span class="amber">[note]</span> this is attempt #${count} at a host that does not exist`, delay:400 },
+      { text:`<span class="amber">[note]</span> impressive persistence, honestly`, delay:400 },
+      { text:`ssh: this host has never existed. I checked. Twice.`, delay:450 },
+      { text:`<span class="dim">psst — maybe try: <span class="glow">ssh recruiter@nikita.sh</span></span>`, delay:500 },
     ];
   }
 
@@ -1033,7 +1082,7 @@ and SRE practices into reality.`;
       case "matrix": return ["on","off"];
       case "lang": return ["ru","en"];
       case "sudo": return ["rm -rf /","./nikita.sh"];
-      case "ssh": return ["recruiter@nikita.sh"];
+      case "ssh": return Object.values(PERSONAS).map(p => p.host);
       case "terraform": return ["apply","destroy"];
       case "kubectl":
         if(remainderLower.startsWith("describe pod")){
@@ -1080,8 +1129,8 @@ and SRE practices into reality.`;
 
       if(mode === 'htop'){
         items = [{label: lang === 'ru' ? 'q — выход' : 'q — quit', value:'q'}];
-      } else if(mode === 'recruiter'){
-        const cmds = [...recruiterQA().map(q => q.cmd), 'exit'];
+      } else if(mode === 'ssh'){
+        const cmds = [...PERSONAS[sshPersonaKey].qa().map(q => q.cmd), 'exit'];
         const prefix = raw.trim().toLowerCase();
         const matches = prefix ? cmds.filter(c => c.startsWith(prefix)) : cmds;
         items = matches.map(c => ({label:c, value:c}));
@@ -1110,7 +1159,7 @@ and SRE practices into reality.`;
   function applyChipValue(value){
     cmdInput.value = value;
 
-    if(mode === 'recruiter' || mode === 'htop'){
+    if(mode === 'ssh' || mode === 'htop'){
       cmdInput.dispatchEvent(new KeyboardEvent('keydown', {key:'Enter'}));
       return;
     }
@@ -1137,10 +1186,12 @@ and SRE practices into reality.`;
 
   /* ---------- shell mode (normal | recruiter | htop) ---------- */
   let mode = 'shell';
+  let sshPersonaKey = null;
+  let sshFailCount = 0;
   let htopInterval = null;
   let htopContainerEl = null;
   function psHTML(){
-    if(mode === 'recruiter') return `recruiter@nikita.sh <span class="path">~</span> $`;
+    if(mode === 'ssh') return `${PERSONAS[sshPersonaKey].host} <span class="path">~</span> $`;
     if(mode === 'htop') return `<span class="dim">${lang === 'ru' ? '(htop — q для выхода)' : '(htop — q to quit)'}</span>`;
     return `guest@nikita.sh <span class="path">~</span> $`;
   }
@@ -1148,8 +1199,8 @@ and SRE practices into reality.`;
     const label = document.getElementById('psLabel');
     if(label) label.innerHTML = psHTML();
     const title = document.querySelector('.term-title');
-    if(title) title.textContent = mode === 'recruiter'
-      ? 'recruiter@nikita.sh — ssh — 80×24'
+    if(title) title.textContent = mode === 'ssh'
+      ? `${PERSONAS[sshPersonaKey].host} — ssh — 80×24`
       : mode === 'htop'
         ? 'guest@nikita.sh — htop — 80×24'
         : 'guest@nikita.sh — bash — 80×24';
@@ -1201,19 +1252,19 @@ and SRE practices into reality.`;
     printLine(t('sudo'));
   }
 
-  async function sshHandshake(){
+  async function sshHandshake(host){
     const lines = lang === 'ru' ? [
-      "запрашиваю рукопожатие с recruiter@nikita.sh ...",
+      `запрашиваю рукопожатие с ${host} ...`,
       "ECDSA key fingerprint is SHA256:7hR3s+kn0wYouR3Wo7rth.",
       "Are you sure you want to continue connecting (yes/no)? yes",
-      "Warning: Permanently added 'recruiter@nikita.sh' (ECDSA) to the list of known hosts.",
+      `Warning: Permanently added '${host}' (ECDSA) to the list of known hosts.`,
       "аутентификация...",
       "доступ разрешён.",
     ] : [
-      "requesting handshake with recruiter@nikita.sh ...",
+      `requesting handshake with ${host} ...`,
       "ECDSA key fingerprint is SHA256:7hR3s+kn0wYouR3Wo7rth.",
       "Are you sure you want to continue connecting (yes/no)? yes",
-      "Warning: Permanently added 'recruiter@nikita.sh' (ECDSA) to the list of known hosts.",
+      `Warning: Permanently added '${host}' (ECDSA) to the list of known hosts.`,
       "authenticating...",
       "access granted.",
     ];
@@ -1224,48 +1275,55 @@ and SRE practices into reality.`;
     await sleep(150);
   }
 
-  function recruiterMenuHTML(){
-    const qa = recruiterQA();
+  function personaMenuHTML(personaKey){
+    const qa = PERSONAS[personaKey].qa();
     let html = `<div>${lang === 'ru'
       ? `Введите команду, чтобы задать вопрос, или "exit", чтобы отключиться:`
       : `Type a command to ask a question, or "exit" to disconnect:`}</div>`;
+    html += `<div class="dim">${lang === 'ru' ? 'темы:' : 'topics:'}</div>`;
     html += `<table class="tbl">`;
     qa.forEach(item=>{ html += `<tr><td class="accent">${item.cmd}</td><td>${item.q}</td></tr>`; });
     html += `</table>`;
     return html;
   }
 
-  async function enterRecruiterMode(){
-    await sshHandshake();
-    mode = 'recruiter';
+  async function enterPersonaMode(personaKey){
+    const host = PERSONAS[personaKey].host;
+    await sshHandshake(host);
+    mode = 'ssh';
+    sshPersonaKey = personaKey;
     updatePromptUI();
     printLine(lang === 'ru'
-      ? `подключено к <span class="glow">recruiter@nikita.sh</span>.`
-      : `connected to <span class="glow">recruiter@nikita.sh</span>.`);
-    printLine(recruiterMenuHTML());
+      ? `подключено к <span class="glow">${host}</span>.`
+      : `connected to <span class="glow">${host}</span>.`);
+    printLine(personaMenuHTML(personaKey));
   }
 
-  async function runRecruiterCommand(raw){
+  async function runPersonaCommand(raw){
     const cmd = raw.trim();
     if(cmd) { history.push(raw); hIndex = history.length; }
     const lc = cmd.toLowerCase();
+    const host = PERSONAS[sshPersonaKey].host;
     if(lc === 'exit' || lc === 'logout' || lc === 'quit'){
       printLine(lang === 'ru'
-        ? 'разрываю соединение с recruiter@nikita.sh...'
-        : 'closing connection to recruiter@nikita.sh...');
+        ? `разрываю соединение с ${host}...`
+        : `closing connection to ${host}...`);
       mode = 'shell';
+      sshPersonaKey = null;
       updatePromptUI();
       return;
     }
-    const qa = recruiterQA();
+    const qa = PERSONAS[sshPersonaKey].qa();
     const normalized = lc.replace(/^ask\s+/, '').trim();
     const item = qa.find(q => q.cmd === normalized);
     if(item){
       printLine(`<span class="accent">${item.q}</span>`);
       await typeLine(item.a);
-      printLine(recruiterMenuHTML());
+      printLine(lang === 'ru'
+        ? `<span class="dim">задайте другой вопрос, или введите "exit"</span>`
+        : `<span class="dim">ask another question, or type "exit"</span>`);
     } else if(lc === 'help' || lc === ''){
-      printLine(recruiterMenuHTML());
+      printLine(personaMenuHTML(sshPersonaKey));
     } else {
       printLine(lang === 'ru'
         ? `неизвестная команда — доступны: ${qa.map(q=>q.cmd).join(', ')} или "exit"`
@@ -1316,8 +1374,8 @@ and SRE practices into reality.`;
     const cmd = raw.trim();
     printPromptEcho(raw);
 
-    if(mode === 'recruiter'){
-      await runRecruiterCommand(raw);
+    if(mode === 'ssh'){
+      await runPersonaCommand(raw);
       return;
     }
     if(mode === 'htop'){
@@ -1575,14 +1633,24 @@ and SRE practices into reality.`;
       }
       case "ssh": {
         const target = arg.trim();
-        if(target.toLowerCase() === 'recruiter@nikita.sh'){
-          await enterRecruiterMode();
-        } else if(!target){
-          printLine(lang === 'ru' ? 'использование: ssh &lt;user@host&gt;' : 'usage: ssh &lt;user@host&gt;');
-        } else {
+        if(!target){
+          printLine(lang === 'ru' ? 'использование: ssh &lt;user@host&gt;' : 'usage: ssh <user@host>');
+          const hostList = Object.values(PERSONAS).map(p => `<span class="glow">${p.host}</span>`).join(', ');
           printLine(lang === 'ru'
-            ? `ssh: не удаётся разрешить имя хоста ${escapeHtml(target)}: имя или служба неизвестны`
-            : `ssh: Could not resolve hostname ${escapeHtml(target)}: Name or service not known`);
+            ? `<span class="dim"># известные хосты на этой машине:</span> ${hostList}`
+            : `<span class="dim"># known hosts on this machine:</span> ${hostList}`);
+        } else {
+          const personaKey = resolveSSHTarget(target);
+          if(personaKey){
+            await enterPersonaMode(personaKey);
+          } else {
+            sshFailCount++;
+            const seq = sshFailureSequence(target, sshFailCount);
+            for(const line of seq){
+              if(line.delay) await sleep(line.delay);
+              printLine(line.text);
+            }
+          }
         }
         break;
       }
@@ -1709,8 +1777,8 @@ and SRE practices into reality.`;
       let candidates, headPart, prefix, base = null;
 
       if(spaceIdx === -1){
-        candidates = (mode === 'recruiter')
-          ? [...recruiterQA().map(q => q.cmd), "help", "exit"]
+        candidates = (mode === 'ssh')
+          ? [...PERSONAS[sshPersonaKey].qa().map(q => q.cmd), "help", "exit"]
           : COMMANDS;
         headPart = "";
         prefix = raw.toLowerCase();
