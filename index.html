@@ -1052,7 +1052,7 @@ and SRE practices into reality.`;
       gameDenied: `bash: ./nikita.sh: Permission denied`,
       loggingOut: "logging out...",
       connClosed: "connection to nikita.sh closed.",
-      notFound: (b)=>`command not found: <span class="accent">${b}</span> — type <span class="glow">help</span> for a list of commands`,
+      notFound: (b)=>`command not found: <span class="accent">${b}</span> — this is a fake terminal held together by JavaScript, not a real shell. try <span class="glow">help</span> for what's actually here`,
       welcome: "Welcome to my silly terminal. Type 'help' to see what's available.",
     },
     ru: {
@@ -1073,7 +1073,7 @@ and SRE practices into reality.`;
       gameDenied: `bash: ./nikita.sh: отказано в доступе`,
       loggingOut: "выхожу из системы...",
       connClosed: "соединение с nikita.sh закрыто.",
-      notFound: (b)=>`команда не найдена: <span class="accent">${b}</span> — введите <span class="glow">help</span> для списка команд`,
+      notFound: (b)=>`команда не найдена: <span class="accent">${b}</span> — это ненастоящий терминал на JavaScript, а не настоящий шелл. попробуйте <span class="glow">help</span>, чтобы увидеть, что здесь действительно есть`,
       welcome: "Добро пожаловать в мой игрушечный терминал. Введите «help», чтобы увидеть список команд.",
     },
   };
@@ -1131,6 +1131,47 @@ and SRE practices into reality.`;
     pairs.forEach(([k,v]) => { html += `<tr><td class="accent">${k}</td><td>${v}</td></tr>`; });
     html += `</table>`;
     return html;
+  }
+
+  function lsFiles(){
+    return [
+      { name:'about.txt', perms:'-rw-r--r--', size: 401 },
+      { name:'skills.txt', perms:'-rw-r--r--', size: 237 },
+      { name:'contact.txt', perms:'-rw-r--r--', size: 184 },
+      { name:'cv.html', perms:'-rw-r--r--', size: 14336 },
+      { name:'nikita.sh', perms:'-rwxr--r--', size: 185, accent:true },
+    ];
+  }
+
+  function humanSize(bytes){
+    if(bytes < 1024) return String(bytes);
+    const units = ['K','M','G'];
+    let val = bytes, i = -1;
+    do { val /= 1024; i++; } while(val >= 1024 && i < units.length - 1);
+    return (val < 10 ? val.toFixed(1) : Math.round(val)) + units[i];
+  }
+
+  function renderLs({ longFormat, human, all }){
+    const files = lsFiles();
+    if(!longFormat){
+      const names = files.map(f => f.accent ? `<span class="accent">${f.name}</span>` : f.name);
+      if(all) names.unshift('..', '.');
+      printLine(names.join('   '));
+      return;
+    }
+    const DATE = 'Aug  9 20:48';
+    let totalBlocks = files.reduce((sum,f) => sum + Math.ceil(f.size/512), 0);
+    if(all) totalBlocks += 2;
+    printLine(`total ${totalBlocks}`);
+    if(all){
+      printLine(`drwxr-xr-x  2 nikita staff     160 ${DATE} .`);
+      printLine(`drwxr-xr-x  3 nikita staff      96 ${DATE} ..`);
+    }
+    files.forEach(f => {
+      const sizeStr = (human ? humanSize(f.size) : String(f.size)).padStart(6);
+      const name = f.accent ? `<span class="accent">${f.name}</span>` : f.name;
+      printLine(`${f.perms}  1 nikita staff ${sizeStr} ${DATE} ${name}`);
+    });
   }
 
   function defaultChips(){
@@ -1466,7 +1507,19 @@ and SRE practices into reality.`;
         break;
       }
       case "ls": {
-        printLine(`about.txt   skills.txt   contact.txt   cv.html   <span class="accent">nikita.sh</span>`);
+        const flagChars = new Set();
+        arg.trim().split(/\s+/).forEach(tok => {
+          if(tok.startsWith('-')) tok.slice(1).split('').forEach(c => flagChars.add(c));
+        });
+        renderLs({ longFormat: flagChars.has('l'), human: flagChars.has('h'), all: flagChars.has('a') });
+        break;
+      }
+      case "ll": {
+        const flagChars = new Set(['l']);
+        arg.trim().split(/\s+/).forEach(tok => {
+          if(tok.startsWith('-')) tok.slice(1).split('').forEach(c => flagChars.add(c));
+        });
+        renderLs({ longFormat: true, human: flagChars.has('h'), all: flagChars.has('a') });
         break;
       }
       case "cat": {
