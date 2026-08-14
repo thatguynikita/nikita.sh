@@ -102,6 +102,7 @@
     color:var(--fg); font-size:14px; padding:40px;
     white-space:pre-wrap; line-height:1.65;
     text-shadow:var(--glow);
+    overflow-y:auto;
   }
   #boot.hidden{display:none;}
 
@@ -221,6 +222,8 @@
 
   table.tbl{border-collapse:collapse; margin:4px 0;}
   table.tbl td{padding:1px 14px 1px 0; vertical-align:top;}
+  table.tbl.kv-tbl td:first-child{white-space:nowrap;}
+  table.tbl:not(.kv-tbl) tr:first-child td{white-space:nowrap;}
   .help-cmd{cursor:pointer; border-radius:3px;}
   .help-cmd:hover{text-decoration:underline;}
   .help-cmd:active{background:rgba(61,255,138,.16);}
@@ -292,6 +295,7 @@
     .neofetch{gap:14px;}
     .nf-art{font-size:10px;}
     body{padding:14px 8px 10px;}
+    #boot{padding:20px 16px;}
     .game-overlay{padding:8px;}
     .game-frame{
       width:96vw;
@@ -528,6 +532,7 @@
     if(li < bootLines.length){
       bootHTML += bootLines[li] + "\n";
       bootEl.innerHTML = bootHTML;
+      bootEl.scrollTop = bootEl.scrollHeight;
       const isTitle = li === 0;
       const isBlank = bootLines[li] === "";
       li++;
@@ -1107,7 +1112,7 @@ and SRE practices into reality.`;
 
   // Two-column key/value table with an accent-styled key column, no header row.
   function kvTableHTML(pairs){
-    let html = `<table class="tbl">`;
+    let html = `<table class="tbl kv-tbl">`;
     pairs.forEach(([k,v]) => { html += `<tr><td class="accent">${k}</td><td>${v}</td></tr>`; });
     html += `</table>`;
     return html;
@@ -1285,7 +1290,7 @@ and SRE practices into reality.`;
       ? `Введите команду, чтобы задать вопрос, или "exit", чтобы отключиться:`
       : `Type a command to ask a question, or "exit" to disconnect:`}</div>`;
     html += `<div class="dim">${lang === 'ru' ? 'темы:' : 'topics:'}</div>`;
-    html += `<table class="tbl">`;
+    html += `<table class="tbl kv-tbl">`;
     qa.forEach(item=>{ html += `<tr><td class="accent">${item.cmd}</td><td>${item.q}</td></tr>`; });
     html += `</table>`;
     return html;
@@ -1400,7 +1405,7 @@ and SRE practices into reality.`;
     switch(b){
       case "help": {
         printLine(`<span class="accent">${t('availableCommands')}</span>`);
-        let helpTbl = `<table class="tbl">`;
+        let helpTbl = `<table class="tbl kv-tbl">`;
         HELP().forEach(([c,d,fill])=>{
           helpTbl += `<tr><td class="glow help-cmd" data-value="${escapeAttr(fill)}">${escapeHtml(c)}</td><td class="dim">${d}</td></tr>`;
         });
