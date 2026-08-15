@@ -112,12 +112,46 @@
   footer a:hover{color:var(--fg);}
 
   @media print{
-    #matrix, .crt, .vignette, .topbar, footer{display:none !important;}
-    body{background:#050806; padding:0;}
-    .term{box-shadow:none; border:none;}
-    .term-body{max-height:none; overflow:visible;}
+    #matrix, .crt, .vignette, .topbar, footer, .term-head, .fake-cursor{display:none !important;}
+    @page{margin:1.6cm;}
+
+    body{background:#fff !important; color:#141414 !important; padding:0;}
+    .term{box-shadow:none; border:none; background:none;}
+    .term-body{max-height:none; overflow:visible; padding:0;}
+
     .avatar-frame::after{display:none;}
     .avatar{filter:none;}
+    .avatar-frame{border-color:#ccc; box-shadow:none;}
+
+    .ps{display:none;}
+    .section-head .cmd, .section-head .file{
+      color:#141414 !important; text-shadow:none !important; font-weight:700;
+    }
+
+    .title, .job-meta .co, .job-title, table.tbl td.key,
+    .cert-row .ok, .lang-label{color:#111 !important; text-shadow:none !important;}
+    .tagline, .meta-line, .job-meta .span, .job-meta .loc,
+    .cert-row .yr, .lang-sub, .traits, .traits .hash, ul.bullets li::marker{
+      color:#555 !important;
+    }
+    .job-meta .dates{color:#333 !important; font-weight:700;}
+    .tech{color:#555 !important; text-shadow:none !important;}
+
+    .accent{color:#111 !important; text-shadow:none !important; font-weight:700;}
+    .dim{color:#555 !important;}
+    .amber{color:#333 !important; text-shadow:none !important; font-style:italic;}
+    .glow{text-shadow:none !important;}
+
+    a, .contact-row a, footer a{color:#141414 !important; text-decoration:underline; text-shadow:none !important;}
+    .contact-row a[href^="http"]::after, .contact-row a[href^="mailto"]::after{
+      content:" (" attr(href) ")"; font-size:10px; color:#777;
+    }
+
+    .rule, .rule.strong{background:#ccc !important; box-shadow:none !important; opacity:1;}
+    .job{border-left-color:#ccc; break-inside:avoid; page-break-inside:avoid;}
+
+    .lang-bar i{background:#fff; border:1px solid #999; box-shadow:none;}
+    .lang-bar i.on{background:#333 !important; box-shadow:none;}
   }
 
   @media (max-width:560px){
