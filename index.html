@@ -283,6 +283,17 @@
 (function(){
   "use strict";
 
+  if(!window.NikitaTheme){
+    window.NikitaTheme = {
+      THEME_STORAGE_KEY: 'nikita.sh:theme',
+      LANG_STORAGE_KEY: 'nikita.sh:lang',
+      MATRIX_STORAGE_KEY: 'nikita.sh:matrix',
+      readStored: function(){ return null; },
+      writeStored: function(){},
+      applyTheme: function(){ return null; },
+    };
+  }
+
   /* ================= matrix rain ================= */
   const canvas = document.getElementById('matrix');
   const ctx = canvas.getContext('2d');
@@ -450,6 +461,10 @@
   ];
   let bootHTML = "";
   let li = 0;
+  const BOOTED_SESSION_KEY = 'nikita.sh:booted';
+  let skipBoot = false;
+  try { skipBoot = sessionStorage.getItem(BOOTED_SESSION_KEY) === '1'; } catch(e) {}
+
   function typeBoot(){
     if(li < bootLines.length){
       bootHTML += bootLines[li] + "\n";
@@ -461,13 +476,20 @@
       const delay = isTitle ? 380 : isBlank ? 150 : 260;
       setTimeout(typeBoot, delay);
     } else {
+      try { sessionStorage.setItem(BOOTED_SESSION_KEY, '1'); } catch(e) {}
       setTimeout(()=>{
         bootEl.classList.add('hidden');
         startTerminal();
       }, 400);
     }
   }
-  setTimeout(typeBoot, 150);
+
+  if(skipBoot){
+    bootEl.classList.add('hidden');
+    setTimeout(bootIntro, 0);
+  } else {
+    setTimeout(typeBoot, 150);
+  }
 
   /* ================= game overlay ================= */
   const gameOverlay = document.getElementById('gameOverlay');

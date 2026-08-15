@@ -19,6 +19,8 @@
   .topbar a:hover, .topbar button:hover{color:var(--fg); text-shadow:var(--glow);}
   .topbar .right{display:flex; gap:16px; align-items:center;}
   .topbar button{color:var(--fg-dim); text-decoration:none; cursor:pointer; background:none; border:none; font:inherit; letter-spacing:.03em; padding:0;}
+  #langChip{display:inline-block; min-width:2.5ch; text-align:center;}
+  #printBtn{display:inline-block; min-width:7ch; text-align:center;}
 
   .term-body{padding:20px 22px 8px; font-size:14px; line-height:1.6;}
 
@@ -27,13 +29,29 @@
 
   .profile-block{display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap;}
   .profile-text{flex:1 1 320px; min-width:0;}
-  .avatar{
+  .avatar-frame{
+    position:relative;
     flex:0 0 auto;
     width:168px; height:168px;
-    object-fit:cover; border-radius:12px;
+    border-radius:12px;
+    overflow:hidden;
     border:1px solid var(--border);
     box-shadow:var(--glow), 0 10px 28px rgba(0,0,0,.55);
+  }
+  .avatar-frame::after{
+    content:"";
+    position:absolute; inset:0;
+    background:var(--fg);
+    mix-blend-mode:color;
+    opacity:.85;
+    pointer-events:none;
+  }
+  .avatar{
+    display:block;
+    width:100%; height:100%;
+    object-fit:cover;
     background:transparent;
+    filter:grayscale(1) contrast(1.05) brightness(1.05);
   }
 
   .title{font-size:26px; margin:4px 0 4px;}
@@ -98,6 +116,8 @@
     body{background:#050806; padding:0;}
     .term{box-shadow:none; border:none;}
     .term-body{max-height:none; overflow:visible;}
+    .avatar-frame::after{display:none;}
+    .avatar{filter:none;}
   }
 
   @media (max-width:560px){
@@ -107,7 +127,7 @@
     .profile-block{gap:10px; flex-direction:column; align-items:center; text-align:center;}
     .profile-text{order:2; flex:0 0 auto; width:100%;}
     .contact-row{justify-content:center;}
-    .avatar{order:1; width:120px; height:120px;}
+    .avatar-frame{order:1; width:120px; height:120px;}
   }
 </style>
 </head>
@@ -147,6 +167,17 @@
 <script>
 (function(){
   "use strict";
+
+  if(!window.NikitaTheme){
+    window.NikitaTheme = {
+      THEME_STORAGE_KEY: 'nikita.sh:theme',
+      LANG_STORAGE_KEY: 'nikita.sh:lang',
+      MATRIX_STORAGE_KEY: 'nikita.sh:matrix',
+      readStored: function(){ return null; },
+      writeStored: function(){},
+      applyTheme: function(){ return null; },
+    };
+  }
 
   /* ================= matrix rain ================= */
   const canvas = document.getElementById('matrix');
@@ -514,7 +545,7 @@
     html += `</div>`;
     html += `<div class="meta-line">${U.metaLine}</div>`;
     html += `</div>`;
-    html += `<img class="avatar" src="nikita-photo.png" alt="${U.name}">`;
+    html += `<div class="avatar-frame"><img class="avatar" src="nikita-photo.png" alt="${U.name}"></div>`;
     html += `</div>`;
     html += `<hr class="rule strong">`;
 
