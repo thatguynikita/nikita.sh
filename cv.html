@@ -9,25 +9,31 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="Nikita Chernozipunnikov — CV">
 <meta property="og:description" content="DevOps / SRE — CV / résumé. AWS, Docker, Kubernetes, Linux.">
-<meta property="og:image" content="https://nikita.sh/og-cv.png">
+<meta property="og:image" content="https://nikita.sh/nikita-photo.png">
 <meta property="og:url" content="https://nikita.sh/cv.html">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Nikita Chernozipunnikov — CV">
 <meta name="twitter:description" content="DevOps / SRE — CV / résumé. AWS, Docker, Kubernetes, Linux.">
-<meta name="twitter:image" content="https://nikita.sh/og-cv.png">
+<meta name="twitter:image" content="https://nikita.sh/nikita-photo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="theme.css">
 <style>
   .topbar{
     display:flex; justify-content:space-between; align-items:center;
-    font-size:12px; color:var(--fg-dim); margin-bottom:10px; padding:0 4px;
+    font-size:12px; color:var(--fg-dim); margin-bottom:10px; padding:0;
     letter-spacing:.03em;
   }
-  .topbar a{color:var(--fg-dim); text-decoration:none; cursor:pointer; background:none; border:none; font:inherit;}
-  .topbar a:hover, .topbar button:hover{color:var(--fg); text-shadow:var(--glow);}
-  .topbar .right{display:flex; gap:16px; align-items:center;}
-  .topbar button{color:var(--fg-dim); text-decoration:none; cursor:pointer; background:none; border:none; font:inherit; letter-spacing:.03em; padding:0;}
+  .topbar a{
+    color:var(--fg-dim); text-decoration:none; cursor:pointer; background:none; border:none; font:inherit;
+    padding:6px 8px; border-radius:4px;
+  }
+  .topbar a:hover, .topbar button:hover{color:var(--fg); text-shadow:var(--glow); background:rgba(61,255,138,.08);}
+  .topbar .right{display:flex; gap:8px; align-items:center;}
+  .topbar button{
+    color:var(--fg-dim); text-decoration:none; cursor:pointer; background:none; border:none; font:inherit;
+    letter-spacing:.03em; padding:6px 8px; border-radius:4px;
+  }
   #langChip{display:inline-block; min-width:2.5ch; text-align:center;}
   #printBtn{display:inline-block; min-width:7ch; text-align:center;}
 
@@ -63,7 +69,7 @@
     filter:grayscale(1) contrast(1.05) brightness(1.05);
   }
 
-  .title{font-size:26px; margin:4px 0 4px;}
+  .title{font-size:26px; margin:4px 0 4px; font-weight:400;}
   .tagline{font-size:13px; margin-bottom:10px;}
   .contact-row{display:flex; flex-wrap:wrap; gap:6px 16px; font-size:12.5px; margin-bottom:4px;}
   .contact-row a{white-space:nowrap;}
@@ -75,7 +81,7 @@
 
   .section{margin-top:26px;}
   .section:first-of-type{margin-top:0;}
-  .section-head{font-size:15.5px; margin-bottom:8px;}
+  .section-head{font-size:15.5px; margin-bottom:8px; font-weight:400;}
   .section-head .cmd{color:var(--amber);}
   .section-head .file{color:var(--fg); text-shadow:var(--glow); font-weight:700;}
 
@@ -575,7 +581,7 @@
   }
 
   function sectionHead(cmd, file){
-    return `<div class="line section-head"><span class="ps">guest@nikita.sh:~$</span><span class="cmd">${cmd}</span> <span class="file">${file}</span></div>`;
+    return `<h2 class="line section-head"><span class="ps">guest@nikita.sh:~$</span><span class="cmd">${cmd}</span> <span class="file">${file}</span></h2>`;
   }
 
   function render(){
@@ -584,7 +590,7 @@
     let html = "";
     html += `<div class="profile-block">`;
     html += `<div class="profile-text">`;
-    html += `<div class="line glow title">${U.name}</div>`;
+    html += `<h1 class="line glow title">${U.name}</h1>`;
     html += `<div class="line tagline">${U.tagline}</div>`;
     html += `<div class="contact-row">`;
     html += SOCIALS.map(([label,href])=>`<a href="${href}" target="_blank" rel="noopener">${label}</a>`).join(`<span class="dim">&middot;</span>`);
