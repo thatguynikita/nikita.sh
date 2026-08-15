@@ -1076,8 +1076,10 @@ and SRE practices into reality.`;
       gameDenied: `bash: ./nikita.sh: Permission denied`,
       loggingOut: "logging out...",
       connClosed: "connection to nikita.sh closed.",
-      notFound: (b)=>`command not found: <span class="accent">${b}</span> — this is a silly terminal held together by JavaScript, not a real shell. try <span class="glow">help</span> for what's actually here`,
+      notFound: (b)=>`command not found: <span class="accent">${b}</span>`,
+      notFoundHint: `<span class="dim">this is a silly terminal held together by JavaScript, not a real shell. try <span class="glow">help</span> for what's here</span>`,
       welcome: "Welcome to my silly terminal. Type 'help' to see what's available.",
+      welcomeWhisper: "(psst — 'help' is being modest. dig a little.)",
     },
     ru: {
       availableCommands: "Доступные команды:",
@@ -1097,8 +1099,10 @@ and SRE practices into reality.`;
       gameDenied: `bash: ./nikita.sh: отказано в доступе`,
       loggingOut: "выхожу из системы...",
       connClosed: "соединение с nikita.sh закрыто.",
-      notFound: (b)=>`команда не найдена: <span class="accent">${b}</span> — это игрушечный терминал на JavaScript, а не настоящий шелл. попробуй <span class="glow">help</span>, чтобы увидеть, что здесь действительно есть`,
+      notFound: (b)=>`команда не найдена: <span class="accent">${b}</span>`,
+      notFoundHint: `<span class="dim">это игрушечный терминал на JavaScript, а не настоящий шелл. попробуй <span class="glow">help</span>, чтобы увидеть, что здесь есть</span>`,
       welcome: "Добро пожаловать в мой игрушечный терминал. Введите «help», чтобы увидеть список команд.",
+      welcomeWhisper: "(псс — «help» скромничает. покопайся немного.)",
     },
   };
   function t(key, ...args){
@@ -2021,6 +2025,7 @@ and SRE practices into reality.`;
       }
       default: {
         printLine(t('notFound', escapeHtml(rawB)));
+        printLine(t('notFoundHint'));
       }
     }
   }
@@ -2208,6 +2213,8 @@ and SRE practices into reality.`;
     printLine(neofetchHTML());
     await sleep(200);
     await typeLine(t('welcome'), "dim", 14);
+    await sleep(450);
+    await typeLine(t('welcomeWhisper'), "dim", 20);
     printLine("&nbsp;");
     mountInput();
   }
