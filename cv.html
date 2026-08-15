@@ -93,7 +93,7 @@
   .cert-row .yr{color:var(--fg-dim); margin-right:8px;}
 
   .langrow{display:flex; align-items:center; gap:10px; margin:6px 0; flex-wrap:wrap;}
-  .lang-label{min-width:72px; font-weight:700; color:var(--fg); font-size:13.3px;}
+  .lang-label{width:11ch; flex:0 0 auto; white-space:nowrap; font-weight:700; color:var(--fg); font-size:13.3px;}
   .lang-bar{display:inline-flex; gap:2px;}
   .lang-bar i{width:9px; height:13px; display:inline-block; background:rgba(61,255,138,.16); border-radius:1px;}
   .lang-bar i.on{background:var(--fg); box-shadow:0 0 4px rgba(61,255,138,.7);}
@@ -150,7 +150,10 @@
     .rule, .rule.strong{background:#ccc !important; box-shadow:none !important; opacity:1;}
     .job{border-left-color:#ccc; break-inside:avoid; page-break-inside:avoid;}
 
-    .lang-bar i{background:#fff; border:1px solid #999; box-shadow:none;}
+    .lang-bar i{
+      background:#fff; border:1px solid #999; box-shadow:none;
+      -webkit-print-color-adjust:exact; print-color-adjust:exact; color-adjust:exact;
+    }
     .lang-bar i.on{background:#333 !important; box-shadow:none;}
   }
 
@@ -498,11 +501,11 @@
   };
 
   const SOCIALS = [
-    ["me@nikita.sh","mailto:me@nikita.sh"],
-    ["nikita.sh","https://nikita.sh"],
-    ["@thatguynikita","https://t.me/thatguynikita"],
-    ["thatguynikita","https://github.com/thatguynikita"],
-    ["in/nikita-chernozipunnikov","https://www.linkedin.com/in/nikita-chernozipunnikov"],
+    ["Email","mailto:me@nikita.sh"],
+    ["Website","https://nikita.sh"],
+    ["Telegram","https://t.me/thatguynikita"],
+    ["Github","https://github.com/thatguynikita"],
+    ["LinkedIn","https://www.linkedin.com/in/nikita-chernozipunnikov"],
   ];
 
   const UI = {
