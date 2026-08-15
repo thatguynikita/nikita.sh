@@ -12,72 +12,8 @@
 <link rel="manifest" href="/site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
 <style>
-  :root{
-    --bg:#050806;
-    --panel:#070d09;
-    --fg:#3dff8a;
-    --fg-dim:#2a9c60;
-    --accent:#5ff1ff;
-    --amber:#ffb454;
-    --amber-glow:0 0 6px rgba(255,180,84,.6);
-    --red:#ff5f56;
-    --border:rgba(61,255,138,.28);
-    --glow:0 0 4px rgba(61,255,138,.85), 0 0 12px rgba(61,255,138,.45), 0 0 24px rgba(61,255,138,.25);
-  }
-  *{box-sizing:border-box;}
-  html,body{height:100%;}
-  html{-webkit-text-size-adjust:100%; text-size-adjust:100%;}
-  body{
-    margin:0;
-    background:
-      radial-gradient(ellipse at 50% 0%, rgba(61,255,138,.06), transparent 60%),
-      var(--bg);
-    color:var(--fg);
-    font-family:'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    padding:28px 14px 16px;
-    overflow-x:hidden;
-    position:relative;
-  }
-
-  /* ---------- background matrix rain ---------- */
-  #matrix{
-    position:fixed; inset:0; width:100%; height:100%;
-    z-index:0; opacity:.24; pointer-events:none;
-    transition:opacity .6s ease;
-  }
-  #matrix.off{opacity:0;}
-
-  /* ---------- CRT overlay ---------- */
-  .crt{
-    position:fixed; inset:0; z-index:5; pointer-events:none;
-    background:repeating-linear-gradient(
-      to bottom,
-      rgba(0,0,0,0) 0px,
-      rgba(0,0,0,0) 1px,
-      rgba(0,0,0,.22) 2px,
-      rgba(0,0,0,0) 3px
-    );
-    mix-blend-mode:multiply;
-    animation:flicker 6s infinite;
-  }
-  .vignette{
-    position:fixed; inset:0; z-index:4; pointer-events:none;
-    background:radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
-  }
-  @keyframes flicker{
-    0%,100%{opacity:.9;}
-    92%{opacity:.9;}
-    93%{opacity:.7;}
-    94%{opacity:1;}
-    95%{opacity:.75;}
-    96%{opacity:1;}
-  }
-
   /* ---------- panic effect (sudo rm -rf /) ---------- */
   .rm-line{color:var(--red); text-shadow:0 0 4px rgba(255,95,86,.8);}
   body.panic .term{animation:panic-shake .12s infinite;}
@@ -108,8 +44,6 @@
   #boot.hidden{display:none;}
 
   /* ---------- layout ---------- */
-  .wrap{position:relative; z-index:2; width:100%; max-width:880px;}
-
   .topbar{
     display:flex; justify-content:space-between; align-items:center;
     font-size:12px; color:var(--fg-dim); margin-bottom:10px; padding:0 4px;
@@ -117,29 +51,6 @@
   }
   .topbar a{color:var(--fg-dim); text-decoration:none;}
   .topbar a:hover{color:var(--fg); text-shadow:var(--glow);}
-
-  .term{
-    background:linear-gradient(180deg, rgba(15,25,17,.92), rgba(6,10,8,.96));
-    border:1px solid var(--border);
-    border-radius:10px;
-    box-shadow:var(--glow), 0 20px 60px rgba(0,0,0,.6), inset 0 0 40px rgba(61,255,138,.03);
-    overflow:hidden;
-    backdrop-filter:blur(2px);
-  }
-  .term-head{
-    display:flex; align-items:center; gap:8px;
-    padding:10px 14px;
-    background:rgba(0,0,0,.35);
-    border-bottom:1px solid var(--border);
-  }
-  .dot{width:11px; height:11px; border-radius:50%; display:inline-block;}
-  .dot.r{background:var(--red); box-shadow:0 0 6px var(--red);}
-  .dot.y{background:var(--amber); box-shadow:0 0 6px var(--amber);}
-  .dot.g{background:var(--fg); box-shadow:0 0 6px var(--fg);}
-  .term-title{
-    flex:1; text-align:center; font-size:12px; color:var(--fg-dim);
-    letter-spacing:.04em;
-  }
 
   .np-field{
     flex:1 1 auto; min-width:0; overflow:hidden;
@@ -169,13 +80,6 @@
   .term-body::-webkit-scrollbar{width:8px;}
   .term-body::-webkit-scrollbar-thumb{background:var(--border); border-radius:4px;}
   .term-body::-webkit-scrollbar-track{background:transparent;}
-
-  .glow{text-shadow:var(--glow);}
-  .dim{color:var(--fg-dim);}
-  .accent{color:var(--accent); text-shadow:0 0 6px rgba(95,241,255,.7);}
-  .amber{color:var(--amber); text-shadow:var(--amber-glow);}
-  a{color:var(--accent);}
-  a:hover{text-shadow:0 0 8px var(--accent);}
 
   .line{white-space:pre-wrap; word-break:break-word; margin:0 0 2px;}
   .prompt-row{display:flex; align-items:baseline; flex-wrap:wrap; gap:0; cursor:pointer; border-radius:4px;}
@@ -374,6 +278,7 @@
   </div>
 </div>
 
+<script src="theme.js"></script>
 <script>
 (function(){
   "use strict";
@@ -643,27 +548,27 @@
 
   let lang = 'en';
 
-  const THEME_STORAGE_KEY = 'nikita.sh:theme';
-  const LANG_STORAGE_KEY = 'nikita.sh:lang';
-  const MATRIX_STORAGE_KEY = 'nikita.sh:matrix';
-  try {
-    const storedLang = localStorage.getItem(LANG_STORAGE_KEY);
+  const THEME_STORAGE_KEY = window.NikitaTheme.THEME_STORAGE_KEY;
+  const LANG_STORAGE_KEY = window.NikitaTheme.LANG_STORAGE_KEY;
+  const MATRIX_STORAGE_KEY = window.NikitaTheme.MATRIX_STORAGE_KEY;
+  {
+    const storedLang = window.NikitaTheme.readStored(LANG_STORAGE_KEY);
     if(storedLang === 'ru' || storedLang === 'en'){
       lang = storedLang;
       document.documentElement.lang = lang;
     }
-  } catch(e) {}
-  try {
-    const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+  }
+  {
+    const storedTheme = window.NikitaTheme.readStored(THEME_STORAGE_KEY);
     if(storedTheme) setTheme(storedTheme);
-  } catch(e) {}
-  try {
-    const storedMatrix = localStorage.getItem(MATRIX_STORAGE_KEY);
+  }
+  {
+    const storedMatrix = window.NikitaTheme.readStored(MATRIX_STORAGE_KEY);
     if(storedMatrix === 'off'){
       matrixOn = false;
       canvas.classList.add('off');
     }
-  } catch(e) {}
+  }
 
   /* ================= now playing (lives inside neofetch) ================= */
   const NP_ENDPOINT = '/now-playing.json';
@@ -1335,22 +1240,9 @@ and SRE practices into reality.`;
   }
 
   function setTheme(name){
-    const root = document.documentElement.style;
-    const map = {
-      green:{fg:"#3dff8a",dim:"#2a9c60",accent:"#5ff1ff",warn:"#ffb454"},
-      amber:{fg:"#ffb454",dim:"#a06a1f",accent:"#ffe08a",warn:"#5ff1ff"},
-      cyan :{fg:"#5ff1ff",dim:"#2a8a9c",accent:"#3dff8a",warn:"#ffb454"},
-    };
-    const t = map[name];
-    if(!t) return false;
-    root.setProperty('--fg', t.fg);
-    root.setProperty('--fg-dim', t.dim);
-    root.setProperty('--accent', t.accent);
-    root.setProperty('--amber', t.warn);
-    root.setProperty('--amber-glow', `0 0 6px ${t.warn}99`);
-    root.setProperty('--border', `${t.fg}47`);
-    matrixColor = t.fg;
-    root.setProperty('--glow', `0 0 4px ${t.fg}, 0 0 12px ${t.fg}88, 0 0 24px ${t.fg}44`);
+    const fg = window.NikitaTheme.applyTheme(name);
+    if(!fg) return false;
+    matrixColor = fg;
     return true;
   }
 
@@ -1762,11 +1654,11 @@ and SRE practices into reality.`;
       case "matrix": {
         if(arg === "off"){
           matrixOn = false; canvas.classList.add('off'); printLine(t('matrixOff'));
-          try { localStorage.setItem(MATRIX_STORAGE_KEY, 'off'); } catch(e) {}
+          window.NikitaTheme.writeStored(MATRIX_STORAGE_KEY, 'off');
         }
         else if(arg === "on"){
           matrixOn = true; canvas.classList.remove('off'); printLine(t('matrixOn'));
-          try { localStorage.setItem(MATRIX_STORAGE_KEY, 'on'); } catch(e) {}
+          window.NikitaTheme.writeStored(MATRIX_STORAGE_KEY, 'on');
         }
         else { printLine(t('matrixUsage')); }
         break;
@@ -1774,7 +1666,7 @@ and SRE practices into reality.`;
       case "theme": {
         if(setTheme(arg)){
           printLine(t('themeSet', arg));
-          try { localStorage.setItem(THEME_STORAGE_KEY, arg); } catch(e) {}
+          window.NikitaTheme.writeStored(THEME_STORAGE_KEY, arg);
         }
         else printLine(t('themeUsage'));
         break;
@@ -1785,7 +1677,7 @@ and SRE practices into reality.`;
           lang = choice;
           document.documentElement.lang = lang;
           printLine(t('langSet'));
-          try { localStorage.setItem(LANG_STORAGE_KEY, choice); } catch(e) {}
+          window.NikitaTheme.writeStored(LANG_STORAGE_KEY, choice);
         } else {
           printLine(t('langUsage'));
         }

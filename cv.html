@@ -8,59 +8,8 @@
 <meta name="theme-color" content="#060a08">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
 <style>
-  :root{
-    --bg:#050806;
-    --panel:#070d09;
-    --fg:#3dff8a;
-    --fg-dim:#2a9c60;
-    --fg-dim2:#1f6b45;
-    --accent:#5ff1ff;
-    --amber:#ffb454;
-    --red:#ff5f56;
-    --border:rgba(61,255,138,.28);
-    --glow:0 0 4px rgba(61,255,138,.85), 0 0 12px rgba(61,255,138,.45), 0 0 24px rgba(61,255,138,.25);
-  }
-  *{box-sizing:border-box;}
-  html,body{height:100%;}
-  body{
-    margin:0;
-    background:
-      radial-gradient(ellipse at 50% 0%, rgba(61,255,138,.06), transparent 60%),
-      var(--bg);
-    color:var(--fg);
-    font-family:'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
-    min-height:100vh;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    padding:28px 14px 16px;
-    overflow-x:hidden;
-    position:relative;
-  }
-
-  #matrix{
-    position:fixed; inset:0; width:100%; height:100%;
-    z-index:0; opacity:.14; pointer-events:none;
-  }
-  .crt{
-    position:fixed; inset:0; z-index:5; pointer-events:none;
-    background:repeating-linear-gradient(
-      to bottom, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 1px, rgba(0,0,0,.22) 2px, rgba(0,0,0,0) 3px
-    );
-    mix-blend-mode:multiply;
-    animation:flicker 6s infinite;
-  }
-  .vignette{
-    position:fixed; inset:0; z-index:4; pointer-events:none;
-    background:radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
-  }
-  @keyframes flicker{
-    0%,100%{opacity:.9;} 92%{opacity:.9;} 93%{opacity:.7;} 94%{opacity:1;} 95%{opacity:.75;} 96%{opacity:1;}
-  }
-
-  .wrap{position:relative; z-index:2; width:100%; max-width:880px;}
-
   .topbar{
     display:flex; justify-content:space-between; align-items:center;
     font-size:12px; color:var(--fg-dim); margin-bottom:10px; padding:0 4px;
@@ -71,34 +20,7 @@
   .topbar .right{display:flex; gap:16px; align-items:center;}
   .topbar button{color:var(--fg-dim); text-decoration:none; cursor:pointer; background:none; border:none; font:inherit; letter-spacing:.03em; padding:0;}
 
-  .term{
-    background:linear-gradient(180deg, rgba(15,25,17,.92), rgba(6,10,8,.96));
-    border:1px solid var(--border);
-    border-radius:10px;
-    box-shadow:var(--glow), 0 20px 60px rgba(0,0,0,.6), inset 0 0 40px rgba(61,255,138,.03);
-    overflow:hidden;
-    backdrop-filter:blur(2px);
-  }
-  .term-head{
-    display:flex; align-items:center; gap:8px;
-    padding:10px 14px;
-    background:rgba(0,0,0,.35);
-    border-bottom:1px solid var(--border);
-  }
-  .dot{width:11px; height:11px; border-radius:50%; display:inline-block;}
-  .dot.r{background:var(--red); box-shadow:0 0 6px var(--red);}
-  .dot.y{background:var(--amber); box-shadow:0 0 6px var(--amber);}
-  .dot.g{background:var(--fg); box-shadow:0 0 6px var(--fg);}
-  .term-title{flex:1; text-align:center; font-size:12px; color:var(--fg-dim); letter-spacing:.04em;}
-
   .term-body{padding:20px 22px 8px; font-size:14px; line-height:1.6;}
-
-  .glow{text-shadow:var(--glow);}
-  .dim{color:var(--fg-dim);}
-  .accent{color:var(--accent); text-shadow:0 0 6px rgba(95,241,255,.7);}
-  .amber{color:var(--amber); text-shadow:0 0 6px rgba(255,180,84,.6);}
-  a{color:var(--accent);}
-  a:hover{text-shadow:0 0 8px var(--accent);}
 
   .line{margin:0 0 2px; word-break:break-word;}
   .ps{color:var(--fg-dim); margin-right:6px; white-space:nowrap;}
@@ -221,6 +143,7 @@
   </footer>
 </div>
 
+<script src="theme.js"></script>
 <script>
 (function(){
   "use strict";
@@ -228,8 +151,21 @@
   /* ================= matrix rain ================= */
   const canvas = document.getElementById('matrix');
   const ctx = canvas.getContext('2d');
-  let cols, drops;
+  let cols, drops, matrixOn = true, matrixColor = "#3dff8a";
   const glyphs = "01アイウエオカキクケコサシスセソ$#&+=-<>/\\{}[]";
+
+  {
+    const storedTheme = window.NikitaTheme.readStored(window.NikitaTheme.THEME_STORAGE_KEY);
+    const fg = storedTheme ? window.NikitaTheme.applyTheme(storedTheme) : null;
+    if(fg) matrixColor = fg;
+  }
+  {
+    const storedMatrix = window.NikitaTheme.readStored(window.NikitaTheme.MATRIX_STORAGE_KEY);
+    if(storedMatrix === 'off'){
+      matrixOn = false;
+      canvas.classList.add('off');
+    }
+  }
 
   function resizeMatrix(){
     canvas.width = window.innerWidth;
@@ -239,15 +175,17 @@
     drops = new Array(cols).fill(0).map(()=>Math.random()*-50);
   }
   function drawMatrix(){
-    ctx.fillStyle = "rgba(2,4,3,0.08)";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle = "#3dff8a";
-    ctx.font = "15px monospace";
-    for(let i=0;i<cols;i++){
-      const text = glyphs[Math.floor(Math.random()*glyphs.length)];
-      ctx.fillText(text, i*15, drops[i]*15);
-      if(drops[i]*15 > canvas.height && Math.random() > 0.975) drops[i] = 0;
-      drops[i]++;
+    if(matrixOn){
+      ctx.fillStyle = "rgba(2,4,3,0.08)";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle = matrixColor;
+      ctx.font = "15px monospace";
+      for(let i=0;i<cols;i++){
+        const text = glyphs[Math.floor(Math.random()*glyphs.length)];
+        ctx.fillText(text, i*15, drops[i]*15);
+        if(drops[i]*15 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i]++;
+      }
     }
     requestAnimationFrame(drawMatrix);
   }
@@ -554,6 +492,10 @@
   /* ================= render ================= */
   const termBody = document.getElementById('termBody');
   let lang = 'en';
+  {
+    const storedLang = window.NikitaTheme.readStored(window.NikitaTheme.LANG_STORAGE_KEY);
+    if(storedLang === 'ru' || storedLang === 'en') lang = storedLang;
+  }
 
   function sectionHead(cmd, file){
     return `<div class="line section-head"><span class="ps">guest@nikita.sh:~$</span><span class="cmd">${cmd}</span> <span class="file">${file}</span></div>`;
@@ -645,6 +587,7 @@
     lang = lang === 'en' ? 'ru' : 'en';
     updateLangChip();
     render();
+    window.NikitaTheme.writeStored(window.NikitaTheme.LANG_STORAGE_KEY, lang);
   });
 
   updateLangChip();
