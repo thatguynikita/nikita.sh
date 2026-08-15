@@ -6,6 +6,15 @@
 <title>Nikita Chernozipunnikov — CV</title>
 <meta name="description" content="DevOps / SRE — CV / résumé. AWS, Docker, Kubernetes, Linux.">
 <meta name="theme-color" content="#060a08">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Nikita Chernozipunnikov — CV">
+<meta property="og:description" content="DevOps / SRE — CV / résumé. AWS, Docker, Kubernetes, Linux.">
+<meta property="og:image" content="https://nikita.sh/og-cv.png">
+<meta property="og:url" content="https://nikita.sh/cv.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Nikita Chernozipunnikov — CV">
+<meta name="twitter:description" content="DevOps / SRE — CV / résumé. AWS, Docker, Kubernetes, Linux.">
+<meta name="twitter:image" content="https://nikita.sh/og-cv.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="theme.css">
@@ -187,7 +196,7 @@
   <div class="term">
     <div class="term-head">
       <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
-      <span class="term-title">guest@nikita.sh — cat resume.txt</span>
+      <span class="term-title">guest@nikita.sh — open cv.html</span>
     </div>
 
     <div class="term-body" id="termBody"></div>
@@ -243,7 +252,7 @@
     drops = new Array(cols).fill(0).map(()=>Math.random()*-50);
   }
   function drawMatrix(){
-    if(matrixOn){
+    if(matrixOn && !document.hidden){
       ctx.fillStyle = "rgba(2,4,3,0.08)";
       ctx.fillRect(0,0,canvas.width,canvas.height);
       ctx.fillStyle = matrixColor;
