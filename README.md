@@ -23,9 +23,10 @@ assets/img/                → nikita-photo.png, og-terminal.png (OG images)
 
 content/site-data.mjs       → single source of truth for shared facts
                                (bio, socials, skills, jobs, certs, JSON-LD)
-scripts/                     → node scripts/build.mjs propagates
-                                content/site-data.mjs into index.html,
-                                cv.html, and llm/* — see docs/UPDATE-GUIDE.md
+scripts/                     → build.mjs propagates content/site-data.mjs
+                                into index.html, cv.html, and llm/*;
+                                deploy.mjs pushes to Yandex Object Storage
+                                — see docs/UPDATE-GUIDE.md
 
 llm/                          → plain-HTML crawler mirror (see below)
 spotify/                       → now-playing widget backend (separate

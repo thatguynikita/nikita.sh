@@ -44,26 +44,31 @@ hand-edited — the next build overwrites it.
    right, you're done editing. Running the build with no data changes
    should produce no diff at all; if it does, something's out of sync.
 
-4. **Deploy.** Still manual — you're serving from a Yandex Object Storage
-   bucket behind nginx (SSL termination only, nginx doesn't set headers),
-   so upload each *changed* file (`git status` tells you which) with
-   `yc storage s3api put-object` and set `--content-type` explicitly —
-   S3-compatible storage doesn't reliably infer charset from the file
-   extension, which is what caused a `llms.txt` garbling issue in the
-   past:
+4. **Deploy:**
    ```bash
-   yc storage s3api put-object \
-     --body llm/index.html \
-     --bucket <your-bucket-name> \
-     --key llm/index.html \
-     --content-type "text/html; charset=utf-8"
+   node scripts/deploy.mjs --bucket <your-bucket-name>
    ```
-   Repeat with the right `--key` and content-type for each changed file
-   (`.html` → `text/html; charset=utf-8`, `.xml` → `application/xml;
-   charset=utf-8`, `.txt` → `text/plain; charset=utf-8`). If
-   `--content-type` isn't available in your installed CLI version,
-   set it afterward via the console: bucket → object → Properties →
-   Metadata → edit `Content-Type`.
+   (or `export NIKITASH_BUCKET=<your-bucket-name>` once per shell and
+   drop `--bucket` from then on). This uploads the full fixed set of
+   deployable files — `index.html`, `cv.html`, `theme.css`, `theme.js`,
+   `favicon.ico`, `robots.txt`, `sitemap.xml`, `site.webmanifest`,
+   `llms.txt`, and everything under `assets/` and `llm/` — via
+   `yc storage s3api put-object`, one call per file, with the
+   `--content-type` picked automatically from a table in the script
+   (this is exactly what caused the `llms.txt` charset-garbling bug in
+   the past — S3-compatible storage doesn't reliably infer charset from
+   the file extension on its own). It always deploys the full manifest
+   rather than trying to guess "what changed," since git only knows
+   local history, not what's actually live in the bucket.
+
+   Run `node scripts/deploy.mjs --dry-run` first (no bucket needed) to
+   preview the exact file → key → content-type plan with zero network
+   calls. The script continues through failures rather than stopping at
+   the first one, and prints a pass/fail summary at the end.
+
+   `content/`, `scripts/`, `docs/`, `spotify/`, `README.md`, and `.claude/`
+   are never part of the deploy — the manifest is an explicit allowlist
+   in `scripts/deploy.mjs`, not everything-minus-some-exclusions.
 
 5. **Ask for a recrawl** instead of waiting. In Google Search Console,
    use URL Inspection → Request Indexing on each changed URL. Bing and
@@ -112,6 +117,5 @@ in a real browser — `file://` won't execute the page's JavaScript.
 - [ ] `git diff` reviewed and matches intent
 - [ ] Spot-checked the live terminal (`about`, `skills`, `contact`, `cv`)
       and at least one `/llm/*` mirror in a browser
-- [ ] Deployed with `--content-type` (and `charset=utf-8`) set on every
-      uploaded file
+- [ ] `node scripts/deploy.mjs --dry-run` reviewed, then deployed for real
 - [ ] Reindex requested for changed URLs in GSC
