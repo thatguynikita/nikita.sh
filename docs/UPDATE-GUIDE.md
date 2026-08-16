@@ -70,6 +70,15 @@ hand-edited — the next build overwrites it.
    Yandex don't have as fast a manual re-fetch option, but resubmitting
    the sitemap in their consoles nudges them too.
 
+> **One-time note (2026-08 restructuring):** icons and images moved from
+> the bucket root into `assets/icons/` and `assets/img/` (e.g.
+> `favicon-32x32.png` → `assets/icons/favicon-32x32.png`,
+> `nikita-photo.png` → `assets/img/nikita-photo.png`). The bucket key
+> mirrors the repo path (`--key assets/icons/favicon-32x32.png`), same
+> pattern as any other file — but the *old* root-level keys need a
+> one-time re-upload at the new path plus deletion of the stale old-path
+> objects so they don't linger in the bucket.
+
 ## What if I need to change page chrome, not facts?
 
 Headings, button labels, and other page-chrome strings for the `/llm/`

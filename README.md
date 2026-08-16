@@ -1,6 +1,41 @@
-# nikita.sh — bilingual parallel LLM/crawler mirror
+# nikita.sh
 
-`index.html` and `cv.html` at the site root are untouched. This adds a
+An interactive JS-terminal portfolio (`index.html`) plus a résumé page
+(`cv.html`), with a plain-HTML mirror for crawlers/AI agents that don't
+execute JavaScript. Deployed as static files to a Yandex Object Storage
+bucket — the repo root mirrors the deploy root, so a few files are pinned
+to root by web/browser convention even though everything else is
+organized into folders.
+
+## Project structure
+
+```
+index.html, cv.html      → the live site (hand-authored; only their
+                            GENERATED:* data blocks are generator-owned)
+theme.css, theme.js      → shared styling/JS for both live pages
+favicon.ico, robots.txt,
+site.webmanifest,
+sitemap.xml, llms.txt    → pinned to root: browser/crawler convention
+                            requires it, not a choice
+
+assets/icons/             → favicons, apple-touch-icon, android-chrome
+assets/img/                → nikita-photo.png, og-terminal.png (OG images)
+
+content/site-data.mjs       → single source of truth for shared facts
+                               (bio, socials, skills, jobs, certs, JSON-LD)
+scripts/                     → node scripts/build.mjs propagates
+                                content/site-data.mjs into index.html,
+                                cv.html, and llm/* — see docs/UPDATE-GUIDE.md
+
+llm/                          → plain-HTML crawler mirror (see below)
+spotify/                       → now-playing widget backend (separate
+                                  service, not part of the static deploy)
+docs/UPDATE-GUIDE.md            → the content-update + deploy workflow
+```
+
+## Bilingual LLM/crawler mirror
+
+`index.html` and `cv.html` at the site root are untouched. `llm/` is a
 plain-HTML mirror under `/llm/` (English) and `/llm/ru/` (Russian), plus
 the root-level discovery files.
 
@@ -23,7 +58,7 @@ These mirror pages are generated, not hand-maintained — `content/site-data.mjs
 is the single source of truth for the shared facts (bio, skills, socials,
 job history, certs, languages, JSON-LD), and `node scripts/build.mjs`
 propagates edits into `index.html`, `cv.html`, and all 4 mirror pages in
-one run. See `UPDATE-GUIDE.md` for the workflow. The cloaking concern from
+one run. See `docs/UPDATE-GUIDE.md` for the workflow. The cloaking concern from
 the previous (hand-synced) version of these mirrors is why `index.html`/
 `cv.html` still don't link to `/llm/` directly — that part is unchanged.
 
