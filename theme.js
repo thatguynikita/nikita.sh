@@ -1,7 +1,7 @@
 /* ================================================================
    theme.js — shared theme/lang/matrix persistence for nikita.sh
-   Used by both index.html and cv.html so a preference set on one
-   page is respected on the other. Exposes window.NikitaTheme.
+   Used by index.html, cv.html, and 404.html so a preference set on
+   one page is respected on the others. Exposes window.NikitaTheme.
    ================================================================ */
 (function(){
   "use strict";
@@ -69,8 +69,8 @@
   // Creates a self-contained matrix-rain animation bound to a <canvas>,
   // handling its own resize/draw loop. Shared since the drawing logic is
   // otherwise byte-identical between pages — encapsulating it here means
-  // the two pages can't silently drift apart the way they already had
-  // (index.html was missing the tab-visibility pause cv.html had).
+  // the pages can't silently drift apart the way index.html and cv.html
+  // already had (index.html was missing the tab-visibility pause cv.html had).
   function createMatrixRain(canvasEl){
     const ctx = canvasEl.getContext('2d');
     const glyphs = "01アイウエオカキクケコサシスセソ$#&+=-<>/\\{}[]";

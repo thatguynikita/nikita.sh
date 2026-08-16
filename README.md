@@ -38,6 +38,9 @@ crawlers and AI agents that skip JavaScript still get the real content.
 |---|---|
 | **This file** | Repo layout, the bilingual `/llm/` crawler mirror, SEO/discovery notes |
 | [docs/UPDATE-GUIDE.md](docs/UPDATE-GUIDE.md) | Editing content, running the build, deploying to Yandex Object Storage |
+| [docs/TERMINAL.md](docs/TERMINAL.md) | How `index.html`'s command dispatch, mode system, and sub-features (SSH persona, fake top/kubectl, panic effect, now-playing) work |
+| [docs/CV.md](docs/CV.md) | `cv.html`'s purpose, its single-`render()` content model, and print/JSON-LD behavior |
+| [docs/404.md](docs/404.md) | `404.html`'s purpose, structure, and path-detection logic |
 | [spotify/SETUP.md](spotify/SETUP.md) | Standing up the now-playing widget on a VPS — systemd timer, nginx config, Spotify API setup |
 
 ## Project structure

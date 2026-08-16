@@ -1,6 +1,7 @@
 /* ================================================================
    theme.css — shared color tokens + minimal chrome for nikita.sh
-   Used by both index.html (the terminal) and cv.html (the resume).
+   Used by index.html (the terminal), cv.html (the resume), and
+   404.html (the error page).
    Keep this file the single source of truth for anything shared —
    page-specific layout (chips, jobs, etc.) stays in each page's
    own <style> block.

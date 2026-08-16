@@ -9,8 +9,8 @@ Thumbs.db
 *.swo
 *~
 
-# Node — scripts/build.mjs has zero dependencies today (no package.json),
-# but keep this ready in case tooling grows.
+# Node — scripts/build.mjs and scripts/deploy.mjs have zero npm
+# dependencies today, but keep this ready in case tooling grows.
 node_modules/
 npm-debug.log*
 

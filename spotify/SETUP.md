@@ -27,11 +27,14 @@ sudo cp spotify-widget.service /etc/systemd/system/
 sudo cp spotify-widget.timer /etc/systemd/system/
 ```
 
-**Note:** the service file uses `DynamicUser=yes` for sandboxing, which means
-systemd creates a temporary unprivileged user to run the script. Make sure
+**Note:** the service file runs as `User=www-data`/`Group=www-data` — the
+same user nginx runs as — with `ReadWritePaths` restricting it to
+`/var/www/nikita.sh` (plus `NoNewPrivileges`/`ProtectSystem=strict`/
+`ProtectHome=yes` for light sandboxing beyond that). Make sure
 `ReadWritePaths` in `spotify-widget.service` points at the actual directory
-containing your `OUTPUT_PATH`, and that directory is writable by that dynamic
-user (systemd handles the permissions automatically via `ReadWritePaths`).
+containing your `OUTPUT_PATH`, and that `www-data` owns (or can write to)
+that directory — since it's the same user nginx already runs as, this is
+usually already the case for anything under `/var/www`.
 
 ## 4. Enable and start the timer
 ```bash
@@ -85,11 +88,11 @@ curl https://nikita.sh/now-playing.json
 ```
 
 **Permissions note:** the script writes the file with default permissions
-(readable by everyone, `644`), and nginx just needs read access to
-`/var/www/nikita.sh/now-playing.json` and execute access on the directory —
-no special ownership needed since `DynamicUser` writes it as world-readable
-by default. If you get a `403` from nginx, check `ls -l /var/www/nikita.sh/`
-and `chmod o+rx /var/www/nikita.sh` if needed.
+(readable by everyone, `644`), and since it runs as `www-data` — the same
+user nginx runs as — there's no cross-user ownership issue to worry about.
+nginx just needs read access to `/var/www/nikita.sh/now-playing.json` and
+execute access on the directory. If you get a `403` from nginx, check
+`ls -l /var/www/nikita.sh/` and `chmod o+rx /var/www/nikita.sh` if needed.
 
 ## 6. Frontend integration
 

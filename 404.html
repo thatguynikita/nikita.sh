@@ -99,8 +99,8 @@
       <span class="term-title">guest@nikita.sh — bash — 404</span>
     </div>
     <div class="term-body">
-      <div class="line"><span class="ps">guest@nikita.sh <span class="path">~</span> $</span>cd <span id="reqPath">/requested-path</span></div>
-      <div class="line err">bash: cd: <span id="reqPathEcho">/requested-path</span>: <span id="notFoundText">No such file or directory</span></div>
+      <div class="line"><span class="ps">guest@nikita.sh <span class="path">~</span> $</span>ls <span id="reqPath">requested-path</span></div>
+      <div class="line err">ls: <span id="reqPathEcho">requested-path</span>: <span id="notFoundText">No such file or directory</span></div>
 
       <div class="scene">
         <div class="cat">
@@ -164,7 +164,8 @@
     let p;
     try { p = decodeURIComponent(location.pathname); }
     catch(e){ p = location.pathname || ""; }
-    return (!p || p === "/") ? "/unknown-page" : p;
+    p = p.replace(/^\/+/, "");
+    return p || "unknown-page";
   }
 
   const requestedPath = getRequestedPath();
