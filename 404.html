@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>404 — nikita.sh</title>
+<meta name="description" content="404 — page not found.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#060a08">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/theme.css">
+<style>
+  .topbar{
+    display:flex; justify-content:space-between; align-items:center;
+    font-size:12px; color:var(--fg-dim); margin-bottom:10px; padding:0;
+    letter-spacing:.03em;
+  }
+  .topbar .right{display:flex; gap:2px; align-items:center;}
+  .topbar button{
+    color:var(--fg-dim); cursor:pointer; background:none; border:none; font:inherit;
+    letter-spacing:.03em; padding:6px 8px; border-radius:4px;
+  }
+  .topbar button:hover{color:var(--fg); text-shadow:var(--glow); background:rgba(61,255,138,.08);}
+  #langChip{display:inline-block; width:calc(2.5ch + 16px); text-align:center;}
+
+  .term-body{padding:22px 24px 20px; font-size:14px; line-height:1.6;}
+  .ps{color:var(--fg); text-shadow:var(--glow); margin-right:8px; white-space:nowrap;}
+  .ps .path{color:var(--accent);}
+  .line{margin:0 0 4px; word-break:break-word;}
+  .err{color:var(--red);}
+
+  /* ---------- scene: cat + spilled condensed-milk cans ---------- */
+  .scene{
+    position:relative; margin:26px 0 22px; padding:18px 10px 10px;
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+  }
+
+  /* Same duotone treatment as cv.html's avatar photo: grayscale the source
+     image, then blend a solid var(--fg) layer over it with mix-blend-mode:
+     color, so the cat re-tints with whatever `theme` is active. The overlay
+     is masked to the image's own alpha channel (not a plain rectangle),
+     since unlike the avatar this photo isn't sitting in an opaque frame. */
+  .cat{position:relative; text-align:center;}
+  .cat-frame{position:relative; display:inline-block; width:min(480px, 92vw);}
+  .cat-photo{
+    display:block; width:100%; height:auto;
+    filter:grayscale(1) contrast(1.05) brightness(1.05);
+  }
+  .cat-frame::after{
+    content:"";
+    position:absolute; inset:0;
+    background:var(--fg);
+    mix-blend-mode:color;
+    opacity:.85;
+    -webkit-mask-image:url(/assets/img/404-cat.png);
+    mask-image:url(/assets/img/404-cat.png);
+    -webkit-mask-size:100% 100%;
+    mask-size:100% 100%;
+    -webkit-mask-repeat:no-repeat;
+    mask-repeat:no-repeat;
+    pointer-events:none;
+  }
+
+  .message{margin:18px auto 22px; max-width:520px; text-align:center;}
+  .message p{margin:0 0 6px;}
+
+  footer{padding-bottom:6px;}
+
+  @media (max-width:560px){
+    .term-body{font-size:13px; padding:18px 16px 16px;}
+    body{padding:14px 8px 10px;}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="matrix" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+<div class="crt" aria-hidden="true"></div>
+
+<div class="wrap">
+  <div class="topbar">
+    <a href="https://nikita.sh">&larr; nikita.sh</a>
+    <div class="right">
+      <button id="langChip" data-lang="ru">RU</button>
+      <a href="/cv.html">cv.html &rarr;</a>
+    </div>
+  </div>
+  <div id="langAnnounce" class="sr-only" aria-live="polite"></div>
+
+  <div class="term">
+    <div class="term-head">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="term-title">guest@nikita.sh — bash — 404</span>
+    </div>
+    <div class="term-body">
+      <div class="line"><span class="ps">guest@nikita.sh <span class="path">~</span> $</span>cd <span id="reqPath">/requested-path</span></div>
+      <div class="line err">bash: cd: <span id="reqPathEcho">/requested-path</span>: <span id="notFoundText">No such file or directory</span></div>
+
+      <div class="scene">
+        <div class="cat">
+          <div class="cat-frame">
+            <img class="cat-photo" id="catPhoto" src="/assets/img/404-cat.png" alt="">
+          </div>
+        </div>
+      </div>
+
+      <div class="message" id="message"></div>
+    </div>
+  </div>
+
+  <footer id="pageFooter">
+    © 2026 <a href="https://nikita.sh" target="_blank" rel="noopener">Nikita Chernozipunnikov</a> ·
+    <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0</a>
+    · <a href="https://nikita.sh" id="footerBack">back to terminal</a>
+  </footer>
+</div>
+
+<script src="/theme.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  if(!window.NikitaTheme){
+    window.NikitaTheme = {
+      THEME_STORAGE_KEY: 'nikita.sh:theme',
+      LANG_STORAGE_KEY: 'nikita.sh:lang',
+      MATRIX_STORAGE_KEY: 'nikita.sh:matrix',
+      readStored: function(){ return null; },
+      writeStored: function(){},
+      applyTheme: function(){ return null; },
+    };
+  }
+
+  const matrixRain = window.NikitaTheme.createMatrixRain(document.getElementById('matrix'));
+  const restored = window.NikitaTheme.restoreSettings();
+  if(restored.matrixColor) matrixRain.setColor(restored.matrixColor);
+  matrixRain.setEnabled(restored.matrixEnabled);
+  let lang = restored.lang;
+
+  const UI = {
+    en: {
+      notFound: "No such file or directory",
+      message1: "Oops! Looks like the cat ate all the condensed milk... and your page too.",
+      catAlt: "An orange cat lies on its back, tired, surrounded by spilled condensed-milk cans.",
+      footerBack: "back to terminal", langChip: "RU",
+      langSwitchLabel: "Switch to Russian", langAnnounce: "Language switched to English",
+    },
+    ru: {
+      notFound: "Нет такого файла или каталога",
+      message1: "Ой! Похоже, котик съел всю сгущёнку... и вашу страницу тоже.",
+      catAlt: "Рыжий кот лежит на спине, уставший, вокруг рассыпаны банки сгущёнки.",
+      footerBack: "назад в терминал", langChip: "EN",
+      langSwitchLabel: "Переключить на английский", langAnnounce: "Язык переключён на русский",
+    },
+  };
+
+  function getRequestedPath(){
+    let p;
+    try { p = decodeURIComponent(location.pathname); }
+    catch(e){ p = location.pathname || ""; }
+    return (!p || p === "/") ? "/unknown-page" : p;
+  }
+
+  const requestedPath = getRequestedPath();
+
+  function render(){
+    const U = UI[lang];
+    document.documentElement.lang = lang;
+
+    document.getElementById('reqPath').textContent = requestedPath;
+    document.getElementById('reqPathEcho').textContent = requestedPath;
+    document.getElementById('notFoundText').textContent = U.notFound;
+
+    document.getElementById('message').innerHTML =
+      `<p>${U.message1}</p>`;
+
+    document.getElementById('catPhoto').alt = U.catAlt;
+
+    document.getElementById('footerBack').textContent = U.footerBack;
+  }
+
+  render();
+
+  const langChip = document.getElementById('langChip');
+  const langAnnounce = document.getElementById('langAnnounce');
+  function updateLangChip(){
+    langChip.textContent = UI[lang].langChip;
+    langChip.setAttribute('aria-label', UI[lang].langSwitchLabel);
+  }
+  langChip.addEventListener('click', ()=>{
+    lang = lang === 'en' ? 'ru' : 'en';
+    updateLangChip();
+    render();
+    window.NikitaTheme.writeStored(window.NikitaTheme.LANG_STORAGE_KEY, lang);
+    if(langAnnounce) langAnnounce.textContent = UI[lang].langAnnounce;
+  });
+
+  updateLangChip();
+})();
+</script>
+</body>
+</html>

@@ -34,6 +34,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const ROOT_FILES = [
   "index.html",
   "cv.html",
+  "404.html",
   "theme.css",
   "theme.js",
   "favicon.ico",
