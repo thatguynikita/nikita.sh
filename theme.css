@@ -108,3 +108,15 @@ body{
 .amber{color:var(--amber); text-shadow:var(--amber-glow);}
 a{color:var(--accent);}
 a:hover{text-shadow:0 0 8px var(--accent);}
+
+.line{margin:0 0 2px; word-break:break-word;}
+
+.topbar a{color:var(--fg-dim); text-decoration:none; padding:6px 8px; border-radius:4px;}
+.topbar a:hover{color:var(--fg); text-shadow:var(--glow); background:rgba(61,255,138,.08);}
+
+footer{
+  margin-top:14px; font-size:11px; color:var(--fg-dim); text-align:center;
+  letter-spacing:.03em;
+}
+footer a{color:var(--fg-dim); text-decoration:underline;}
+footer a:hover{color:var(--fg);}
