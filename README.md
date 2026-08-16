@@ -1,5 +1,7 @@
 # nikita.sh
 
+[![CI](https://github.com/thatguynikita/nikita.sh/actions/workflows/ci.yml/badge.svg)](https://github.com/thatguynikita/nikita.sh/actions/workflows/ci.yml)
+
 <p align="center">
   <img src="assets/img/og-terminal.png" width="560" alt="nikita.sh — the neofetch card in the live terminal, showing an ASCII portrait, role, uptime, and now-playing track">
 </p>

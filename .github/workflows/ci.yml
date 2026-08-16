@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify generated content is in sync
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run content build (content/site-data.mjs -> index.html, cv.html, llm/*, sitemap.xml)
+        run: npm run build
+
+      - name: Fail if the build produced any drift
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error::npm run build produced changes that aren't committed."
+            echo "This usually means a GENERATED:* block or a llm/* mirror page was hand-edited,"
+            echo "or content/site-data.mjs changed without running the build. Run"
+            echo "'npm run build' locally and commit the result."
+            echo
+            git status --porcelain
+            echo
+            git --no-pager diff
+            exit 1
+          fi
+
+      - name: Deploy dry-run sanity check
+        run: npm run deploy:dry-run

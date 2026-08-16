@@ -22,8 +22,9 @@ hand-edited — the next build overwrites it.
 
 2. **Run the build:**
    ```bash
-   node scripts/build.mjs
+   npm run build
    ```
+   (equivalent to `node scripts/build.mjs` directly, if you'd rather skip npm)
    This regenerates:
    - the `GENERATED:*` data blocks inside `index.html` and `cv.html`
      (everything else in those files — layout, terminal logic, styling —
@@ -46,10 +47,11 @@ hand-edited — the next build overwrites it.
 
 4. **Deploy:**
    ```bash
-   node scripts/deploy.mjs --bucket <your-bucket-name>
+   npm run deploy -- --bucket <your-bucket-name>
    ```
    (or `export NIKITASH_BUCKET=<your-bucket-name>` once per shell and
-   drop `--bucket` from then on). This uploads the full fixed set of
+   drop `-- --bucket ...` for `npm run deploy` alone). This uploads the
+   full fixed set of
    deployable files — `index.html`, `cv.html`, `theme.css`, `theme.js`,
    `favicon.ico`, `robots.txt`, `sitemap.xml`, `site.webmanifest`,
    `llms.txt`, and everything under `assets/` and `llm/` — via
@@ -61,16 +63,16 @@ hand-edited — the next build overwrites it.
    rather than trying to guess "what changed," since git only knows
    local history, not what's actually live in the bucket.
 
-   Run `node scripts/deploy.mjs --dry-run` first (no bucket needed) to
-   preview the exact file → key → content-type plan with zero network
-   calls. The script continues through failures rather than stopping at
-   the first one, and prints a pass/fail summary at the end.
+   Run `npm run deploy:dry-run` first (no bucket needed) to preview the
+   exact file → key → content-type plan with zero network calls. The
+   script continues through failures rather than stopping at the first
+   one, and prints a pass/fail summary at the end.
 
    To deploy only specific files instead of the full manifest, pass them
    as extra arguments (repo-relative paths, same as they appear in
    `--dry-run` output):
    ```bash
-   node scripts/deploy.mjs --bucket <your-bucket-name> index.html cv.html
+   npm run deploy -- --bucket <your-bucket-name> index.html cv.html
    ```
    Each path is still checked against the manifest — a typo or a path
    outside the allowlist (e.g. `content/site-data.mjs`) errors out rather
@@ -115,9 +117,9 @@ in a real browser — `file://` won't execute the page's JavaScript.
 ## Sanity checklist before you consider an update "done"
 
 - [ ] `content/site-data.mjs` updated
-- [ ] `node scripts/build.mjs` run
+- [ ] `npm run build` run
 - [ ] `git diff` reviewed and matches intent
 - [ ] Spot-checked the live terminal (`about`, `skills`, `contact`, `cv`)
       and at least one `/llm/*` mirror in a browser
-- [ ] `node scripts/deploy.mjs --dry-run` reviewed, then deployed for real
+- [ ] `npm run deploy:dry-run` reviewed, then deployed for real
 - [ ] Reindex requested for changed URLs in GSC

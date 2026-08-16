@@ -1,0 +1,22 @@
+{
+  "name": "nikita.sh",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Interactive terminal portfolio and resume, with a generated bilingual crawler mirror.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "deploy": "node scripts/deploy.mjs",
+    "deploy:dry-run": "node scripts/deploy.mjs --dry-run"
+  },
+  "author": "Nikita Chernozipunnikov",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thatguynikita/nikita.sh.git"
+  },
+  "homepage": "https://nikita.sh"
+}
