@@ -23,6 +23,8 @@ crawlers and AI agents that skip JavaScript still get the real content.
 ## What's in this repo
 
 - the interactive terminal portfolio (`index.html`) and résumé (`cv.html`)
+- a themed 404 page (`404.html`) — same terminal look, its own cat-themed
+  scene, fully hand-authored
 - a generated bilingual plain-HTML mirror for crawlers/LLMs (`llm/`)
 - a small zero-dependency Node pipeline that keeps content and structured
   data in sync across all of the above from one source of truth
@@ -43,10 +45,11 @@ crawlers and AI agents that skip JavaScript still get the real content.
 | Path | What it is |
 |---|---|
 | `index.html`, `cv.html` | The live site — hand-authored; only their `GENERATED:*` data blocks are generator-owned |
-| `theme.css`, `theme.js` | Shared styling/JS for both live pages |
+| `404.html` | Custom error page — fully hand-authored, no `GENERATED:*` blocks (`content/site-data.mjs` doesn't apply to it) |
+| `theme.css`, `theme.js` | Shared styling/JS for all three live pages |
 | `favicon.ico`, `robots.txt`, `site.webmanifest`, `sitemap.xml`, `llms.txt` | Pinned to root — browser/crawler convention requires it, not a choice |
 | `assets/icons/` | Favicons, apple-touch-icon, android-chrome |
-| `assets/img/` | `nikita-photo.png`, `og-terminal.png` (OG images) |
+| `assets/img/` | `nikita-photo.png`, `og-terminal.png` (OG images), `404-cat.png` (404 page art) |
 | `content/site-data.mjs` | Single source of truth for shared facts (bio, socials, skills, jobs, certs, JSON-LD) |
 | `scripts/` | `build.mjs` propagates `content/site-data.mjs` into `index.html`, `cv.html`, and `llm/*`; `deploy.mjs` pushes to Yandex Object Storage |
 | `llm/` | Plain-HTML crawler mirror (see below) |

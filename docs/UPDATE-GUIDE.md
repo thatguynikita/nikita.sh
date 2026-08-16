@@ -52,8 +52,8 @@ hand-edited — the next build overwrites it.
    (or `export NIKITASH_BUCKET=<your-bucket-name>` once per shell and
    drop `-- --bucket ...` for `npm run deploy` alone). This uploads the
    full fixed set of
-   deployable files — `index.html`, `cv.html`, `theme.css`, `theme.js`,
-   `favicon.ico`, `robots.txt`, `sitemap.xml`, `site.webmanifest`,
+   deployable files — `index.html`, `cv.html`, `404.html`, `theme.css`,
+   `theme.js`, `favicon.ico`, `robots.txt`, `sitemap.xml`, `site.webmanifest`,
    `llms.txt`, and everything under `assets/` and `llm/` — via
    `yc storage s3api put-object`, one call per file, with the
    `--content-type` picked automatically from a table in the script
@@ -95,7 +95,9 @@ mirrors live in small `UI` objects at the top of
 — edit those directly, then re-run the build. `index.html`/`cv.html`'s own
 chrome (everything outside the `GENERATED:*` markers) is edited directly
 in those files — no build step involved, since it's hand-authored, not
-generated.
+generated. `404.html` is entirely hand-authored the same way — it has no
+`GENERATED:*` blocks at all, so `content/site-data.mjs` and `build.mjs`
+don't touch it; edit it directly.
 
 ## Adding a new generated field
 
@@ -111,8 +113,9 @@ form for markers sitting outside a `<script>` tag), then add a matching
 ## Local preview
 
 `.claude/launch.json` defines a `static` preview config
-(`python3 -m http.server`) so the terminal and cv.html can be exercised
-in a real browser — `file://` won't execute the page's JavaScript.
+(`python3 -m http.server`) so the terminal, cv.html, and 404.html can be
+exercised in a real browser — `file://` won't execute the page's
+JavaScript.
 
 ## Sanity checklist before you consider an update "done"
 
