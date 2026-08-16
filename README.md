@@ -44,13 +44,13 @@ crawlers and AI agents that skip JavaScript still get the real content.
 | `spotify/` | Now-playing widget backend — separate service, not part of the static deploy |
 | `docs/UPDATE-GUIDE.md` | The content-update + deploy workflow |
 
-## Bilingual LLM/crawler mirror
+## Crawler mirror (`/llm/`)
 
-`index.html` and `cv.html` at the site root are untouched. `llm/` is a
-plain-HTML mirror under `/llm/` (English) and `/llm/ru/` (Russian), plus
-the root-level discovery files.
-
-## /llm/ mirror files
+`index.html` and `cv.html` are the live, JS-rendered site. `llm/` is a
+generated plain-HTML mirror of the same content — English at `/llm/`,
+Russian at `/llm/ru/` — for crawlers and AI agents that don't execute
+JavaScript. It's generated from `content/site-data.mjs` by
+`node scripts/build.mjs`, not hand-maintained (see `docs/UPDATE-GUIDE.md`).
 
 | File | What it is |
 |---|---|
@@ -63,39 +63,10 @@ the root-level discovery files.
 | `llm/ru/index.html` | RU profile |
 | `llm/ru/cv.html` | RU full CV |
 
-## Content source
-
-These mirror pages are generated, not hand-maintained — `content/site-data.mjs`
-is the single source of truth for the shared facts (bio, skills, socials,
-job history, certs, languages, JSON-LD), and `node scripts/build.mjs`
-propagates edits into `index.html`, `cv.html`, and all 4 mirror pages in
-one run. See `docs/UPDATE-GUIDE.md` for the workflow. The cloaking concern from
-the previous (hand-synced) version of these mirrors is why `index.html`/
-`cv.html` still don't link to `/llm/` directly — that part is unchanged.
-
-## Bilingual setup
-
-- Each EN page has `<link rel="alternate" hreflang="ru" ...>` pointing to
-  its RU counterpart, and vice versa, plus `x-default` pointing at EN.
-- `sitemap.xml` repeats the same hreflang alternates per Google's
-  guidance for multilingual sitemaps, so crawlers that read sitemaps
-  (rather than in-page tags) also get the language relationship.
-- Visible `EN / RU` links sit at the top of every mirror page for anyone
-  (human or agent) who lands on the "wrong" language.
-
-## Discovery
-
-Same mechanism as before — `sitemap.xml` and `llms.txt` list `/llm/` and
-`/llm/ru/` directly, since nothing in `index.html`/`cv.html` links to them.
-Submit `sitemap.xml` to Google Search Console, Bing Webmaster Tools, and
-Yandex.Webmaster so indexing doesn't depend on a crawler finding it
-unprompted.
-
-## Still to do outside these files
-
-- Register the domain and submit `sitemap.xml` in the three search
-  consoles.
-- Add `rel="me"` back-links: put `https://nikita.sh` in the "website"
-  field on GitHub, LinkedIn, Telegram, Twitter, Facebook, and Instagram,
-  matching the `sameAs` list in the JSON-LD.
-- Wikidata: only once you have an independent citing source.
+**Discovery**: `index.html`/`cv.html` never link to `/llm/` on purpose —
+a JS page and a plain-HTML page serving the same content differently at
+the same URL would read as cloaking to search engines. Instead
+`sitemap.xml` and `llms.txt` list `/llm/` and `/llm/ru/` directly, each
+EN/RU pair cross-references the other via `hreflang` (plus `x-default`
+pointing at EN), and every mirror page has a visible `EN`/`RU` switcher
+for anyone who lands on the wrong language.
