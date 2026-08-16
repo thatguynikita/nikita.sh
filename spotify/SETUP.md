@@ -45,49 +45,33 @@ cat /var/www/nikita.sh/now-playing.json
 
 ## 5. Add a location block to nginx to serve the JSON file
 
-`nikita.sh`'s `/` location is a reverse proxy to your Yandex Cloud origin —
-there's no local docroot for the apex domain, so nginx won't automatically
-pick up a file dropped in `/var/www/nikita.sh`. Add one `location` block
-that serves *just* that one file locally, and make sure it comes **before**
-the catch-all `location /` proxy block (nginx matches the most specific
-location first regardless of order, but keeping it above is clearer to read).
+If `/` on your domain is a reverse proxy (no local docroot for the apex
+domain), nginx won't automatically pick up a file dropped in
+`/var/www/nikita.sh`. Add one `location` block that serves *just* that
+one file locally, above your existing `location /` proxy block (nginx
+matches the most specific location regardless of order, but keeping it
+above is clearer to read).
 
 Create the directory first:
 ```bash
 sudo mkdir -p /var/www/nikita.sh
 ```
 
-Then edit `/etc/nginx/sites-available/nikita.sh` and add this inside the
-`nikita.sh` (port 443) server block, alongside the existing `location /`:
+Then add this inside your existing HTTPS server block for the domain,
+alongside your existing `location /`:
 
 ```nginx
-# nikita.sh -> Yandex origin
-server {
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2;
-    server_name nikita.sh;
-    ssl_certificate     /etc/letsencrypt/live/nikita.sh/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/nikita.sh/privkey.pem;
-
-    location = /now-playing.json {
-        alias /var/www/nikita.sh/now-playing.json;
-        add_header Cache-Control "no-store";
-        default_type application/json;
-    }
-
-    location / {
-        proxy_pass http://<redacted-yandex-website-endpoint>;
-        proxy_set_header Host <redacted-yandex-website-endpoint>;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
+location = /now-playing.json {
+    alias /var/www/nikita.sh/now-playing.json;
+    add_header Cache-Control "no-store";
+    default_type application/json;
 }
 ```
 
-`location = /now-playing.json` is an exact match, so it takes priority over
-the prefix-matched `location /` — requests for that one path get served
-from disk, everything else still proxies to Yandex as before.
+`location = /now-playing.json` is an exact match, so it takes priority
+over a prefix-matched `location /` — requests for that one path get
+served from disk, everything else keeps proxying to your existing
+backend, untouched.
 
 Test and reload:
 ```bash
@@ -107,9 +91,18 @@ no special ownership needed since `DynamicUser` writes it as world-readable
 by default. If you get a `403` from nginx, check `ls -l /var/www/nikita.sh/`
 and `chmod o+rx /var/www/nikita.sh` if needed.
 
-## 6. Add the widget to your site
-Copy the markup/CSS/JS from `now-playing-widget.html` into your page.
-Adjust `ENDPOINT` in the script if the JSON file isn't at the site root.
+## 6. Frontend integration
+
+nikita.sh's own frontend already polls `/now-playing.json` and renders it
+inside the terminal's neofetch card (see `fetchNowPlaying()` in
+`index.html`) — once steps 1–5 are done, it picks the widget up
+automatically, nothing else to wire up here.
+
+`now-playing-widget.html` in this folder is a separate, generic reference
+implementation (its own markup/CSS/JS, not tied to nikita.sh's theme) —
+useful only if you want to reuse this backend behind a different
+frontend. Adjust `ENDPOINT` in its script if the JSON file isn't served
+at that frontend's site root.
 
 ## Useful commands
 ```bash
