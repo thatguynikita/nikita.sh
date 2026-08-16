@@ -1,6 +1,8 @@
 # nikita.sh
 
-<img src="assets/img/og-terminal.png" width="560" alt="nikita.sh — the neofetch card in the live terminal, showing an ASCII portrait, role, uptime, and now-playing track">
+<p align="center">
+  <img src="assets/img/og-terminal.png" width="560" alt="nikita.sh — the neofetch card in the live terminal, showing an ASCII portrait, role, uptime, and now-playing track">
+</p>
 
 **[nikita.sh](https://nikita.sh)** is a DevOps/SRE portfolio dressed up
 as a terminal — a playful homage, not a real shell. Type `help` once
