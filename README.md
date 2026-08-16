@@ -1,6 +1,11 @@
 # nikita.sh
 
-[![CI](https://github.com/thatguynikita/nikita.sh/actions/workflows/ci.yml/badge.svg)](https://github.com/thatguynikita/nikita.sh/actions/workflows/ci.yml)
+<p align="center">
+  <a href="https://github.com/thatguynikita/nikita.sh/actions/workflows/ci.yml"><img src="https://github.com/thatguynikita/nikita.sh/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/thatguynikita/nikita.sh" alt="Code license: MIT"></a>
+  <a href="LICENSE-CONTENT"><img src="https://img.shields.io/badge/content-CC_BY--NC--ND_4.0-lightgrey" alt="Content license: CC BY-NC-ND 4.0"></a>
+  <a href="https://nikita.sh"><img src="https://img.shields.io/badge/site-nikita.sh-brightgreen" alt="Live site"></a>
+</p>
 
 <p align="center">
   <img src="assets/img/og-terminal.png" width="560" alt="nikita.sh — the neofetch card in the live terminal, showing an ASCII portrait, role, uptime, and now-playing track">
