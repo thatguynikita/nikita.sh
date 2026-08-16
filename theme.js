@@ -6,10 +6,16 @@
 (function(){
   "use strict";
 
+  // gameHue: hue-rotate() angle fed to the cat.nikita.sh game overlay's
+  // CRT-tint filter (see index.html's .game-view iframe) so that tint
+  // lands on each theme's own color instead of always being green.
+  // Solved from the CSS Filter Effects matrices (grayscale(.55) ->
+  // sepia(.5) -> hue-rotate -> saturate(1.8)) for the angle whose output
+  // hue best matches each theme's --fg.
   const THEME_MAP = {
-    green:{fg:"#3dff8a",dim:"#2a9c60",accent:"#5ff1ff",warn:"#ffb454"},
-    amber:{fg:"#ffb454",dim:"#a06a1f",accent:"#ffe08a",warn:"#5ff1ff"},
-    cyan :{fg:"#5ff1ff",dim:"#2a8a9c",accent:"#3dff8a",warn:"#ffb454"},
+    green:{fg:"#3dff8a",dim:"#2a9c60",accent:"#5ff1ff",warn:"#ffb454",gameHue:"75deg"},
+    amber:{fg:"#ffb454",dim:"#a06a1f",accent:"#ffe08a",warn:"#5ff1ff",gameHue:"-6deg"},
+    cyan :{fg:"#5ff1ff",dim:"#2a8a9c",accent:"#3dff8a",warn:"#ffb454",gameHue:"137deg"},
   };
 
   const THEME_STORAGE_KEY = 'nikita.sh:theme';
@@ -37,6 +43,9 @@
     root.setProperty('--amber-glow', `0 0 6px ${t.warn}99`);
     root.setProperty('--border', `${t.fg}47`);
     root.setProperty('--glow', `0 0 4px ${t.fg}, 0 0 12px ${t.fg}88, 0 0 24px ${t.fg}44`);
+    root.setProperty('--ambient', `${t.fg}0f`);
+    root.setProperty('--ambient-inset', `${t.fg}08`);
+    root.setProperty('--game-hue', t.gameHue);
     return t.fg;
   }
 

@@ -18,6 +18,9 @@
   --red:#ff5f56;
   --border:rgba(61,255,138,.28);
   --glow:0 0 4px rgba(61,255,138,.85), 0 0 12px rgba(61,255,138,.45), 0 0 24px rgba(61,255,138,.25);
+  --ambient:rgba(61,255,138,.06);
+  --ambient-inset:rgba(61,255,138,.03);
+  --game-hue:75deg;
 }
 *{box-sizing:border-box;}
 html,body{height:100%;}
@@ -30,7 +33,7 @@ html::-webkit-scrollbar{display:none;} /* Chrome/Safari/new Edge */
 body{
   margin:0;
   background:
-    radial-gradient(ellipse at 50% 0%, rgba(61,255,138,.06), transparent 60%),
+    radial-gradient(ellipse at 50% 0%, var(--ambient), transparent 60%),
     var(--bg);
   color:var(--fg);
   font-family:'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
@@ -83,7 +86,7 @@ body{
   background:linear-gradient(180deg, rgba(15,25,17,.92), rgba(6,10,8,.96));
   border:1px solid var(--border);
   border-radius:10px;
-  box-shadow:var(--glow), 0 20px 60px rgba(0,0,0,.6), inset 0 0 40px rgba(61,255,138,.03);
+  box-shadow:var(--glow), 0 20px 60px rgba(0,0,0,.6), inset 0 0 40px var(--ambient-inset);
   overflow:hidden;
   backdrop-filter:blur(2px);
 }
