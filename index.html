@@ -236,11 +236,11 @@
 </head>
 <body>
 
-<canvas id="matrix"></canvas>
-<div class="vignette"></div>
-<div class="crt"></div>
+<canvas id="matrix" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+<div class="crt" aria-hidden="true"></div>
 
-<div id="boot">&gt; booting nikita.sh ...</div>
+<div id="boot" aria-hidden="true">&gt; booting nikita.sh ...</div>
 
 <div class="wrap">
   <div class="topbar">
@@ -253,7 +253,7 @@
       <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
       <span class="term-title">guest@nikita.sh — bash — 80×24</span>
     </div>
-    <div class="term-body" id="termBody"></div>
+    <div class="term-body" id="termBody" role="log" aria-live="polite" aria-label="Terminal output"></div>
     <div class="chips" id="chips"></div>
   </div>
 
@@ -1219,6 +1219,12 @@ and SRE practices into reality.`;
       : mode === 'top'
         ? 'guest@nikita.sh — top — 80×24'
         : 'guest@nikita.sh — bash — 80×24';
+    updateA11yLabels();
+  }
+
+  function updateA11yLabels(){
+    if(cmdInput) cmdInput.setAttribute('aria-label', lang === 'ru' ? 'Поле ввода команд терминала' : 'Terminal command input');
+    if(body) body.setAttribute('aria-label', lang === 'ru' ? 'Вывод терминала' : 'Terminal output');
   }
 
   function commonPrefix(arr){
@@ -1670,6 +1676,7 @@ and SRE practices into reality.`;
           document.documentElement.lang = lang;
           printLine(t('langSet'));
           window.NikitaTheme.writeStored(LANG_STORAGE_KEY, choice);
+          updateA11yLabels();
         } else {
           printLine(t('langUsage'));
         }
@@ -1917,7 +1924,7 @@ and SRE practices into reality.`;
   /* ================= input handling ================= */
   const inputRow = el('div','input-row');
   inputRow.innerHTML = `<span class="ps" id="psLabel">guest@nikita.sh <span class="path">${PROMPT_PATH}</span> $</span>
-    <input id="cmdline" autocomplete="off" autocapitalize="off" spellcheck="false" />`;
+    <input id="cmdline" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Terminal command input" />`;
 
   const cmdInput = inputRow.querySelector('#cmdline');
   let busy = false;

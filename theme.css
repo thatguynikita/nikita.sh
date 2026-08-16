@@ -111,6 +111,12 @@ a:hover{text-shadow:0 0 8px var(--accent);}
 
 .line{margin:0 0 2px; word-break:break-word;}
 
+/* visually hidden but still announced by screen readers */
+.sr-only{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+
 .topbar a{color:var(--fg-dim); text-decoration:none; padding:6px 8px; border-radius:4px;}
 .topbar a:hover{color:var(--fg); text-shadow:var(--glow); background:rgba(61,255,138,.08);}
 

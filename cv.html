@@ -293,9 +293,9 @@
 </head>
 <body>
 
-<canvas id="matrix"></canvas>
-<div class="vignette"></div>
-<div class="crt"></div>
+<canvas id="matrix" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+<div class="crt" aria-hidden="true"></div>
 
 <div class="wrap">
   <div class="topbar">
@@ -306,6 +306,7 @@
       <span class="glow">cv.html</span>
     </div>
   </div>
+  <div id="langAnnounce" class="sr-only" aria-live="polite"></div>
 
   <div class="term">
     <div class="term-head">
@@ -633,6 +634,7 @@
       techPrefix: "// tech:",
       signOff: `$ <span class="accent">echo</span> <span class="amber">"thanks for reading this far. let's build something reliable together."</span>`,
       print: "print", footerBack: "back to terminal", langChip: "RU",
+      langSwitchLabel: "Switch to Russian", langAnnounce: "Language switched to English",
     },
     ru: {
       name: "Никита Чернозипунников",
@@ -650,6 +652,7 @@
       techPrefix: "// стек:",
       signOff: `$ <span class="accent">echo</span> <span class="amber">"спасибо, что дочитали до конца. давайте построим что-то надёжное вместе."</span>`,
       print: "печать", footerBack: "назад в терминал", langChip: "EN",
+      langSwitchLabel: "Переключить на английский", langAnnounce: "Язык переключён на русский",
     },
   };
 
@@ -731,7 +734,7 @@
     html += `</div></div>`;
 
     html += `<hr class="rule">`;
-    html += `<div class="line sign-off dim">${U.signOff}<span class="fake-cursor"></span></div>`;
+    html += `<div class="line sign-off dim">${U.signOff}<span class="fake-cursor" aria-hidden="true"></span></div>`;
 
     termBody.innerHTML = html;
     document.getElementById('printBtn').textContent = U.print;
@@ -740,14 +743,17 @@
   }
 
   const langChip = document.getElementById('langChip');
+  const langAnnounce = document.getElementById('langAnnounce');
   function updateLangChip(){
     langChip.textContent = UI[lang].langChip;
+    langChip.setAttribute('aria-label', UI[lang].langSwitchLabel);
   }
   langChip.addEventListener('click', ()=>{
     lang = lang === 'en' ? 'ru' : 'en';
     updateLangChip();
     render();
     window.NikitaTheme.writeStored(window.NikitaTheme.LANG_STORAGE_KEY, lang);
+    if(langAnnounce) langAnnounce.textContent = UI[lang].langAnnounce;
   });
 
   updateLangChip();
