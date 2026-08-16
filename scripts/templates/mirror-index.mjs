@@ -1,6 +1,6 @@
 // Renders llm/index.html (lang='en') and llm/ru/index.html (lang='ru').
 
-import { PERSON, SOCIALS, SKILLS } from "../../content/site-data.mjs";
+import { PERSON, SOCIALS, SKILLS, LICENSE_CONTENT } from "../../content/site-data.mjs";
 import { escapeHtml } from "../lib/html.mjs";
 import { aboutParagraph } from "../lib/content.mjs";
 import { buildIndexJsonLd, jsonLdScript } from "./jsonld.mjs";
@@ -34,6 +34,13 @@ function noticeText(lang) {
   return lang === "ru"
     ? `Это статическая HTML-версия <a href="https://nikita.sh/">nikita.sh</a>,\n    опубликованная для краулеров и AI-агентов, которые не выполняют JavaScript.\n    Контент соответствует живому сайту. Для интерактивной версии посетите\n    <a href="https://nikita.sh/">nikita.sh</a>. English version: <a href="https://nikita.sh/llm/">nikita.sh/llm/</a>`
     : `This is a plain-HTML mirror of <a href="https://nikita.sh/">nikita.sh</a>,\n    published for crawlers and AI agents that don't execute JavaScript. Content\n    matches the live site. Humans should visit <a href="https://nikita.sh/">nikita.sh</a>\n    for the interactive version. Russian version: <a href="https://nikita.sh/llm/ru/">nikita.sh/llm/ru/</a>`;
+}
+
+function licenseText(lang) {
+  const { holder, year, name, url } = LICENSE_CONTENT;
+  return lang === "ru"
+    ? `© ${year} ${holder}. Контент распространяется по лицензии <a href="${url}">${name}</a> — можно просматривать и делиться с указанием авторства, без коммерческого использования и без производных работ.`
+    : `© ${year} ${holder}. Content licensed <a href="${url}">${name}</a> — view and share with attribution, no commercial use, no derivatives.`;
 }
 
 export function renderIndexMirror(lang) {
@@ -95,6 +102,9 @@ ${contactRows.map(([k, v]) => `    <tr><th>${escapeHtml(k)}</th><td>${v}</td></t
 
   <p class="notice">
     ${noticeText(lang)}
+  </p>
+  <p class="notice license">
+    ${licenseText(lang)}
   </p>
 </main>
 </body>

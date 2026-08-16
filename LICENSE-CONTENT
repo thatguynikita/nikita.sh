@@ -1,0 +1,30 @@
+Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International
+(CC BY-NC-ND 4.0)
+
+Copyright (c) 2026 Nikita Chernozipunnikov
+
+This license applies to the personal and creative content of nikita.sh —
+the biography, résumé/work-history text, photography, and the terminal
+persona's writing (fortunes, boot-sequence text, easter-egg dialogue,
+and similar copy) found throughout this repository, including but not
+limited to:
+
+  - nikita-photo.png
+  - content/site-data.mjs (the facts and their written expression)
+  - the personality/copy embedded in index.html and cv.html that isn't
+    part of the terminal's underlying mechanism (fortunes, boot lines,
+    the ssh persona dialogue, and similar)
+  - the generated /llm/ mirror pages, insofar as their text is derived
+    from the above
+
+It does NOT apply to the surrounding code — the terminal engine, the
+content-generation pipeline, page structure/styling, and build/deploy
+tooling — which is MIT-licensed; see LICENSE.
+
+Under CC BY-NC-ND 4.0, you may share this content as-is with attribution,
+for non-commercial purposes. You may not use it commercially, and you
+may not distribute modified/adapted versions of it (e.g. don't reuse
+the biography, photo, or persona as your own).
+
+Full license text: https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
+Human-readable summary: https://creativecommons.org/licenses/by-nc-nd/4.0/

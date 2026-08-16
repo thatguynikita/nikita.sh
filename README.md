@@ -70,3 +70,15 @@ the same URL would read as cloaking to search engines. Instead
 EN/RU pair cross-references the other via `hreflang` (plus `x-default`
 pointing at EN), and every mirror page has a visible `EN`/`RU` switcher
 for anyone who lands on the wrong language.
+
+## License
+
+Dual-licensed:
+
+- **Code** (the terminal engine, the content-generation pipeline, build/
+  deploy tooling, page structure/styling) — [MIT](LICENSE).
+- **Content** (biography, résumé text, photography, and the terminal
+  persona's writing — fortunes, boot-sequence lines, easter-egg dialogue,
+  and similar) — [CC BY-NC-ND 4.0](LICENSE-CONTENT). View and share with
+  attribution; no commercial use, no adaptations of the persona/bio/photo
+  as your own.

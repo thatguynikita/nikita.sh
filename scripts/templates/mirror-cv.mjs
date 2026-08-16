@@ -1,6 +1,6 @@
 // Renders llm/cv.html (lang='en') and llm/ru/cv.html (lang='ru').
 
-import { PERSON, SOCIALS, SKILLS, JOBS, CERTS, LANGUAGES, EDUCATION } from "../../content/site-data.mjs";
+import { PERSON, SOCIALS, SKILLS, JOBS, CERTS, LANGUAGES, EDUCATION, LICENSE_CONTENT } from "../../content/site-data.mjs";
 import { escapeHtml } from "../lib/html.mjs";
 import { aboutCvParagraph, jobWhenLine } from "../lib/content.mjs";
 import { buildCvJsonLd, jsonLdScript } from "./jsonld.mjs";
@@ -46,6 +46,13 @@ function noticeText(lang) {
   return lang === "ru"
     ? `Это статическая HTML-версия <a href="https://nikita.sh/cv.html">nikita.sh/cv.html</a>,\n    опубликованная для краулеров и AI-агентов, которые не выполняют JavaScript. Контент\n    соответствует живому сайту. Для интерактивной версии посетите\n    <a href="https://nikita.sh/cv.html">nikita.sh/cv.html</a>. English version:\n    <a href="../cv.html">nikita.sh/llm/cv.html</a> · <a href="index.html">← назад</a>`
     : `This is a plain-HTML mirror of <a href="https://nikita.sh/cv.html">nikita.sh/cv.html</a>,\n    published for crawlers and AI agents that don't execute JavaScript. Content matches the\n    live site. Humans should visit <a href="https://nikita.sh/cv.html">nikita.sh/cv.html</a>\n    for the live version. Russian version: <a href="ru/cv.html">nikita.sh/llm/ru/cv.html</a> ·\n    <a href="index.html">← back</a>`;
+}
+
+function licenseText(lang) {
+  const { holder, year, name, url } = LICENSE_CONTENT;
+  return lang === "ru"
+    ? `© ${year} ${holder}. Контент распространяется по лицензии <a href="${url}">${name}</a> — можно просматривать и делиться с указанием авторства, без коммерческого использования и без производных работ.`
+    : `© ${year} ${holder}. Content licensed <a href="${url}">${name}</a> — view and share with attribution, no commercial use, no derivatives.`;
 }
 
 function renderJob(job, lang, U) {
@@ -142,6 +149,9 @@ ${skillsRowsHtml}
 
   <p class="notice">
     ${noticeText(lang)}
+  </p>
+  <p class="notice license">
+    ${licenseText(lang)}
   </p>
 </main>
 </body>

@@ -373,6 +373,18 @@ export const JSONLD = {
   demandName: "DevOps / SRE role, remote worldwide",
 };
 
+// -------- content license --------
+// Applies to the /llm/ mirror pages' notice footer. Matches the live
+// site's own footer (index.html/cv.html) and LICENSE-CONTENT at the repo
+// root — the code powering the site is separately MIT-licensed (see
+// LICENSE), this covers the written content itself.
+export const LICENSE_CONTENT = {
+  holder: "Nikita Chernozipunnikov",
+  year: 2026,
+  name: "CC BY-NC-ND 4.0",
+  url: "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+};
+
 // -------- cv.html's "notes.txt" / not_so_hard_skills traits list --------
 // Live cv.html only (`grep -A99 not_so_hard_skills notes.txt`) — no
 // mirror-page equivalent, since it's playful personality content rather
