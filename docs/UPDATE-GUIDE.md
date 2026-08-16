@@ -66,6 +66,16 @@ hand-edited — the next build overwrites it.
    calls. The script continues through failures rather than stopping at
    the first one, and prints a pass/fail summary at the end.
 
+   To deploy only specific files instead of the full manifest, pass them
+   as extra arguments (repo-relative paths, same as they appear in
+   `--dry-run` output):
+   ```bash
+   node scripts/deploy.mjs --bucket <your-bucket-name> index.html cv.html
+   ```
+   Each path is still checked against the manifest — a typo or a path
+   outside the allowlist (e.g. `content/site-data.mjs`) errors out rather
+   than silently deploying nothing or something unintended.
+
    `content/`, `scripts/`, `docs/`, `spotify/`, `README.md`, and `.claude/`
    are never part of the deploy — the manifest is an explicit allowlist
    in `scripts/deploy.mjs`, not everything-minus-some-exclusions.

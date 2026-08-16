@@ -4,14 +4,21 @@
 // same tool the manual workflow in docs/UPDATE-GUIDE.md already used.
 //
 // Usage:
-//   node scripts/deploy.mjs --dry-run                  # preview, no network calls, no bucket needed
-//   node scripts/deploy.mjs --bucket my-bucket          # deploy for real
-//   NIKITASH_BUCKET=my-bucket node scripts/deploy.mjs   # --bucket falls back to this env var
+//   node scripts/deploy.mjs --dry-run                        # preview everything, no network calls, no bucket needed
+//   node scripts/deploy.mjs --bucket my-bucket                # deploy the full manifest
+//   node scripts/deploy.mjs --bucket my-bucket index.html cv.html
+//                                                               # deploy only these files
+//   NIKITASH_BUCKET=my-bucket node scripts/deploy.mjs llm/index.html
+//                                                               # --bucket falls back to this env var
 //
-// Always uploads the full fixed manifest below (not "files changed since
-// last deploy") — git only knows local history, not what's actually live
-// in the bucket, and the site is small enough that a full upload is fast
-// regardless.
+// With no file arguments, uploads the full fixed manifest below (not
+// "files changed since last deploy") — git only knows local history, not
+// what's actually live in the bucket, and the site is small enough that a
+// full upload is fast regardless. Pass specific paths (repo-relative,
+// same as they appear in --dry-run output) to deploy just those instead
+// — each one is still validated against the manifest below, so this
+// narrows *which* of the deployable files get pushed, it can't be used
+// to deploy something outside the allowlist (e.g. content/site-data.mjs).
 
 import { readdirSync, statSync } from "node:fs";
 import { execFileSync } from "node:child_process";
@@ -87,14 +94,35 @@ function contentTypeFor(key) {
 // -------- args --------
 
 function parseArgs(argv) {
-  const args = { dryRun: false, bucket: null, profile: process.env.YC_PROFILE || null };
+  const args = { dryRun: false, bucket: null, profile: process.env.YC_PROFILE || null, files: [] };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === "--dry-run") args.dryRun = true;
     else if (argv[i] === "--bucket") args.bucket = argv[++i];
     else if (argv[i] === "--profile") args.profile = argv[++i];
+    else if (argv[i].startsWith("--")) {
+      console.error(`Error: unknown flag "${argv[i]}".`);
+      process.exit(1);
+    } else {
+      args.files.push(argv[i].replace(/^\.\//, "").split("\\").join("/"));
+    }
   }
   if (!args.bucket) args.bucket = process.env.NIKITASH_BUCKET || null;
   return args;
+}
+
+// Narrows the full manifest down to just the requested files, if any were
+// given — erroring out (not silently skipping) on anything not in the
+// manifest, so this can't become a backdoor around the allowlist.
+function selectFiles(fullManifest, requested) {
+  if (!requested.length) return fullManifest;
+  const manifestSet = new Set(fullManifest);
+  const invalid = requested.filter((f) => !manifestSet.has(f));
+  if (invalid.length) {
+    console.error(`Error: not in the deployable manifest: ${invalid.join(", ")}`);
+    console.error("Run with --dry-run (no file arguments) to see every deployable path.");
+    process.exit(1);
+  }
+  return requested;
 }
 
 function warnIfDirty() {
@@ -112,10 +140,12 @@ function warnIfDirty() {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  const manifest = buildManifest();
+  const fullManifest = buildManifest();
+  const manifest = selectFiles(fullManifest, args.files);
+  const selectionNote = args.files.length ? ` (${manifest.length} of ${fullManifest.length} deployable files selected)` : "";
 
   if (args.dryRun) {
-    console.log(`Dry run — ${manifest.length} file(s) would be uploaded to bucket "${args.bucket || "<bucket not set>"}":\n`);
+    console.log(`Dry run${selectionNote} — ${manifest.length} file(s) would be uploaded to bucket "${args.bucket || "<bucket not set>"}":\n`);
     for (const key of manifest) {
       console.log(`  ${key.padEnd(40)} -> ${contentTypeFor(key)}`);
     }
@@ -129,6 +159,8 @@ function main() {
   }
 
   warnIfDirty();
+
+  console.log(`Deploying ${manifest.length} file(s)${selectionNote} to bucket "${args.bucket}":\n`);
 
   const results = { ok: [], failed: [] };
   for (const key of manifest) {
