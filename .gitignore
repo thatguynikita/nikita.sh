@@ -1,0 +1,30 @@
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node — scripts/build.mjs has zero dependencies today (no package.json),
+# but keep this ready in case tooling grows.
+node_modules/
+npm-debug.log*
+
+# Python — spotify/get_refresh_token.py, spotify_now_playing.py
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Local secrets. spotify/spotify-widget.env is a committed *template*
+# (placeholder values only) — real secrets live in /etc/spotify-widget.env
+# on the VPS, never in this repo.
+*.env
+!spotify/spotify-widget.env
+
+# Claude Code local session state (personal, not shared)
+.claude/settings.local.json

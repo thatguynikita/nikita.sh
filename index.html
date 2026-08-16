@@ -635,6 +635,7 @@
     return html;
   }
 
+  /* GENERATED:ABOUT:START — edit content/site-data.mjs, then run scripts/build.mjs */
   const ABOUT_EN = `DevOps/SRE with eleven years of experience in Application Support and Operations,
 gradually developing towards AI-driven Software Development.
 
@@ -650,27 +651,31 @@ and SRE practices into reality.`;
 (и как именно они ломаются), богатый опыт администрирования Linux и сетей,
 крепкое понимание основ Computer Science и море энтузиазма по внедрению
 практик DevOps и SRE в реальную жизнь.`;
+  /* GENERATED:ABOUT:END */
 
   function ABOUT(){ return lang === 'ru' ? ABOUT_RU : ABOUT_EN; }
 
+  /* GENERATED:SKILLS:START — edit content/site-data.mjs, then run scripts/build.mjs */
   const SKILLS_EN = [
-    ["Cloud","AWS, OpenStack, Yandex Cloud"],
-    ["Containers","Docker, Kubernetes"],
-    ["Systems","Linux administration, Networking, Virtualization"],
-    ["Databases","PostgreSQL, MariaDB/MySQL, ClickHouse"],
-    ["Foundations","Computer Science, Application Support & Operations"],
+    ["Linux","RHEL, CentOS, Ubuntu, RedOS"],
+    ["Network","TCP/IP, HTTP(S), DNS, SSH, SSL/TLS, APIs, proxies, load balancers, routing, security"],
+    ["Containers","ECS, Kubernetes, OpenShift, Docker, Helm"],
+    ["Cloud","AWS (primarily), GCP, Azure, Yandex Cloud, OpenStack"],
+    ["Databases","PostgreSQL, MariaDB, MySQL, ClickHouse, MongoDB"],
   ];
 
   const SKILLS_RU = [
-    ["Облако","AWS, OpenStack, Yandex Cloud"],
-    ["Контейнеры","Docker, Kubernetes"],
-    ["Системы","Администрирование Linux, сети, виртуализация"],
-    ["Базы данных","PostgreSQL, MariaDB/MySQL, ClickHouse"],
-    ["Основы","Computer Science, Application Support & Operations"],
+    ["Linux","RHEL, CentOS, Ubuntu, RedOS"],
+    ["Сети","TCP/IP, HTTP(S), DNS, SSH, SSL/TLS, APIs, proxies, load balancers, routing, security"],
+    ["Контейнеры","ECS, Kubernetes, OpenShift, Docker, Helm"],
+    ["Облако","AWS (primarily), GCP, Azure, Yandex Cloud, OpenStack"],
+    ["Базы данных","PostgreSQL, MariaDB, MySQL, ClickHouse, MongoDB"],
   ];
+  /* GENERATED:SKILLS:END */
 
   function SKILLS(){ return lang === 'ru' ? SKILLS_RU : SKILLS_EN; }
 
+  /* GENERATED:SOCIALS:START — edit content/site-data.mjs, then run scripts/build.mjs */
   const SOCIALS = [
     ["Email","mailto:me@nikita.sh","me@nikita.sh"],
     ["Telegram","https://t.me/thatguynikita","@thatguynikita"],
@@ -680,6 +685,7 @@ and SRE practices into reality.`;
     ["Facebook","https://www.facebook.com/nikita.chernozipunnikov","nikita.chernozipunnikov"],
     ["Instagram","https://www.instagram.com/thatguynikita","@thatguynikita"],
   ];
+  /* GENERATED:SOCIALS:END */
 
   const HELP_EN = [
     ["about","who is that guy nikita anyway","about"],

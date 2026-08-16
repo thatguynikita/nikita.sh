@@ -19,11 +19,13 @@ llm/ru/cv.html               → RU full CV
 
 ## Content source
 
-Populated directly from the real `SKILLS_EN`/`SKILLS_RU`, `SOCIALS`,
-`ABOUT_EN`/`ABOUT_RU` variables and the live CV output you provided —
-not placeholders. If you update the terminal's content, update these
-mirror pages in the same sitting so the two stay in sync (see the
-cloaking note from the previous version — still applies).
+These mirror pages are generated, not hand-maintained — `content/site-data.mjs`
+is the single source of truth for the shared facts (bio, skills, socials,
+job history, certs, languages, JSON-LD), and `node scripts/build.mjs`
+propagates edits into `index.html`, `cv.html`, and all 4 mirror pages in
+one run. See `UPDATE-GUIDE.md` for the workflow. The cloaking concern from
+the previous (hand-synced) version of these mirrors is why `index.html`/
+`cv.html` still don't link to `/llm/` directly — that part is unchanged.
 
 ## Bilingual setup
 
