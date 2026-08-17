@@ -58,7 +58,7 @@ Dual-licensed and this split matters when adding new content: **code** (terminal
 
 ## Other
 
-- The "Playing" line shown in the terminal's neofetch card is produced by a separate widget backend, developed in its own repo ([thatguynikita/spotify-now-playing](https://github.com/thatguynikita/spotify-now-playing), interface documented in that repo's `CONTRACT.md`) — it used to live here under `spotify/` but was moved out, and was never part of the static site or deploy manifest.
+- The "Playing" line shown in the terminal's neofetch card is produced by a separate widget backend, in its own repo: [thatguynikita/spotify-now-playing](https://github.com/thatguynikita/spotify-now-playing).
 - `.editorconfig`: 2-space indent by default, 4-space for `*.py`, no trailing-whitespace-trim for `*.md`.
 
 ## Working conventions specific to this repo

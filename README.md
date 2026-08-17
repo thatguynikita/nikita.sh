@@ -29,8 +29,8 @@ crawlers and AI agents that skip JavaScript still get the real content.
 - a small zero-dependency Node pipeline that keeps content and structured
   data in sync across all of the above from one source of truth
   (`content/`, `scripts/`)
-- the `Playing` line above is fed by a separate widget backend, now
-  developed in its own repo:
+- the `Playing` line above is fed by a separate widget backend, in its
+  own repo:
   [spotify-now-playing](https://github.com/thatguynikita/spotify-now-playing)
 
 ## Docs
