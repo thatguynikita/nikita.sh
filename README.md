@@ -29,8 +29,9 @@ crawlers and AI agents that skip JavaScript still get the real content.
 - a small zero-dependency Node pipeline that keeps content and structured
   data in sync across all of the above from one source of truth
   (`content/`, `scripts/`)
-- a Spotify "now playing" widget backend — the `Playing` line above —
-  deployed separately from the static site (`spotify/`)
+- the `Playing` line above is fed by a separate widget backend, now
+  developed in its own repo:
+  [spotify-now-playing](https://github.com/thatguynikita/spotify-now-playing)
 
 ## Docs
 
@@ -41,7 +42,6 @@ crawlers and AI agents that skip JavaScript still get the real content.
 | [docs/TERMINAL.md](docs/TERMINAL.md) | What you can do in `index.html`'s terminal — commands, easter eggs, and hidden features |
 | [docs/CV.md](docs/CV.md) | What's on the `cv.html` résumé page and how printing/language switching work |
 | [docs/404.md](docs/404.md) | What the `404.html` error page shows visitors |
-| [spotify/SETUP.md](spotify/SETUP.md) | Standing up the now-playing widget on a VPS — systemd timer, nginx config, Spotify API setup |
 
 ## Project structure
 
@@ -56,7 +56,6 @@ crawlers and AI agents that skip JavaScript still get the real content.
 | `content/site-data.mjs` | Single source of truth for shared facts (bio, socials, skills, jobs, certs, JSON-LD) |
 | `scripts/` | `build.mjs` propagates `content/site-data.mjs` into `index.html`, `cv.html`, and `llm/*`; `deploy.mjs` pushes to Yandex Object Storage |
 | `llm/` | Plain-HTML crawler mirror (see below) |
-| `spotify/` | Now-playing widget backend — separate service, not part of the static deploy |
 | `docs/UPDATE-GUIDE.md` | The content-update + deploy workflow |
 
 ## Crawler mirror (`/llm/`)

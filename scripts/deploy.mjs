@@ -28,7 +28,7 @@ import { dirname, join, extname, relative } from "node:path";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 // -------- manifest: explicit allowlist, not a blocklist --------
-// content/, scripts/, docs/, spotify/, README.md, .claude/, .git etc.
+// content/, scripts/, docs/, README.md, .claude/, .git etc.
 // can never end up here by accident.
 
 const ROOT_FILES = [
