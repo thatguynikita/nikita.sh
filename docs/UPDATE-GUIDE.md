@@ -78,7 +78,7 @@ hand-edited — the next build overwrites it.
    outside the allowlist (e.g. `content/site-data.mjs`) errors out rather
    than silently deploying nothing or something unintended.
 
-   `content/`, `scripts/`, `docs/`, `spotify/`, `README.md`, and `.claude/`
+   `content/`, `scripts/`, `docs/`, `README.md`, and `.claude/`
    are never part of the deploy — the manifest is an explicit allowlist
    in `scripts/deploy.mjs`, not everything-minus-some-exclusions.
 

@@ -36,7 +36,7 @@ Full workflow and the "adding a new generated field" recipe: `docs/UPDATE-GUIDE.
 
 ## Deploy
 
-`scripts/deploy.mjs` shells out to `yc storage s3api put-object` (Yandex Object Storage) — one call per file, zero dependencies. The manifest is an **explicit allowlist**, not a blocklist: root files (`index.html`, `cv.html`, `404.html`, `theme.css`, `theme.js`, `favicon.ico`, `robots.txt`, `sitemap.xml`, `site.webmanifest`, `llms.txt`) plus everything under `assets/` and `llm/`. `content/`, `scripts/`, `docs/`, `spotify/`, `README.md`, `.claude/` can never end up in a deploy by accident. Content-Type is picked from a table keyed by extension (this replaced a manual process that once garbled `llms.txt`'s charset). Always deploys the full manifest, not a diff — git only knows local history, not what's actually live in the bucket.
+`scripts/deploy.mjs` shells out to `yc storage s3api put-object` (Yandex Object Storage) — one call per file, zero dependencies. The manifest is an **explicit allowlist**, not a blocklist: root files (`index.html`, `cv.html`, `404.html`, `theme.css`, `theme.js`, `favicon.ico`, `robots.txt`, `sitemap.xml`, `site.webmanifest`, `llms.txt`) plus everything under `assets/` and `llm/`. `content/`, `scripts/`, `docs/`, `README.md`, `.claude/` can never end up in a deploy by accident. Content-Type is picked from a table keyed by extension (this replaced a manual process that once garbled `llms.txt`'s charset). Always deploys the full manifest, not a diff — git only knows local history, not what's actually live in the bucket.
 
 ## Theming and shared JS (`theme.js` / `theme.css`)
 
@@ -58,7 +58,7 @@ Dual-licensed and this split matters when adding new content: **code** (terminal
 
 ## Other
 
-- `spotify/` is a separate widget backend (systemd timer + nginx on a VPS, see `spotify/SETUP.md`) that produces the "Playing" line shown in the terminal's neofetch card — it is not part of the static site and is explicitly excluded from the deploy manifest.
+- The "Playing" line shown in the terminal's neofetch card is produced by a separate widget backend, in its own repo: [thatguynikita/spotify-now-playing](https://github.com/thatguynikita/spotify-now-playing).
 - `.editorconfig`: 2-space indent by default, 4-space for `*.py`, no trailing-whitespace-trim for `*.md`.
 
 ## Working conventions specific to this repo
