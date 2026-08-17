@@ -42,6 +42,13 @@ export const PERSON = {
 // a separate repo (https://github.com/thatguynikita/spotify-now-playing,
 // interface documented in that repo's CONTRACT.md) — swapping to a
 // different backend/host is just an edit here, no index.html changes.
+//
+// If `endpoint` ever points cross-origin (e.g. a Cloud Function URL like
+// https://functions.yandexcloud.net/<id>, instead of a same-origin path
+// like the default below), the live site's nginx config also needs that
+// origin added to its Content-Security-Policy `connect-src` directive —
+// otherwise the browser silently blocks the fetch. That header lives on
+// the VPS, not in this repo, so it won't show up in `git diff` here.
 export const NOW_PLAYING = {
   endpoint: "/now-playing.json",
   pollMs: 20000,
