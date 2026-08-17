@@ -10,7 +10,7 @@ import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-import { ABOUT, SOCIALS, SKILLS, JOBS, CERTS, LANGUAGES, EDUCATION, TRAITS } from "../content/site-data.mjs";
+import { ABOUT, SOCIALS, SKILLS, JOBS, CERTS, LANGUAGES, EDUCATION, TRAITS, NOW_PLAYING } from "../content/site-data.mjs";
 import { aboutCvParagraph, jobLocationText } from "./lib/content.mjs";
 import { replaceMarker } from "./lib/markers.mjs";
 import { renderIndexMirror } from "./templates/mirror-index.mjs";
@@ -50,6 +50,9 @@ function buildIndexHtml() {
   const indexSocials = SOCIALS.filter((s) => s.contexts.includes("index"));
   const socialsBody = `  const SOCIALS = [\n${tupleBlock(indexSocials.map((s) => [s.label, s.href, s.display]))}\n  ];`;
   html = replaceMarker(html, "SOCIALS", socialsBody);
+
+  const nowPlayingBody = `  const NP_ENDPOINT = ${JSON.stringify(NOW_PLAYING.endpoint)};\n  const NP_POLL_MS = ${JSON.stringify(NOW_PLAYING.pollMs)};`;
+  html = replaceMarker(html, "NOWPLAYING", nowPlayingBody);
 
   write("index.html", html);
 }

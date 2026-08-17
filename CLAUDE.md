@@ -58,7 +58,7 @@ Dual-licensed and this split matters when adding new content: **code** (terminal
 
 ## Other
 
-- The "Playing" line shown in the terminal's neofetch card is produced by a separate widget backend, in its own repo: [thatguynikita/spotify-now-playing](https://github.com/thatguynikita/spotify-now-playing).
+- The "Playing" line shown in the terminal's neofetch card is produced by a separate widget backend, in its own repo: [thatguynikita/spotify-now-playing](https://github.com/thatguynikita/spotify-now-playing). Which endpoint `index.html` polls for it (and how often) is configurable via `NOW_PLAYING` in `content/site-data.mjs`, not hardcoded in `index.html` — swapping backends is a one-line content edit + `npm run build`, same as any other generated field.
 - `.editorconfig`: 2-space indent by default, 4-space for `*.py`, no trailing-whitespace-trim for `*.md`.
 
 ## Working conventions specific to this repo
