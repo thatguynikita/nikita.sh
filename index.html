@@ -559,8 +559,10 @@
   }
 
   /* ================= now playing (lives inside neofetch) ================= */
-  const NP_ENDPOINT = '/now-playing.json';
+  /* GENERATED:NOWPLAYING:START — edit content/site-data.mjs, then run scripts/build.mjs */
+  const NP_ENDPOINT = "/now-playing.json";
   const NP_POLL_MS = 20000;
+  /* GENERATED:NOWPLAYING:END */
   let npLatest; // undefined = unknown/offline, null = idle, string = "track — artist"
   let npUrl = null; // spotify link for the current track, if any
 

@@ -35,6 +35,18 @@ export const PERSON = {
   addressCountry: "RU",
 };
 
+// -------- now-playing widget --------
+// Config for index.html's now-playing poller (the `Playing` row in the
+// neofetch card). `endpoint` is fetched with `cache:'no-store'` every
+// `pollMs`. The widget backend that actually serves this JSON lives in
+// a separate repo (https://github.com/thatguynikita/spotify-now-playing,
+// interface documented in that repo's CONTRACT.md) — swapping to a
+// different backend/host is just an edit here, no index.html changes.
+export const NOW_PLAYING = {
+  endpoint: "/now-playing.json",
+  pollMs: 20000,
+};
+
 // -------- about --------
 // Kept with its original internal line-wraps (index.html's terminal types
 // this out line by line via `.split("\n")`, so the wrap points are load-
