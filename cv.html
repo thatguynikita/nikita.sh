@@ -344,6 +344,7 @@
   const matrixRain = window.NikitaTheme.createMatrixRain(document.getElementById('matrix'));
   const restored = window.NikitaTheme.restoreSettings();
   if(restored.matrixColor) matrixRain.setColor(restored.matrixColor);
+  if(restored.matrixFade) matrixRain.setFadeColor(restored.matrixFade);
   matrixRain.setEnabled(restored.matrixEnabled);
 
   /* ================= content data ================= */
