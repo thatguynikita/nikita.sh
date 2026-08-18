@@ -1015,9 +1015,29 @@ and SRE practices into reality.`;
 
   const POD_NAMES = ["cat-deployment-7f9d8c-x2m4q","condensed-milk-store-0","sre-sanity-canary","deploy-friday-afternoon"];
 
+  const ALIASES = [
+    "alias ll='ls -l'",
+    "alias pwd='pwd'",
+    "alias hostname='hostname'",
+    "alias uname='uname -a'",
+    "alias id='id'",
+    "alias df='df -h'",
+    "alias free='free -h'",
+    "alias uptime='uptime'",
+    "alias dmesg='dmesg'",
+    "alias who='who'",
+    "alias w='w'",
+    "alias ps='ps aux'",
+    "alias env='env'",
+    "alias rm='rm -i'",
+  ];
+
   function getArgCandidates(base, remainderLower){
     switch(base){
-      case "cat": return ["about.txt","skills.txt","contact.txt","cv.html","nikita.sh"];
+      case "cat": {
+        const files = ["about.txt","skills.txt","contact.txt","cv.html","nikita.sh"];
+        return remainderLower.startsWith('.') ? [".bashrc", ...files] : files;
+      }
       case "theme": return sabbaticalUnlocked ? ["green","amber","cyan",SECRET_THEME_NAME] : ["green","amber","cyan"];
       case "matrix": return ["on","off"];
       case "lang": return ["ru","en"];
@@ -1064,6 +1084,7 @@ and SRE practices into reality.`;
 
   function lsFiles(){
     return [
+      { name:'.bashrc', perms:'-rw-r--r--', size: 268, hidden:true },
       { name:'about.txt', perms:'-rw-r--r--', size: 401 },
       { name:'skills.txt', perms:'-rw-r--r--', size: 237 },
       { name:'contact.txt', perms:'-rw-r--r--', size: 184 },
@@ -1081,7 +1102,7 @@ and SRE practices into reality.`;
   }
 
   function renderLs({ longFormat, human, all }){
-    const files = lsFiles();
+    const files = lsFiles().filter(f => all || !f.hidden);
     if(!longFormat){
       const names = files.map(f => f.accent ? `<span class="accent">${f.name}</span>` : f.name);
       if(all) names.unshift('..', '.');
@@ -1499,6 +1520,11 @@ and SRE practices into reality.`;
         else if(arg === "skills.txt") { SKILLS().forEach(([k,v])=>printLine(`<span class="accent">${k}:</span> ${v}`)); }
         else if(arg === "contact.txt") { SOCIALS.forEach(([l,h,tt])=>printLine(`<span class="accent">${l}:</span> <a href="${h}" target="_blank" rel="noopener">${tt}</a>`)); }
         else if(arg === "cv.html") { printLine(t('catNotText')); }
+        else if(arg === ".bashrc") {
+          printLine(`<span class="dim"># ~/.bashrc</span>`);
+          printLine('&nbsp;');
+          ALIASES.forEach(line => printLine(line));
+        }
         else if(arg === "nikita.sh" || arg === "./nikita.sh") {
           const lines = lang === 'ru' ? [
             `#!/bin/bash`,
@@ -1639,22 +1665,7 @@ and SRE practices into reality.`;
         break;
       }
       case "alias": {
-        [
-          "alias ll='ls -l'",
-          "alias pwd='pwd'",
-          "alias hostname='hostname'",
-          "alias uname='uname -a'",
-          "alias id='id'",
-          "alias df='df -h'",
-          "alias free='free -h'",
-          "alias uptime='uptime'",
-          "alias dmesg='dmesg'",
-          "alias who='who'",
-          "alias w='w'",
-          "alias ps='ps aux'",
-          "alias env='env'",
-          "alias rm='rm -i'",
-        ].forEach(line => printLine(line));
+        ALIASES.forEach(line => printLine(line));
         break;
       }
       case "matrix": {
