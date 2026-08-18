@@ -9,7 +9,7 @@
 
 :root{
   --bg:#050806;
-  --bg-rgb:5,8,6;            /* --bg split into r,g,b — var() can't be torn apart inside rgba() */
+  --bg-rgb:5,8,6;
   --panel:#070d09;
   --fg:#3dff8a;
   --fg-dim:#2a9c60;
@@ -35,24 +35,24 @@
   --accent:#3199e1;
   --amber:#eca944;
   --amber-glow:0 0 6px rgba(236,169,68,.35);
-  --red:#c9484c;             /* darkened vs raw ayu red (#ea6c6d) — too washed out on this bg */
+  --red:#c9484c;
   --bg:#f8f9fa;
   --bg-rgb:248,249,250;
   --border:rgba(92,97,102,.28);
-  --glow:0 0 1px rgba(92,97,102,.35);   /* explicit override — auto-derived glow reads muddy on a light bg */
+  --glow:0 0 1px rgba(92,97,102,.35);
   --ambient:rgba(92,97,102,.05);
   --ambient-inset:rgba(92,97,102,.03);
-  --tint-rgb:92,97,102;      /* replaces the rgba(61,255,138,*) literals used across all 3 pages */
+  --tint-rgb:92,97,102;
   --term-g1:rgba(255,255,255,.92);
   --term-g2:rgba(240,242,244,.96);
   --term-head-bg:rgba(92,97,102,.07);
   --chips-bg:rgba(92,97,102,.05);
   --boot-bg:#f3f5f7;
-  --vignette-bg:none;        /* dark-corners vignette reads as a glowing circle on a light page */
+  --vignette-bg:none;
   --game-frame-g1:rgba(255,255,255,.96);
   --game-frame-g2:rgba(240,242,244,.98);
   --game-hint-bg:rgba(92,97,102,.06);
-  --game-filter:grayscale(1) brightness(1.05) contrast(1.02);  /* plain grayscale, no hue tint */
+  --game-filter:grayscale(1) brightness(1.05) contrast(1.02);
 }
 
 *{box-sizing:border-box;}
@@ -68,8 +68,6 @@ body{
   background:
     radial-gradient(ellipse at 50% 0%, var(--ambient), transparent 60%),
     var(--bg);
-  /* fixed, not scroll — keeps the gradient sized to the viewport, not
-     each page's own height, so it tints consistently across pages. */
   background-attachment:fixed;
   color:var(--fg);
   font-family:'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
@@ -115,8 +113,7 @@ body{
   95%{opacity:.75;}
   96%{opacity:1;}
 }
-/* The flicker's opacity dip is invisible on a dark bg, but flashes white
-   on sabbatical's near-white --bg — freeze it there instead. */
+
 :root[data-theme="sabbatical"] .crt{
   animation:none;
   opacity:.9;

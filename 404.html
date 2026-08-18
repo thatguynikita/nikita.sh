@@ -34,17 +34,11 @@
   .line{margin:0 0 4px; word-break:break-word;}
   .err{color:var(--red);}
 
-  /* ---------- scene: cat + spilled condensed-milk cans ---------- */
   .scene{
     position:relative; margin:26px 0 22px; padding:18px 10px 10px;
     display:flex; flex-direction:column; align-items:center; gap:14px;
   }
 
-  /* Same duotone treatment as cv.html's avatar photo: grayscale the source
-     image, then blend a solid var(--fg) layer over it with mix-blend-mode:
-     color, so the cat re-tints with whatever `theme` is active. The overlay
-     is masked to the image's own alpha channel (not a plain rectangle),
-     since unlike the avatar this photo isn't sitting in an opaque frame. */
   .cat{position:relative; text-align:center;}
   .cat-frame{position:relative; display:inline-block; width:min(480px, 92vw);}
   .cat-photo{

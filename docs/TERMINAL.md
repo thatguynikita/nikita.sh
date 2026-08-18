@@ -56,9 +56,8 @@ the same info as the commands above, "file" flavored.
 
 - `theme green` / `amber` / `cyan` changes the color scheme.
 - There's a 4th, hidden theme — not listed in `theme`'s usage or
-  tab-completion. Ask `claude "add light theme"` twice (the first time
-  just gets the usual dismissive joke) to unlock it, or guess its name
-  directly with `theme sabbatical`.
+  tab-completion. Ask `claude "add light theme"` multiple times to unlock 
+  it, or guess its name directly with `theme sabbatical`.
 - `matrix on` / `off` toggles the background "digital rain" effect.
 - `lang en` / `ru` switches the whole site's language — same toggle as
   the language chip in the corner.

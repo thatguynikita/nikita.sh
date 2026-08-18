@@ -6,16 +6,12 @@
 (function(){
   "use strict";
 
-  // gameHue: hue-rotate() angle for the cat.nikita.sh game overlay's CRT
-  // tint, solved per-theme from the CSS Filter Effects matrices so it
-  // matches each theme's --fg instead of always being green.
   const THEME_MAP = {
     green:{fg:"#3dff8a",dim:"#2a9c60",accent:"#5ff1ff",warn:"#ffb454",gameHue:"75deg"},
     amber:{fg:"#ffb454",dim:"#a06a1f",accent:"#ffe08a",warn:"#5ff1ff",gameHue:"-6deg"},
     cyan :{fg:"#5ff1ff",dim:"#2a8a9c",accent:"#3dff8a",warn:"#ffb454",gameHue:"137deg"},
     // Secret theme (easter egg — not listed anywhere). Full palette lives in
-    // theme.css's :root[data-theme="sabbatical"] block; this entry only
-    // carries what canvas-only code needs. No gameHue on purpose.
+    // theme.css's :root[data-theme="sabbatical"] block.
     sabbatical:{fg:"#5c6166",matrixColor:"#8a9199",matrixFade:"rgba(248,249,250,.12)"},
   };
 
@@ -34,9 +30,6 @@
     try { localStorage.setItem(key, value); } catch(e){}
   }
 
-  // Applies a theme by name to :root custom properties. Returns the
-  // theme's fg color (handy for callers that also need to recolor a
-  // <canvas> matrix rain, since canvas can't read CSS vars directly).
   function applyTheme(name){
     const t = THEME_MAP[name];
     if(!t) return null;
@@ -44,8 +37,6 @@
 
     if(DATA_THEME_NAMES.has(name)){
       // Palette comes from theme.css's :root[data-theme="..."] block.
-      // Clear inline overrides a previous JS-driven theme left behind —
-      // inline style beats a stylesheet rule regardless of specificity.
       document.documentElement.dataset.theme = name;
       ['--fg','--fg-dim','--accent','--amber','--amber-glow','--border',
        '--glow','--ambient','--ambient-inset','--game-hue']
@@ -88,10 +79,7 @@
   }
 
   // Creates a self-contained matrix-rain animation bound to a <canvas>,
-  // handling its own resize/draw loop. Shared since the drawing logic is
-  // otherwise byte-identical between pages — encapsulating it here means
-  // the pages can't silently drift apart the way index.html and cv.html
-  // already had (index.html was missing the tab-visibility pause cv.html had).
+  // handling its own resize/draw loop.
   function createMatrixRain(canvasEl){
     const ctx = canvasEl.getContext('2d');
     const glyphs = "01アイウエオカキクケコサシスセソ$#&+=-<>/\\{}[]";

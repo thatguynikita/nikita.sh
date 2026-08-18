@@ -172,13 +172,8 @@
   footer{padding-bottom:6px;}
 
   /* ---------- game overlay (CRT monitor) ---------- */
-  /* .game-frame/.game-hint are theme-reactive chrome, like .term.
-     .game-view/.game-scan/.game-vignette stay fixed/dark for every
-     theme — a CRT screen doesn't turn light with the site theme. */
   .game-overlay{
     position:fixed; inset:0; z-index:50;
-    /* Tinted from --bg-rgb and translucent so the animating #matrix
-       canvas behind it stays visible instead of being fully blocked. */
     background:rgba(var(--bg-rgb, 2,4,3), .75);
     display:flex; align-items:center; justify-content:center; padding:20px;
     overflow-y:auto;
@@ -205,9 +200,6 @@
   .game-view{position:relative; flex:1; background:#000;}
   .game-view iframe{
     width:100%; height:100%; border:0; display:block; background:#000;
-    /* --game-hue tints the CRT to match the active theme; sabbatical
-       overrides the whole filter via --game-filter for plain grayscale
-       instead, since a colored tint doesn't fit a light theme. */
     filter:var(--game-filter, grayscale(.55) sepia(.5) hue-rotate(var(--game-hue, 75deg)) saturate(1.8) brightness(1.08) contrast(1.02));
   }
   .game-scan{
@@ -1216,7 +1208,7 @@ and SRE practices into reality.`;
   let sshPersonaKey = null;
   let sshFailCount = 0;
   let lightThemeAttempts = 0;
-  let sabbaticalUnlocked = false; // becomes true once claude "builds" the theme — see the "add light theme" easter egg
+  let sabbaticalUnlocked = false;
   let topInterval = null;
   let topContainerEl = null;
   function psHTML(){
@@ -1765,8 +1757,8 @@ and SRE practices into reality.`;
                 { text: `<span class="dim"> ⎿  Read theme.js</span>`, delay: 250 },
                 { text: `<span class="dim"> ⎿  Read theme.css</span>`, delay: 200 },
                 { text: lang === 'ru'
-                    ? 'Четвёртой темы тут нет. Видимо, придётся написать самому.'
-                    : "No fourth theme in here. Guess I'll have to write one.", delay: 650, typed: true },
+                    ? 'Светлой темы тут нет. Видимо, придётся написать самому.'
+                    : "No light theme in here. Guess I'll have to write one.", delay: 650, typed: true },
                 { text: `<span class="dim"> ⎿  Edit theme.css</span>`, delay: 300 },
                 { text: lang === 'ru'
                     ? 'Набрасываю светлую палитру... что-то в духе Ayu Light.'
@@ -1782,7 +1774,7 @@ and SRE practices into reality.`;
               ]);
               sabbaticalUnlocked = true;
               await playSequence([
-                { text: lang === 'ru' ? 'Переоткрываю тикет. Снимаю пометку won\'t-fix. Что-нибудь ещё?' : "Reopening the ticket. Un-marking as won't-fix. Anything else?", delay: 350, typed: true },
+                { text: lang === 'ru' ? 'Снимаю пометку won\'t-fix. Что-нибудь ещё?' : "Un-marking as won't-fix. Anything else?", delay: 350, typed: true },
               ]);
             } else {
               await playSequence([
