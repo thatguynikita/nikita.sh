@@ -9,6 +9,7 @@
 
 :root{
   --bg:#050806;
+  --bg-rgb:5,8,6;            /* same as --bg, split into r,g,b — needed wherever a background needs its own alpha (e.g. the game overlay backdrop), since var() can't be torn apart inside rgba() */
   --panel:#070d09;
   --fg:#3dff8a;
   --fg-dim:#2a9c60;
@@ -41,6 +42,7 @@
   --amber-glow:0 0 6px rgba(236,169,68,.35);
   --red:#c9484c;             /* darkened vs raw ayu red (#ea6c6d) — that reads washed-out/pink at ~2.9:1 on this bg */
   --bg:#f8f9fa;
+  --bg-rgb:248,249,250;
   --border:rgba(92,97,102,.28);
   --glow:0 0 1px rgba(92,97,102,.35);   /* explicit override, not auto-derived — a dark fg's auto-derived glow reads as a muddy shadow, not a glow, on a light bg */
   --ambient:rgba(92,97,102,.05);
@@ -70,6 +72,13 @@ body{
   background:
     radial-gradient(ellipse at 50% 0%, var(--ambient), transparent 60%),
     var(--bg);
+  /* fixed, not the scroll default — otherwise the gradient is sized
+     against the page's own (variable) height, so a tall page like
+     cv.html tints noticeably more of the visible viewport than a short
+     one like 404.html on first load, even though both use the same
+     --ambient value. Pinning to the viewport keeps it consistent
+     across pages regardless of how much content each one has. */
+  background-attachment:fixed;
   color:var(--fg);
   font-family:'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   min-height:100vh;

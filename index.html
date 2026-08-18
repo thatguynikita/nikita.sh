@@ -180,7 +180,12 @@
      a CRT screen doesn't turn light just because the site theme did. */
   .game-overlay{
     position:fixed; inset:0; z-index:50;
-    background:rgba(2,4,3,.9);
+    /* Tinted from --bg-rgb (same across all 4 themes) rather than a
+       flat hardcoded dark rgba, and translucent enough that the page's
+       own #matrix canvas — still animating behind this overlay,
+       z-index:0, untouched by opening the game — stays visible through
+       it instead of being nearly fully blocked. */
+    background:rgba(var(--bg-rgb, 2,4,3), .75);
     display:flex; align-items:center; justify-content:center; padding:20px;
     overflow-y:auto;
   }
