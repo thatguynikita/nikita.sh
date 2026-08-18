@@ -1768,7 +1768,7 @@ and SRE practices into reality.`;
                     : "I could add one, but I'd like to flag it may upset the cat.", delay: 350, typed: true },
                 { text: lang === 'ru' ? 'Помечаю как won\'t-fix. Что-нибудь ещё?' : "Marking as won't-fix. Anything else?", delay: 350, typed: true },
               ]);
-            } else {
+            } else if(lightThemeAttempts === 2){
               await playSequence([
                 { text: lang === 'ru' ? 'Ладно, ты настойчив. На этот раз действительно сделаю это.' : "Alright, you're persistent. Let me actually build it this time.", delay: 600, typed: true },
                 { text: `<span class="dim"> ⎿  Read theme.js</span>`, delay: 250 },
@@ -1792,6 +1792,13 @@ and SRE practices into reality.`;
               sabbaticalUnlocked = true;
               await playSequence([
                 { text: lang === 'ru' ? 'Переоткрываю тикет. Снимаю пометку won\'t-fix. Что-нибудь ещё?' : "Reopening the ticket. Un-marking as won't-fix. Anything else?", delay: 350, typed: true },
+              ]);
+            } else {
+              await playSequence([
+                { text: lang === 'ru' ? 'Мы это уже обсуждали.' : "We've been over this.", delay: 500, typed: true },
+                { text: lang === 'ru'
+                    ? `Тикет помечен как выполненный. Строить больше нечего — просто набери theme ${SECRET_THEME_NAME}.`
+                    : `Ticket's marked done. Nothing left to build — just type theme ${SECRET_THEME_NAME}.`, delay: 400, typed: true },
               ]);
             }
           } else if(pl === 'fix the bug'){
