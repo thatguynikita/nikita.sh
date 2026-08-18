@@ -9,7 +9,7 @@
 
 :root{
   --bg:#050806;
-  --bg-rgb:5,8,6;            /* same as --bg, split into r,g,b — needed wherever a background needs its own alpha (e.g. the game overlay backdrop), since var() can't be torn apart inside rgba() */
+  --bg-rgb:5,8,6;
   --panel:#070d09;
   --fg:#3dff8a;
   --fg-dim:#2a9c60;
@@ -26,13 +26,8 @@
 }
 
 /* ---------- secret theme: sabbatical (easter egg — not listed anywhere) ----------
-   Whole palette lives here, not in theme.js, so it's a plain CSS edit +
-   reload to tune. Activated by theme.js's applyTheme() toggling this
-   data-theme attribute on <html>. Higher specificity than the base
-   :root block above, so it cleanly overrides --fg/--border/--glow/etc.
-   without touching green/amber/cyan (they never set this attribute, so
-   this block simply never applies to them). Colors are a first pass
-   inspired by Ayu Light (https://terminalcolors.com/themes/ayu/light/). */
+   Toggled via theme.js's applyTheme() setting data-theme on <html>.
+   Colors inspired by Ayu Light (https://terminalcolors.com/themes/ayu/light/). */
 :root[data-theme="sabbatical"]{
   --fg:#5c6166;
   --fg-dim:#8a9199;
@@ -40,24 +35,24 @@
   --accent:#3199e1;
   --amber:#eca944;
   --amber-glow:0 0 6px rgba(236,169,68,.35);
-  --red:#c9484c;             /* darkened vs raw ayu red (#ea6c6d) — that reads washed-out/pink at ~2.9:1 on this bg */
+  --red:#c9484c;
   --bg:#f8f9fa;
   --bg-rgb:248,249,250;
   --border:rgba(92,97,102,.28);
-  --glow:0 0 1px rgba(92,97,102,.35);   /* explicit override, not auto-derived — a dark fg's auto-derived glow reads as a muddy shadow, not a glow, on a light bg */
+  --glow:0 0 1px rgba(92,97,102,.35);
   --ambient:rgba(92,97,102,.05);
   --ambient-inset:rgba(92,97,102,.03);
-  --tint-rgb:92,97,102;      /* replaces the rgba(61,255,138,*) hover/wash literals used across theme.css/index.html/cv.html/404.html */
+  --tint-rgb:92,97,102;
   --term-g1:rgba(255,255,255,.92);
   --term-g2:rgba(240,242,244,.96);
   --term-head-bg:rgba(92,97,102,.07);
   --chips-bg:rgba(92,97,102,.05);
   --boot-bg:#f3f5f7;
-  --vignette-bg:none;        /* the dark-corners vignette reads as a bright glowing circle in the middle of a light page — just drop it here */
+  --vignette-bg:none;
   --game-frame-g1:rgba(255,255,255,.96);
   --game-frame-g2:rgba(240,242,244,.98);
   --game-hint-bg:rgba(92,97,102,.06);
-  --game-filter:grayscale(1) brightness(1.05) contrast(1.02);  /* plain grayscale — no sepia/hue-rotate tint on the CRT screen */
+  --game-filter:grayscale(1) brightness(1.05) contrast(1.02);
 }
 
 *{box-sizing:border-box;}
@@ -73,12 +68,6 @@ body{
   background:
     radial-gradient(ellipse at 50% 0%, var(--ambient), transparent 60%),
     var(--bg);
-  /* fixed, not the scroll default — otherwise the gradient is sized
-     against the page's own (variable) height, so a tall page like
-     cv.html tints noticeably more of the visible viewport than a short
-     one like 404.html on first load, even though both use the same
-     --ambient value. Pinning to the viewport keeps it consistent
-     across pages regardless of how much content each one has. */
   background-attachment:fixed;
   color:var(--fg);
   font-family:'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
@@ -123,6 +112,11 @@ body{
   94%{opacity:1;}
   95%{opacity:.75;}
   96%{opacity:1;}
+}
+
+:root[data-theme="sabbatical"] .crt{
+  animation:none;
+  opacity:.9;
 }
 
 .wrap{position:relative; z-index:2; width:100%; max-width:880px;}

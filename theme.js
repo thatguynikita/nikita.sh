@@ -6,29 +6,17 @@
 (function(){
   "use strict";
 
-  // gameHue: hue-rotate() angle fed to the cat.nikita.sh game overlay's
-  // CRT-tint filter (see index.html's .game-view iframe) so that tint
-  // lands on each theme's own color instead of always being green.
-  // Solved from the CSS Filter Effects matrices (grayscale(.55) ->
-  // sepia(.5) -> hue-rotate -> saturate(1.8)) for the angle whose output
-  // hue best matches each theme's --fg.
   const THEME_MAP = {
     green:{fg:"#3dff8a",dim:"#2a9c60",accent:"#5ff1ff",warn:"#ffb454",gameHue:"75deg"},
     amber:{fg:"#ffb454",dim:"#a06a1f",accent:"#ffe08a",warn:"#5ff1ff",gameHue:"-6deg"},
     cyan :{fg:"#5ff1ff",dim:"#2a8a9c",accent:"#3dff8a",warn:"#ffb454",gameHue:"137deg"},
-    // Secret theme (easter egg — not listed in help/usage/tab-completion
-    // anywhere). Its full palette lives in theme.css's
-    // :root[data-theme="sabbatical"] block, not here — this entry only
-    // carries what canvas-only code needs, since <canvas> can't read CSS
-    // custom properties. No gameHue on purpose: the cat.nikita.sh game
-    // overlay's CRT tint falls back to the CSS default (75deg/green)
-    // rather than trying to match a light theme, which wouldn't make
-    // sense for a filter meant to look like a dark CRT screen.
+    // Secret theme (easter egg — not listed anywhere). Full palette lives in
+    // theme.css's :root[data-theme="sabbatical"] block.
     sabbatical:{fg:"#5c6166",matrixColor:"#8a9199",matrixFade:"rgba(248,249,250,.12)"},
   };
 
-  // Themes whose full palette lives in theme.css's [data-theme] block
-  // rather than being computed here from a fg/dim/accent/warn set.
+  // Themes whose palette lives in theme.css's [data-theme] block instead
+  // of being computed here from fg/dim/accent/warn.
   const DATA_THEME_NAMES = new Set(['sabbatical']);
 
   const THEME_STORAGE_KEY = 'nikita.sh:theme';
@@ -42,9 +30,6 @@
     try { localStorage.setItem(key, value); } catch(e){}
   }
 
-  // Applies a theme by name to :root custom properties. Returns the
-  // theme's fg color (handy for callers that also need to recolor a
-  // <canvas> matrix rain, since canvas can't read CSS vars directly).
   function applyTheme(name){
     const t = THEME_MAP[name];
     if(!t) return null;
@@ -52,11 +37,6 @@
 
     if(DATA_THEME_NAMES.has(name)){
       // Palette comes from theme.css's :root[data-theme="..."] block.
-      // Clear any inline overrides a previous JS-driven theme left
-      // behind — inline style always wins over a stylesheet rule
-      // regardless of selector specificity, so without this, switching
-      // e.g. green -> sabbatical live (no reload) would keep showing
-      // green's --fg/--border/etc. instead of picking up the CSS block.
       document.documentElement.dataset.theme = name;
       ['--fg','--fg-dim','--accent','--amber','--amber-glow','--border',
        '--glow','--ambient','--ambient-inset','--game-hue']
@@ -99,10 +79,7 @@
   }
 
   // Creates a self-contained matrix-rain animation bound to a <canvas>,
-  // handling its own resize/draw loop. Shared since the drawing logic is
-  // otherwise byte-identical between pages — encapsulating it here means
-  // the pages can't silently drift apart the way index.html and cv.html
-  // already had (index.html was missing the tab-visibility pause cv.html had).
+  // handling its own resize/draw loop.
   function createMatrixRain(canvasEl){
     const ctx = canvasEl.getContext('2d');
     const glyphs = "01アイウエオカキクケコサシスセソ$#&+=-<>/\\{}[]";
