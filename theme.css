@@ -124,6 +124,17 @@ body{
   95%{opacity:.75;}
   96%{opacity:1;}
 }
+/* The flicker keyframes swing this multiply-darkening overlay's opacity
+   down to .7 for a moment each cycle — on a dark bg that dip is barely
+   visible, but on sabbatical's near-white --bg it lets enough of the true
+   background through to read as a brief flash to white. A "CRT interference"
+   flicker doesn't fit a light paper-like theme anyway (see the no-vignette,
+   no-game-hue precedents above), so just freeze it instead of tuning the
+   keyframe values per theme. */
+:root[data-theme="sabbatical"] .crt{
+  animation:none;
+  opacity:.9;
+}
 
 .wrap{position:relative; z-index:2; width:100%; max-width:880px;}
 
