@@ -174,10 +174,11 @@
   /* ---------- game overlay (CRT monitor) ---------- */
   /* .game-frame/.game-hint are the surrounding window chrome — theme-
      reactive like .term, via the var(x, <original>) fallback trick.
-     .game-view/.game-scan/.game-vignette/the iframe's own filter are the
-     simulated monitor screen inside that chrome and intentionally stay
-     fixed/dark for every theme (including sabbatical, no --game-hue) —
-     a CRT screen doesn't turn light just because the site theme did. */
+     .game-view/.game-scan/.game-vignette stay fixed/dark for every
+     theme — a CRT screen doesn't turn light just because the site
+     theme did. The iframe's own filter is the exception: sabbatical
+     overrides it to plain grayscale via --game-filter (see below)
+     instead of leaving it to fall back to green's hue-rotate tint. */
   .game-overlay{
     position:fixed; inset:0; z-index:50;
     /* Tinted from --bg-rgb (same across all 4 themes) rather than a
@@ -212,8 +213,11 @@
   .game-view iframe{
     width:100%; height:100%; border:0; display:block; background:#000;
     /* hue-rotate reads --game-hue so the CRT tint matches whichever
-       theme is active, instead of always landing on green. */
-    filter:grayscale(.55) sepia(.5) hue-rotate(var(--game-hue, 75deg)) saturate(1.8) brightness(1.08) contrast(1.02);
+       theme is active, instead of always landing on green. sabbatical
+       overrides the whole filter via --game-filter instead of just
+       --game-hue — a colored CRT tint (even recomputed) doesn't make
+       sense for a light theme, so it gets a plain grayscale look. */
+    filter:var(--game-filter, grayscale(.55) sepia(.5) hue-rotate(var(--game-hue, 75deg)) saturate(1.8) brightness(1.08) contrast(1.02));
   }
   .game-scan{
     position:absolute; inset:0; pointer-events:none;

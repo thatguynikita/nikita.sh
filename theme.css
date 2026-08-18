@@ -57,6 +57,7 @@
   --game-frame-g1:rgba(255,255,255,.96);
   --game-frame-g2:rgba(240,242,244,.98);
   --game-hint-bg:rgba(92,97,102,.06);
+  --game-filter:grayscale(1) brightness(1.05) contrast(1.02);  /* plain grayscale — no sepia/hue-rotate tint on the CRT screen */
 }
 
 *{box-sizing:border-box;}
