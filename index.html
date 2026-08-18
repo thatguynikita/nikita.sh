@@ -1113,14 +1113,17 @@ and SRE practices into reality.`;
     let totalBlocks = files.reduce((sum,f) => sum + Math.ceil(f.size/512), 0);
     if(all) totalBlocks += 2;
     printLine(`total ${totalBlocks}`);
+    const row = (perms, links, size, name) => {
+      const sizeStr = (human ? humanSize(size) : String(size)).padStart(6);
+      printLine(`${perms}  ${links} nikita staff ${sizeStr} ${DATE} ${name}`);
+    };
     if(all){
-      printLine(`drwxr-xr-x  2 nikita staff     160 ${DATE} .`);
-      printLine(`drwxr-xr-x  3 nikita staff      96 ${DATE} ..`);
+      row('drwxr-xr-x', 2, 160, '.');
+      row('drwxr-xr-x', 3, 96, '..');
     }
     files.forEach(f => {
-      const sizeStr = (human ? humanSize(f.size) : String(f.size)).padStart(6);
       const name = f.accent ? `<span class="accent">${f.name}</span>` : f.name;
-      printLine(`${f.perms}  1 nikita staff ${sizeStr} ${DATE} ${name}`);
+      row(f.perms, 1, f.size, name);
     });
   }
 
