@@ -47,7 +47,7 @@
 
   /* ---------- boot screen ---------- */
   #boot{
-    position:fixed; inset:0; z-index:20; background:#020402;
+    position:fixed; inset:0; z-index:20; background:var(--boot-bg, #020402);
     color:var(--fg); font-size:14px; padding:40px;
     white-space:pre-wrap; line-height:1.65;
     text-shadow:var(--glow);
@@ -93,8 +93,8 @@
 
   .line{white-space:pre-wrap;}
   .prompt-row{display:flex; align-items:baseline; flex-wrap:wrap; gap:0; cursor:pointer; border-radius:4px;}
-  .prompt-row:hover{background:rgba(61,255,138,.08);}
-  .prompt-row:active{background:rgba(61,255,138,.16);}
+  .prompt-row:hover{background:rgba(var(--tint-rgb, 61,255,138),.08);}
+  .prompt-row:active{background:rgba(var(--tint-rgb, 61,255,138),.16);}
   .ps{color:var(--fg); text-shadow:var(--glow); margin-right:8px; white-space:nowrap;}
   .ps .path{color:var(--accent);}
 
@@ -157,17 +157,17 @@
   table.tbl:not(.kv-tbl) tr:first-child td{white-space:nowrap;}
   .help-cmd{cursor:pointer; border-radius:3px;}
   .help-cmd:hover{text-decoration:underline;}
-  .help-cmd:active{background:rgba(61,255,138,.16);}
+  .help-cmd:active{background:rgba(var(--tint-rgb, 61,255,138),.16);}
 
   /* quick chips */
-  .chips{display:flex; flex-wrap:wrap; justify-content:center; gap:8px; padding:12px 16px 14px; border-top:1px solid var(--border); background:rgba(0,0,0,.25);}
+  .chips{display:flex; flex-wrap:wrap; justify-content:center; gap:8px; padding:12px 16px 14px; border-top:1px solid var(--border); background:var(--chips-bg, rgba(0,0,0,.25));}
   .chip{
     font-family:inherit; font-size:12px; color:var(--fg-dim);
-    background:rgba(61,255,138,.06); border:1px solid var(--border);
+    background:rgba(var(--tint-rgb, 61,255,138),.06); border:1px solid var(--border);
     padding:5px 11px; border-radius:20px; cursor:pointer;
     transition:.15s ease;
   }
-  .chip:hover{color:var(--fg); border-color:var(--fg); box-shadow:0 0 10px rgba(61,255,138,.35); text-shadow:var(--glow);}
+  .chip:hover{color:var(--fg); border-color:var(--fg); box-shadow:0 0 10px rgba(var(--tint-rgb, 61,255,138),.35); text-shadow:var(--glow);}
 
   footer{padding-bottom:6px;}
 
@@ -551,10 +551,12 @@
   const THEME_STORAGE_KEY = window.NikitaTheme.THEME_STORAGE_KEY;
   const LANG_STORAGE_KEY = window.NikitaTheme.LANG_STORAGE_KEY;
   const MATRIX_STORAGE_KEY = window.NikitaTheme.MATRIX_STORAGE_KEY;
+  const SECRET_THEME_NAME = "sabbatical"; // easter egg unlocked via `claude "add light theme"` (ask twice) or a lucky `theme sabbatical` guess
   {
     const restored = window.NikitaTheme.restoreSettings();
     lang = restored.lang;
     if(restored.matrixColor) matrixRain.setColor(restored.matrixColor);
+    if(restored.matrixFade) matrixRain.setFadeColor(restored.matrixFade);
     matrixRain.setEnabled(restored.matrixEnabled);
   }
 
@@ -1207,6 +1209,7 @@ and SRE practices into reality.`;
   let mode = 'shell';
   let sshPersonaKey = null;
   let sshFailCount = 0;
+  let lightThemeAttempts = 0;
   let topInterval = null;
   let topContainerEl = null;
   function psHTML(){
@@ -1244,7 +1247,9 @@ and SRE practices into reality.`;
   function setTheme(name){
     const fg = window.NikitaTheme.applyTheme(name);
     if(!fg) return false;
-    matrixRain.setColor(fg);
+    const t = window.NikitaTheme.THEME_MAP[name];
+    matrixRain.setColor((t && t.matrixColor) || fg);
+    matrixRain.setFadeColor((t && t.matrixFade) || "rgba(2,4,3,0.08)");
     return true;
   }
 
@@ -1734,17 +1739,37 @@ and SRE practices into reality.`;
           const prompt = a.replace(/^["'](.*)["']$/, '$1');
           const pl = prompt.toLowerCase();
           if(pl === 'add light theme'){
-            await playSequence([
-              { text: lang === 'ru' ? 'Проверю текущую систему тем.' : "I'll take a look at the current theming setup.", delay: 750, typed: true },
-              { text: `<span class="dim"> ⎿  Read index.html</span>`, delay: 200 },
-              { text: lang === 'ru'
-                  ? 'Нашёл — у этого сайта нет светлой темы. Никогда не было. И не будет.'
-                  : "Found it — this site doesn't have a light theme. It never has. It never will.", delay: 700, typed: true },
-              { text: lang === 'ru'
-                  ? 'Могу добавить, но хочу отметить — коту это может не понравиться.'
-                  : "I could add one, but I'd like to flag it may upset the cat.", delay: 350, typed: true },
-              { text: lang === 'ru' ? 'Помечаю как won\'t-fix. Что-нибудь ещё?' : "Marking as won't-fix. Anything else?", delay: 350, typed: true },
-            ]);
+            lightThemeAttempts++;
+            if(lightThemeAttempts === 1){
+              await playSequence([
+                { text: lang === 'ru' ? 'Проверю текущую систему тем.' : "I'll take a look at the current theming setup.", delay: 750, typed: true },
+                { text: `<span class="dim"> ⎿  Read index.html</span>`, delay: 200 },
+                { text: lang === 'ru'
+                    ? 'Нашёл — у этого сайта нет светлой темы. Никогда не было. И не будет.'
+                    : "Found it — this site doesn't have a light theme. It never has. It never will.", delay: 700, typed: true },
+                { text: lang === 'ru'
+                    ? 'Могу добавить, но хочу отметить — коту это может не понравиться.'
+                    : "I could add one, but I'd like to flag it may upset the cat.", delay: 350, typed: true },
+                { text: lang === 'ru' ? 'Помечаю как won\'t-fix. Что-нибудь ещё?' : "Marking as won't-fix. Anything else?", delay: 350, typed: true },
+              ]);
+            } else {
+              await playSequence([
+                { text: lang === 'ru' ? 'Ладно, ты настойчив. На этот раз и правда посмотрю.' : "Alright, you're persistent. Let me actually look this time.", delay: 600, typed: true },
+                { text: `<span class="dim"> ⎿  Read theme.js</span>`, delay: 250 },
+                { text: `<span class="dim"> ⎿  Read theme.css</span>`, delay: 200 },
+                { text: lang === 'ru'
+                    ? 'Нашёл уже готовую четвёртую тему. Странно — я был уверен, что говорил, что её никогда не будет.'
+                    : "Found a fourth theme already stubbed out. Weird — I could've sworn I said it would never exist.", delay: 650, typed: true },
+                { text: lang === 'ru' ? 'Применяю. Кота уведомили — он подаёт жалобу.' : "Applying it. The cat has been informed and is filing a complaint.", delay: 450, typed: true },
+              ]);
+              if(setTheme(SECRET_THEME_NAME)){
+                window.NikitaTheme.writeStored(THEME_STORAGE_KEY, SECRET_THEME_NAME);
+                printLine(t('themeSet', SECRET_THEME_NAME));
+              }
+              await playSequence([
+                { text: lang === 'ru' ? 'Переоткрываю тикет. Снимаю пометку won\'t-fix. Что-нибудь ещё?' : "Reopening the ticket. Un-marking as won't-fix. Anything else?", delay: 350, typed: true },
+              ]);
+            }
           } else if(pl === 'fix the bug'){
             await playSequence([
               { text: `<span class="dim"> ⎿  Searched for "bug"</span>`, delay: 750 },

@@ -23,6 +23,36 @@
   --ambient-inset:rgba(61,255,138,.03);
   --game-hue:75deg;
 }
+
+/* ---------- secret theme: sabbatical (easter egg — not listed anywhere) ----------
+   Whole palette lives here, not in theme.js, so it's a plain CSS edit +
+   reload to tune. Activated by theme.js's applyTheme() toggling this
+   data-theme attribute on <html>. Higher specificity than the base
+   :root block above, so it cleanly overrides --fg/--border/--glow/etc.
+   without touching green/amber/cyan (they never set this attribute, so
+   this block simply never applies to them). Colors are a first pass
+   inspired by Ayu Light (https://terminalcolors.com/themes/ayu/light/). */
+:root[data-theme="sabbatical"]{
+  --fg:#5c6166;
+  --fg-dim:#8a9199;
+  --fg-dim2:#aeb4ba;
+  --accent:#3199e1;
+  --amber:#eca944;
+  --amber-glow:0 0 6px rgba(236,169,68,.35);
+  --red:#c9484c;             /* darkened vs raw ayu red (#ea6c6d) — that reads washed-out/pink at ~2.9:1 on this bg */
+  --bg:#f8f9fa;
+  --border:rgba(92,97,102,.28);
+  --glow:0 0 1px rgba(92,97,102,.35);   /* explicit override, not auto-derived — a dark fg's auto-derived glow reads as a muddy shadow, not a glow, on a light bg */
+  --ambient:rgba(92,97,102,.05);
+  --ambient-inset:rgba(92,97,102,.03);
+  --tint-rgb:92,97,102;      /* replaces the rgba(61,255,138,*) hover/wash literals used across theme.css/index.html/cv.html/404.html */
+  --term-g1:rgba(255,255,255,.92);
+  --term-g2:rgba(240,242,244,.96);
+  --term-head-bg:rgba(92,97,102,.07);
+  --chips-bg:rgba(92,97,102,.05);
+  --boot-bg:#f3f5f7;
+}
+
 *{box-sizing:border-box;}
 html,body{height:100%;}
 html{
@@ -84,7 +114,7 @@ body{
 .wrap{position:relative; z-index:2; width:100%; max-width:880px;}
 
 .term{
-  background:linear-gradient(180deg, rgba(15,25,17,.92), rgba(6,10,8,.96));
+  background:linear-gradient(180deg, var(--term-g1, rgba(15,25,17,.92)), var(--term-g2, rgba(6,10,8,.96)));
   border:1px solid var(--border);
   border-radius:10px;
   box-shadow:var(--glow), 0 20px 60px rgba(0,0,0,.6), inset 0 0 40px var(--ambient-inset);
@@ -94,7 +124,7 @@ body{
 .term-head{
   display:flex; align-items:center; gap:8px;
   padding:10px 14px;
-  background:rgba(0,0,0,.35);
+  background:var(--term-head-bg, rgba(0,0,0,.35));
   border-bottom:1px solid var(--border);
 }
 .dot{width:11px; height:11px; border-radius:50%; display:inline-block;}
@@ -122,7 +152,7 @@ a:hover{text-shadow:0 0 8px var(--accent);}
 }
 
 .topbar a{color:var(--fg-dim); text-decoration:none; padding:6px 8px; border-radius:4px;}
-.topbar a:hover{color:var(--fg); text-shadow:var(--glow); background:rgba(61,255,138,.08);}
+.topbar a:hover{color:var(--fg); text-shadow:var(--glow); background:rgba(var(--tint-rgb, 61,255,138),.08);}
 
 footer{
   margin-top:14px; font-size:11px; color:var(--fg-dim); text-align:center;

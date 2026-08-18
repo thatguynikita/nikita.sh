@@ -16,7 +16,20 @@
     green:{fg:"#3dff8a",dim:"#2a9c60",accent:"#5ff1ff",warn:"#ffb454",gameHue:"75deg"},
     amber:{fg:"#ffb454",dim:"#a06a1f",accent:"#ffe08a",warn:"#5ff1ff",gameHue:"-6deg"},
     cyan :{fg:"#5ff1ff",dim:"#2a8a9c",accent:"#3dff8a",warn:"#ffb454",gameHue:"137deg"},
+    // Secret theme (easter egg — not listed in help/usage/tab-completion
+    // anywhere). Its full palette lives in theme.css's
+    // :root[data-theme="sabbatical"] block, not here — this entry only
+    // carries what canvas-only code needs, since <canvas> can't read CSS
+    // custom properties. No gameHue on purpose: the cat.nikita.sh game
+    // overlay's CRT tint falls back to the CSS default (75deg/green)
+    // rather than trying to match a light theme, which wouldn't make
+    // sense for a filter meant to look like a dark CRT screen.
+    sabbatical:{fg:"#5c6166",matrixColor:"#86b300",matrixFade:"rgba(248,249,250,.12)"},
   };
+
+  // Themes whose full palette lives in theme.css's [data-theme] block
+  // rather than being computed here from a fg/dim/accent/warn set.
+  const DATA_THEME_NAMES = new Set(['sabbatical']);
 
   const THEME_STORAGE_KEY = 'nikita.sh:theme';
   const LANG_STORAGE_KEY = 'nikita.sh:lang';
@@ -36,16 +49,32 @@
     const t = THEME_MAP[name];
     if(!t) return null;
     const root = document.documentElement.style;
-    root.setProperty('--fg', t.fg);
-    root.setProperty('--fg-dim', t.dim);
-    root.setProperty('--accent', t.accent);
-    root.setProperty('--amber', t.warn);
-    root.setProperty('--amber-glow', `0 0 6px ${t.warn}99`);
-    root.setProperty('--border', `${t.fg}47`);
-    root.setProperty('--glow', `0 0 4px ${t.fg}, 0 0 12px ${t.fg}88, 0 0 24px ${t.fg}44`);
-    root.setProperty('--ambient', `${t.fg}0f`);
-    root.setProperty('--ambient-inset', `${t.fg}08`);
-    root.setProperty('--game-hue', t.gameHue);
+
+    if(DATA_THEME_NAMES.has(name)){
+      // Palette comes from theme.css's :root[data-theme="..."] block.
+      // Clear any inline overrides a previous JS-driven theme left
+      // behind — inline style always wins over a stylesheet rule
+      // regardless of selector specificity, so without this, switching
+      // e.g. green -> sabbatical live (no reload) would keep showing
+      // green's --fg/--border/etc. instead of picking up the CSS block.
+      document.documentElement.dataset.theme = name;
+      ['--fg','--fg-dim','--accent','--amber','--amber-glow','--border',
+       '--glow','--ambient','--ambient-inset','--game-hue']
+        .forEach((p) => root.removeProperty(p));
+    } else {
+      document.documentElement.dataset.theme = '';
+      root.setProperty('--fg', t.fg);
+      root.setProperty('--fg-dim', t.dim);
+      root.setProperty('--accent', t.accent);
+      root.setProperty('--amber', t.warn);
+      root.setProperty('--amber-glow', `0 0 6px ${t.warn}99`);
+      root.setProperty('--border', `${t.fg}47`);
+      root.setProperty('--glow', `0 0 4px ${t.fg}, 0 0 12px ${t.fg}88, 0 0 24px ${t.fg}44`);
+      root.setProperty('--ambient', `${t.fg}0f`);
+      root.setProperty('--ambient-inset', `${t.fg}08`);
+      if(t.gameHue) root.setProperty('--game-hue', t.gameHue);
+      else root.removeProperty('--game-hue');
+    }
     return t.fg;
   }
 
@@ -59,11 +88,14 @@
     document.documentElement.lang = lang;
 
     const storedTheme = readStored(THEME_STORAGE_KEY);
-    const matrixColor = storedTheme ? applyTheme(storedTheme) : null;
+    const t = storedTheme ? THEME_MAP[storedTheme] : null;
+    const fg = storedTheme ? applyTheme(storedTheme) : null;
+    const matrixColor = t && t.matrixColor ? t.matrixColor : fg;
+    const matrixFade = t && t.matrixFade ? t.matrixFade : null;
 
     const matrixEnabled = readStored(MATRIX_STORAGE_KEY) !== 'off';
 
-    return { lang, matrixColor, matrixEnabled };
+    return { lang, matrixColor, matrixFade, matrixEnabled };
   }
 
   // Creates a self-contained matrix-rain animation bound to a <canvas>,
@@ -76,6 +108,7 @@
     const glyphs = "01アイウエオカキクケコサシスセソ$#&+=-<>/\\{}[]";
     let cols, drops;
     let color = "#3dff8a";
+    let fadeColor = "rgba(2,4,3,0.08)";
     let enabled = true;
 
     function resize(){
@@ -87,7 +120,7 @@
     }
     function draw(){
       if(enabled && !document.hidden){
-        ctx.fillStyle = "rgba(2,4,3,0.08)";
+        ctx.fillStyle = fadeColor;
         ctx.fillRect(0,0,canvasEl.width,canvasEl.height);
         ctx.fillStyle = color;
         ctx.font = "15px monospace";
@@ -107,6 +140,7 @@
 
     return {
       setColor(c){ color = c; },
+      setFadeColor(c){ fadeColor = c; },
       setEnabled(v){
         enabled = v;
         canvasEl.classList.toggle('off', !v);
