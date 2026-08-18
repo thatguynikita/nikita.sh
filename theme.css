@@ -51,6 +51,10 @@
   --term-head-bg:rgba(92,97,102,.07);
   --chips-bg:rgba(92,97,102,.05);
   --boot-bg:#f3f5f7;
+  --vignette-bg:none;        /* the dark-corners vignette reads as a bright glowing circle in the middle of a light page — just drop it here */
+  --game-frame-g1:rgba(255,255,255,.96);
+  --game-frame-g2:rgba(240,242,244,.98);
+  --game-hint-bg:rgba(92,97,102,.06);
 }
 
 *{box-sizing:border-box;}
@@ -100,7 +104,7 @@ body{
 }
 .vignette{
   position:fixed; inset:0; z-index:4; pointer-events:none;
-  background:radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
+  background:var(--vignette-bg, radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%));
 }
 @keyframes flicker{
   0%,100%{opacity:.9;}

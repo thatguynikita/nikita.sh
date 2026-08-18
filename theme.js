@@ -24,7 +24,7 @@
     // overlay's CRT tint falls back to the CSS default (75deg/green)
     // rather than trying to match a light theme, which wouldn't make
     // sense for a filter meant to look like a dark CRT screen.
-    sabbatical:{fg:"#5c6166",matrixColor:"#86b300",matrixFade:"rgba(248,249,250,.12)"},
+    sabbatical:{fg:"#5c6166",matrixColor:"#8a9199",matrixFade:"rgba(248,249,250,.12)"},
   };
 
   // Themes whose full palette lives in theme.css's [data-theme] block

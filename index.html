@@ -172,6 +172,12 @@
   footer{padding-bottom:6px;}
 
   /* ---------- game overlay (CRT monitor) ---------- */
+  /* .game-frame/.game-hint are the surrounding window chrome — theme-
+     reactive like .term, via the var(x, <original>) fallback trick.
+     .game-view/.game-scan/.game-vignette/the iframe's own filter are the
+     simulated monitor screen inside that chrome and intentionally stay
+     fixed/dark for every theme (including sabbatical, no --game-hue) —
+     a CRT screen doesn't turn light just because the site theme did. */
   .game-overlay{
     position:fixed; inset:0; z-index:50;
     background:rgba(2,4,3,.9);
@@ -184,7 +190,7 @@
     width:min(920px, 96vw);
     height:min(640px, 88vh);
     height:min(640px, 88dvh);
-    background:linear-gradient(180deg, rgba(15,25,17,.96), rgba(6,10,8,.98));
+    background:linear-gradient(180deg, var(--game-frame-g1, rgba(15,25,17,.96)), var(--game-frame-g2, rgba(6,10,8,.98)));
     border:1px solid var(--border); border-radius:10px;
     box-shadow:var(--glow), 0 30px 80px rgba(0,0,0,.75);
     display:flex; flex-direction:column; overflow:hidden;
@@ -215,7 +221,7 @@
   }
   .game-hint{
     padding:8px 14px; font-size:11px; text-align:center;
-    border-top:1px solid var(--border); background:rgba(0,0,0,.3); letter-spacing:.02em;
+    border-top:1px solid var(--border); background:var(--game-hint-bg, rgba(0,0,0,.3)); letter-spacing:.02em;
   }
   .game-hint a{color:var(--accent);}
 
