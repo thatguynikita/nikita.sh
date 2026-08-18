@@ -6,29 +6,21 @@
 (function(){
   "use strict";
 
-  // gameHue: hue-rotate() angle fed to the cat.nikita.sh game overlay's
-  // CRT-tint filter (see index.html's .game-view iframe) so that tint
-  // lands on each theme's own color instead of always being green.
-  // Solved from the CSS Filter Effects matrices (grayscale(.55) ->
-  // sepia(.5) -> hue-rotate -> saturate(1.8)) for the angle whose output
-  // hue best matches each theme's --fg.
+  // gameHue: hue-rotate() angle for the cat.nikita.sh game overlay's CRT
+  // tint, solved per-theme from the CSS Filter Effects matrices so it
+  // matches each theme's --fg instead of always being green.
   const THEME_MAP = {
     green:{fg:"#3dff8a",dim:"#2a9c60",accent:"#5ff1ff",warn:"#ffb454",gameHue:"75deg"},
     amber:{fg:"#ffb454",dim:"#a06a1f",accent:"#ffe08a",warn:"#5ff1ff",gameHue:"-6deg"},
     cyan :{fg:"#5ff1ff",dim:"#2a8a9c",accent:"#3dff8a",warn:"#ffb454",gameHue:"137deg"},
-    // Secret theme (easter egg — not listed in help/usage/tab-completion
-    // anywhere). Its full palette lives in theme.css's
-    // :root[data-theme="sabbatical"] block, not here — this entry only
-    // carries what canvas-only code needs, since <canvas> can't read CSS
-    // custom properties. No gameHue on purpose: the cat.nikita.sh game
-    // overlay's CRT tint falls back to the CSS default (75deg/green)
-    // rather than trying to match a light theme, which wouldn't make
-    // sense for a filter meant to look like a dark CRT screen.
+    // Secret theme (easter egg — not listed anywhere). Full palette lives in
+    // theme.css's :root[data-theme="sabbatical"] block; this entry only
+    // carries what canvas-only code needs. No gameHue on purpose.
     sabbatical:{fg:"#5c6166",matrixColor:"#8a9199",matrixFade:"rgba(248,249,250,.12)"},
   };
 
-  // Themes whose full palette lives in theme.css's [data-theme] block
-  // rather than being computed here from a fg/dim/accent/warn set.
+  // Themes whose palette lives in theme.css's [data-theme] block instead
+  // of being computed here from fg/dim/accent/warn.
   const DATA_THEME_NAMES = new Set(['sabbatical']);
 
   const THEME_STORAGE_KEY = 'nikita.sh:theme';
@@ -52,11 +44,8 @@
 
     if(DATA_THEME_NAMES.has(name)){
       // Palette comes from theme.css's :root[data-theme="..."] block.
-      // Clear any inline overrides a previous JS-driven theme left
-      // behind — inline style always wins over a stylesheet rule
-      // regardless of selector specificity, so without this, switching
-      // e.g. green -> sabbatical live (no reload) would keep showing
-      // green's --fg/--border/etc. instead of picking up the CSS block.
+      // Clear inline overrides a previous JS-driven theme left behind —
+      // inline style beats a stylesheet rule regardless of specificity.
       document.documentElement.dataset.theme = name;
       ['--fg','--fg-dim','--accent','--amber','--amber-glow','--border',
        '--glow','--ambient','--ambient-inset','--game-hue']
