@@ -139,7 +139,7 @@
     font-size:12px; color:var(--fg-dim); margin-bottom:10px; padding:0;
     letter-spacing:.03em;
   }
-  .topbar button:hover{color:var(--fg); text-shadow:var(--glow); background:rgba(61,255,138,.08);}
+  .topbar button:hover{color:var(--fg); text-shadow:var(--glow); background:rgba(var(--tint-rgb, 61,255,138),.08);}
   .topbar .right{display:flex; gap:2px; align-items:center;}
   .topbar button{
     color:var(--fg-dim); text-decoration:none; cursor:pointer; background:none; border:none; font:inherit;
@@ -187,7 +187,7 @@
 
   .rule{height:1px; border:none; margin:8px 0 18px; background:var(--accent);
     box-shadow:0 0 6px var(--accent), 0 0 14px rgba(95,241,255,.35); opacity:.55;}
-  .rule.strong{background:var(--fg); box-shadow:0 0 6px var(--fg), 0 0 16px rgba(61,255,138,.4); opacity:.75;}
+  .rule.strong{background:var(--fg); box-shadow:0 0 6px var(--fg), 0 0 16px rgba(var(--tint-rgb, 61,255,138),.4); opacity:.75;}
 
   .section{margin-top:26px;}
   .section:first-of-type{margin-top:0;}
@@ -220,8 +220,8 @@
   .langrow{display:flex; align-items:center; gap:10px; margin:6px 0; flex-wrap:wrap;}
   .lang-label{width:11ch; flex:0 0 auto; white-space:nowrap; font-weight:700; color:var(--fg); font-size:13.3px;}
   .lang-bar{display:inline-flex; gap:2px;}
-  .lang-bar i{width:9px; height:13px; display:inline-block; background:rgba(61,255,138,.16); border-radius:1px;}
-  .lang-bar i.on{background:var(--fg); box-shadow:0 0 4px rgba(61,255,138,.7);}
+  .lang-bar i{width:9px; height:13px; display:inline-block; background:rgba(var(--tint-rgb, 61,255,138),.16); border-radius:1px;}
+  .lang-bar i.on{background:var(--fg); box-shadow:0 0 4px rgba(var(--tint-rgb, 61,255,138),.7);}
   .lang-sub{font-size:12.5px; color:var(--fg-dim);}
 
   .traits{font-size:12.6px; line-height:1.7; color:var(--fg-dim); font-style:italic;}
@@ -344,6 +344,7 @@
   const matrixRain = window.NikitaTheme.createMatrixRain(document.getElementById('matrix'));
   const restored = window.NikitaTheme.restoreSettings();
   if(restored.matrixColor) matrixRain.setColor(restored.matrixColor);
+  if(restored.matrixFade) matrixRain.setFadeColor(restored.matrixFade);
   matrixRain.setEnabled(restored.matrixEnabled);
 
   /* ================= content data ================= */
