@@ -1035,7 +1035,7 @@ and SRE practices into reality.`;
   function getArgCandidates(base, remainderLower){
     switch(base){
       case "cat": return ["about.txt","skills.txt","contact.txt","cv.html","nikita.sh"];
-      case "theme": return ["green","amber","cyan"];
+      case "theme": return sabbaticalUnlocked ? ["green","amber","cyan",SECRET_THEME_NAME] : ["green","amber","cyan"];
       case "matrix": return ["on","off"];
       case "lang": return ["ru","en"];
       case "sudo": return ["./nikita.sh"];
@@ -1225,6 +1225,7 @@ and SRE practices into reality.`;
   let sshPersonaKey = null;
   let sshFailCount = 0;
   let lightThemeAttempts = 0;
+  let sabbaticalUnlocked = false; // becomes true once claude "builds" the theme — see the "add light theme" easter egg
   let topInterval = null;
   let topContainerEl = null;
   function psHTML(){
@@ -1769,18 +1770,26 @@ and SRE practices into reality.`;
               ]);
             } else {
               await playSequence([
-                { text: lang === 'ru' ? 'Ладно, ты настойчив. На этот раз и правда посмотрю.' : "Alright, you're persistent. Let me actually look this time.", delay: 600, typed: true },
+                { text: lang === 'ru' ? 'Ладно, ты настойчив. На этот раз действительно сделаю это.' : "Alright, you're persistent. Let me actually build it this time.", delay: 600, typed: true },
                 { text: `<span class="dim"> ⎿  Read theme.js</span>`, delay: 250 },
                 { text: `<span class="dim"> ⎿  Read theme.css</span>`, delay: 200 },
                 { text: lang === 'ru'
-                    ? 'Нашёл уже готовую четвёртую тему. Странно — я был уверен, что говорил, что её никогда не будет.'
-                    : "Found a fourth theme already stubbed out. Weird — I could've sworn I said it would never exist.", delay: 650, typed: true },
-                { text: lang === 'ru' ? 'Применяю. Кота уведомили — он подаёт жалобу.' : "Applying it. The cat has been informed and is filing a complaint.", delay: 450, typed: true },
+                    ? 'Четвёртой темы тут нет. Видимо, придётся написать самому.'
+                    : "No fourth theme in here. Guess I'll have to write one.", delay: 650, typed: true },
+                { text: `<span class="dim"> ⎿  Edit theme.css</span>`, delay: 300 },
+                { text: lang === 'ru'
+                    ? 'Набрасываю светлую палитру... что-то в духе Ayu Light.'
+                    : 'Sketching out a light palette... something in the spirit of Ayu Light.', delay: 500, typed: true },
+                { text: `<span class="dim"> ⎿  Edit theme.js</span>`, delay: 250 },
+                { text: lang === 'ru'
+                    ? 'Подключаю её и называю так, чтобы никто не угадал.'
+                    : "Wiring it up and naming it something nobody will guess.", delay: 450, typed: true },
+                { text: lang === 'ru' ? 'Готово. Кота уведомили — он подаёт жалобу.' : "Shipped it. The cat has been informed and is filing a complaint.", delay: 450, typed: true },
+                { text: lang === 'ru'
+                    ? `Написать — моя работа, переключать — уже твоя: theme ${SECRET_THEME_NAME}.`
+                    : `Building it was my job — flipping the switch is yours: theme ${SECRET_THEME_NAME}.`, delay: 450, typed: true },
               ]);
-              if(setTheme(SECRET_THEME_NAME)){
-                window.NikitaTheme.writeStored(THEME_STORAGE_KEY, SECRET_THEME_NAME);
-                printLine(t('themeSet', SECRET_THEME_NAME));
-              }
+              sabbaticalUnlocked = true;
               await playSequence([
                 { text: lang === 'ru' ? 'Переоткрываю тикет. Снимаю пометку won\'t-fix. Что-нибудь ещё?' : "Reopening the ticket. Un-marking as won't-fix. Anything else?", delay: 350, typed: true },
               ]);
