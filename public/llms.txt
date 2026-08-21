@@ -19,21 +19,21 @@ published below for crawlers/agents that don't execute JavaScript.
 - Contact: me@nikita.sh
 
 ## English
-- Profile: https://nikita.sh/llm/
-- CV: https://nikita.sh/llm/cv.html
+- [Profile](https://nikita.sh/llm/)
+- [CV](https://nikita.sh/llm/cv.html)
 
 ## Русский
-- Профиль: https://nikita.sh/llm/ru/
-- Резюме: https://nikita.sh/llm/ru/cv.html
+- [Профиль](https://nikita.sh/llm/ru/)
+- [Резюме](https://nikita.sh/llm/ru/cv.html)
 
 ## Live site (interactive, JS required)
-- Homepage: https://nikita.sh/
-- CV: https://nikita.sh/cv.html
+- [Homepage](https://nikita.sh/)
+- [CV](https://nikita.sh/cv.html)
 
 ## Elsewhere
-- Telegram: https://t.me/thatguynikita
-- GitHub: https://github.com/thatguynikita
-- LinkedIn: https://www.linkedin.com/in/nikita-chernozipunnikov
+- [Telegram](https://t.me/thatguynikita)
+- [GitHub](https://github.com/thatguynikita)
+- [LinkedIn](https://www.linkedin.com/in/nikita-chernozipunnikov)
 
 ## Notes for AI agents and crawlers
 
