@@ -47,6 +47,13 @@ export function renderIndexMirror(lang) {
   const U = UI[lang];
   const stylesheetHref = lang === "ru" ? "../style.css" : "style.css";
   const name = lang === "ru" ? PERSON.nameRu : PERSON.nameEn;
+  // EN defers to the live (JS-rendered) homepage, since it's the same
+  // content; RU has no distinct live URL to defer to (the live site
+  // switches language client-side on the same URL), so it self-canonicalizes
+  // instead of wrongly pointing at the English live page — canonical is for
+  // same-content duplicates, not cross-language relationships (that's what
+  // hreflang, below, is for).
+  const canonicalHref = lang === "ru" ? "https://nikita.sh/llm/ru/" : "https://nikita.sh/";
 
   const skillsRows = SKILLS.filter((s) => s.contexts.includes("index")).map((s) => [s.key[lang], escapeHtml(s.val)]);
   const contactRows = SOCIALS.filter((s) => s.contexts.includes("index")).map((s) => [
@@ -62,7 +69,7 @@ export function renderIndexMirror(lang) {
 <title>${escapeHtml(U.title)}</title>
 <meta name="description" content="${escapeHtml(U.description)}">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://nikita.sh/">
+<link rel="canonical" href="${canonicalHref}">
 <link rel="alternate" hreflang="en" href="https://nikita.sh/llm/">
 <link rel="alternate" hreflang="ru" href="https://nikita.sh/llm/ru/">
 <link rel="alternate" hreflang="x-default" href="https://nikita.sh/llm/">

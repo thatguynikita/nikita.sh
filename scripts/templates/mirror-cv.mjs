@@ -71,6 +71,9 @@ export function renderCvMirror(lang) {
   const U = UI[lang];
   const stylesheetHref = lang === "ru" ? "../style.css" : "style.css";
   const name = lang === "ru" ? PERSON.nameRu : PERSON.nameEn;
+  // See the matching comment in mirror-index.mjs: EN defers to the live
+  // cv.html, RU self-canonicalizes since there's no distinct live RU URL.
+  const canonicalHref = lang === "ru" ? "https://nikita.sh/llm/ru/cv.html" : "https://nikita.sh/cv.html";
 
   const linksRow = SOCIALS.filter((s) => s.contexts.includes("cv") && s.sameAs)
     .map((s) => `<a href="${s.href}" rel="me noopener noreferrer">${escapeHtml(s.label)}</a>`)
@@ -94,7 +97,7 @@ export function renderCvMirror(lang) {
 <title>${escapeHtml(U.title)}</title>
 <meta name="description" content="${escapeHtml(U.description)}">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="https://nikita.sh/cv.html">
+<link rel="canonical" href="${canonicalHref}">
 <link rel="alternate" hreflang="en" href="https://nikita.sh/llm/cv.html">
 <link rel="alternate" hreflang="ru" href="https://nikita.sh/llm/ru/cv.html">
 <link rel="alternate" hreflang="x-default" href="https://nikita.sh/llm/cv.html">
