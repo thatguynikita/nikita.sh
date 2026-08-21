@@ -701,6 +701,7 @@ and SRE practices into reality.`;
     ["ls","list files","ls"],
     ["cat","print a file","cat "],
     ["fortune","random sysadmin wisdom","fortune"],
+    ["vim","text editor. good luck getting out","vim "],
     ["top","fake process monitor","top"],
     ["kubectl","peek at a pretend cluster","kubectl "],
     ["terraform","apply optimism, destroy everything","terraform "],
@@ -722,6 +723,7 @@ and SRE practices into reality.`;
     ["ls","список файлов","ls"],
     ["cat","вывести файл","cat "],
     ["fortune","случайная мудрость сисадмина","fortune"],
+    ["vim","текстовый редактор. удачи выбраться","vim "],
     ["top","фейковый монитор процессов","top"],
     ["kubectl","заглянуть в игрушечный кластер","kubectl "],
     ["terraform","apply обещает, destroy исполняет","terraform "],
@@ -1011,7 +1013,7 @@ and SRE practices into reality.`;
     return typeof v === 'function' ? v(...args) : v;
   }
 
-  const COMMANDS = ["about","skills","contact","cv","neofetch","whoami","ls","cat","history","matrix","theme","lang","sudo","fortune","top","kubectl","terraform","ssh","claude","clear","help"];
+  const COMMANDS = ["about","skills","contact","cv","neofetch","whoami","ls","cat","history","matrix","theme","lang","sudo","fortune","vim","top","kubectl","terraform","ssh","claude","clear","help"];
 
   const POD_NAMES = ["cat-deployment-7f9d8c-x2m4q","condensed-milk-store-0","sre-sanity-canary","deploy-friday-afternoon"];
 
@@ -1177,6 +1179,8 @@ and SRE practices into reality.`;
         const prefix = raw.trim().toLowerCase();
         const matches = prefix ? cmds.filter(c => c.startsWith(prefix)) : cmds;
         items = matches.map(c => ({label:c, value:c}));
+      } else if(mode === 'vim'){
+        items = []; // no shell-style hints while "stuck" — that's the joke
       } else if(!raw){
         items = defaultChips();
       } else {
@@ -1235,9 +1239,12 @@ and SRE practices into reality.`;
   let sabbaticalUnlocked = false;
   let topInterval = null;
   let topContainerEl = null;
+  let vimFilename = '';
+  let vimAttempts = 0;
   function psHTML(){
     if(mode === 'ssh') return `${PERSONAS[sshPersonaKey].host} <span class="path">~</span> $`;
     if(mode === 'top') return `<span class="dim">${lang === 'ru' ? '(top — q для выхода)' : '(top — q to quit)'}</span>`;
+    if(mode === 'vim') return `<span class="dim">-- INSERT --</span>`;
     return `guest@nikita.sh <span class="path">~</span> $`;
   }
   function updatePromptUI(){
@@ -1248,7 +1255,9 @@ and SRE practices into reality.`;
       ? `${PERSONAS[sshPersonaKey].host} — ssh — 80×24`
       : mode === 'top'
         ? 'guest@nikita.sh — top — 80×24'
-        : 'guest@nikita.sh — bash — 80×24';
+        : mode === 'vim'
+          ? `"${vimFilename || '[No Name]'}" — VIM — 80×24`
+          : 'guest@nikita.sh — bash — 80×24';
     updateA11yLabels();
   }
 
@@ -1429,6 +1438,58 @@ and SRE practices into reality.`;
     }
   }
 
+  // The `vim`/`vi` easter egg: no exit hint on entry (unlike top) — the
+  // whole joke is that you don't know how to get out. Ctrl+C is a
+  // deliberate dead end here (see the keydown handler) — that's the
+  // second half of the real meme, and top's Ctrl+C-exits precedent would
+  // undercut it. After a few failed attempts we fall back to vim's own
+  // real mercy message ("Type :qa and press <Enter> to exit Vim").
+  const VIM_EXIT_CMDS = new Set([':q', ':q!', ':wq', ':wq!', ':x', 'zz']);
+  function vimEscalation(lang, n){
+    const en = [
+      `<span class="dim">(nothing happens.)</span>`,
+      `<span class="dim">(still nothing.)</span>`,
+      `<span class="dim">you are now questioning your life choices.</span>`,
+      `Type <span class="accent">:qa</span> and press Enter to exit Vim.`,
+    ];
+    const ru = [
+      `<span class="dim">(ничего не происходит.)</span>`,
+      `<span class="dim">(снова ничего.)</span>`,
+      `<span class="dim">вы начинаете сомневаться в жизненных решениях.</span>`,
+      `Введите <span class="accent">:qa</span> и нажмите Enter, чтобы выйти из Vim.`,
+    ];
+    const arr = lang === 'ru' ? ru : en;
+    return arr[Math.min(n, arr.length - 1)];
+  }
+
+  function enterVimMode(filename){
+    mode = 'vim';
+    vimFilename = filename;
+    vimAttempts = 0;
+    updatePromptUI();
+    printLine(`<span class="dim">~<br>~<br>~<br>~</span>`);
+    printLine(filename
+      ? `<span class="dim">"${escapeHtml(filename)}" [New]</span>`
+      : `<span class="dim">[No Name]</span>`);
+  }
+
+  function exitVimMode(){
+    mode = 'shell';
+    updatePromptUI();
+    printLine(lang === 'ru' ? 'Вы выбрались из vim. Немногим это удаётся.' : 'You escaped vim. Few do.');
+  }
+
+  async function runVimCommand(raw){
+    const cmd = raw.trim().toLowerCase();
+    if(raw.trim()) { history.push(raw); hIndex = history.length; }
+    if(VIM_EXIT_CMDS.has(cmd)){
+      exitVimMode();
+    } else {
+      printLine(vimEscalation(lang, vimAttempts));
+      vimAttempts++;
+    }
+  }
+
   const history = [];
   let hIndex = -1;
 
@@ -1442,6 +1503,10 @@ and SRE practices into reality.`;
     }
     if(mode === 'top'){
       await runTopCommand(raw);
+      return;
+    }
+    if(mode === 'vim'){
+      await runVimCommand(raw);
       return;
     }
 
@@ -1840,6 +1905,10 @@ and SRE practices into reality.`;
         await enterTopMode();
         break;
       }
+      case "vim": case "vi": {
+        enterVimMode(arg.trim());
+        break;
+      }
       case "kubectl": {
         const a = arg.trim().toLowerCase();
         if(a === 'get pods' || a === 'get pod'){
@@ -2035,6 +2104,19 @@ and SRE practices into reality.`;
         }
         return;
       }
+      if(mode === 'vim'){
+        const val = cmdInput.value;
+        cmdInput.value = "";
+        inputRow.remove();
+        const row = el('div','line prompt-row');
+        row.innerHTML = `<span class="ps">${psHTML()}</span>${escapeHtml(val)}<span class="amber">^C</span>`;
+        row.dataset.cmd = val;
+        body.appendChild(row);
+        printLine(lang === 'ru' ? `<span class="dim">(здесь это тоже не работает.)</span>` : `<span class="dim">(that doesn't work here either.)</span>`);
+        body.scrollTop = body.scrollHeight;
+        mountInput();
+        return;
+      }
       const val = cmdInput.value;
       cmdInput.value = "";
       inputRow.remove();
@@ -2073,6 +2155,8 @@ and SRE practices into reality.`;
       }
       if(e.key === 'Tab'){ e.preventDefault(); return; }
     }
+
+    if(mode === 'vim' && e.key === 'Tab'){ e.preventDefault(); return; }
 
     if(e.key === "Enter"){
       if(busy) { e.preventDefault(); return; }

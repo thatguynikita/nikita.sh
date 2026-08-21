@@ -39,6 +39,8 @@ the same info as the commands above, "file" flavored.
 
 - **`top`** — drops you into a live, constantly-updating (fake) process
   monitor. Press `q` or type `exit` to get back out.
+- **`vim`** (or `vi`) — try it. Getting out is the real challenge — and
+  no, Ctrl+C won't save you here.
 - **`kubectl get pods`** / **`kubectl describe pod <name>`** — peek at a
   pretend Kubernetes cluster.
 - **`terraform apply`** / **`terraform destroy`** — a one-line joke
