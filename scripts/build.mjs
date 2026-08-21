@@ -15,7 +15,7 @@ import { aboutCvParagraph, jobLocationText } from "./lib/content.mjs";
 import { replaceMarker } from "./lib/markers.mjs";
 import { renderIndexMirror } from "./templates/mirror-index.mjs";
 import { renderCvMirror } from "./templates/mirror-cv.mjs";
-import { buildCvJsonLd, jsonLdScript } from "./templates/jsonld.mjs";
+import { buildIndexJsonLd, buildCvJsonLd, jsonLdScript } from "./templates/jsonld.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PUBLIC_ROOT = join(ROOT, "public");
@@ -54,6 +54,12 @@ function buildIndexHtml() {
 
   const nowPlayingBody = `  const NP_ENDPOINT = ${JSON.stringify(NOW_PLAYING.endpoint)};\n  const NP_POLL_MS = ${JSON.stringify(NOW_PLAYING.pollMs)};`;
   html = replaceMarker(html, "NOWPLAYING", nowPlayingBody);
+
+  // The live page's head JSON-LD isn't re-rendered by the RU/EN toggle
+  // today; keep that behavior — always the English version (matches
+  // cv.html's precedent).
+  const jsonLdBody = jsonLdScript(buildIndexJsonLd("en"));
+  html = replaceMarker(html, "JSONLD", jsonLdBody, { style: "html" });
 
   write("index.html", html);
 }
