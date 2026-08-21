@@ -72,7 +72,7 @@ execute JavaScript. It's generated from `content/site-data.mjs` by
 
 | File | What it is |
 |---|---|
-| `public/robots.txt` | Allows named AI/search crawlers, points to sitemap |
+| `public/robots.txt` | Allows named AI/search crawlers, points to sitemap, declares [Content Signals](https://contentsignals.org/) usage preferences |
 | `public/llms.txt` | Summary + direct links, both languages |
 | `public/sitemap.xml` | Lists live pages + both mirrors, with hreflang alternates |
 | `public/llm/style.css` | Shared stylesheet for the mirror pages |
