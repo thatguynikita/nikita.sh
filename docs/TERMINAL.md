@@ -49,8 +49,9 @@ the same info as the commands above, "file" flavored.
   canned answers. Also try `claude log --oneline` and `claude --confess`.
 - **`sudo rm -rf /`** — go ahead and try it. (Nothing is harmed — it's a
   static site, not a real machine.)
-- **`sudo ./nikita.sh`** — unlocks a hidden little browser game
-  (`cat.nikita.sh`), styled up in a retro CRT-monitor window.
+- **`sudo ./milk-quest.sh`** — unlocks a hidden little browser game
+  (`cat.nikita.sh`), styled up in a retro CRT-monitor window. There's
+  also a shortcut once you've found it in `.bashrc`: plain `game`.
 
 ## Look and feel
 
