@@ -52,6 +52,8 @@ export function buildCvJsonLd(lang) {
       "email": `mailto:${PERSON.email}`,
       "address": { "@type": "PostalAddress", "addressLocality": PERSON.addressLocality[lang], "addressCountry": PERSON.addressCountry },
       "alumniOf": { "@type": "EducationalOrganization", "name": EDUCATION.university[lang] },
+      "sameAs": SOCIALS.filter((s) => s.contexts.includes("cv") && s.sameAs).map((s) => s.href),
+      "seeks": { "@type": "Demand", "name": JSONLD.demandName },
       "knowsLanguage": JSONLD.knowsLanguage,
       "knowsAbout": JSONLD.knowsAbout[lang],
       "hasCredential": CERTS.map((c) => ({

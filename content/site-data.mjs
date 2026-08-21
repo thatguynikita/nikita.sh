@@ -388,8 +388,8 @@ export const JSONLD = {
     ru: ["AWS", "OpenStack", "Yandex Cloud", "Docker", "Kubernetes", "Администрирование Linux", "Сети", "Виртуализация", "PostgreSQL", "MariaDB", "MySQL", "ClickHouse", "GCP", "Azure", "Terraform", "Ansible", "Linux", "Prometheus", "Grafana"],
   },
   knowsLanguage: ["Russian", "English", "German", "Spanish"],
-  // index.html mirrors only ("seeks" a role) — not translated in the
-  // current RU mirror either.
+  // Used by both JSON-LD builders ("seeks" a role) — not translated per
+  // language today, same English string in every mirror.
   demandName: "DevOps / SRE role, remote worldwide",
 };
 
