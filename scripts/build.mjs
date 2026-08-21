@@ -14,7 +14,7 @@ import { ABOUT, SOCIALS, SKILLS, JOBS, CERTS, LANGUAGES, EDUCATION, TRAITS, NOW_
 import { aboutCvParagraph, jobLocationText } from "./lib/content.mjs";
 import { replaceMarker } from "./lib/markers.mjs";
 import { renderIndexMirror } from "./templates/mirror-index.mjs";
-import { renderCvMirror } from "./templates/mirror-cv.mjs";
+import { renderCvMirror, renderCvNoscript } from "./templates/mirror-cv.mjs";
 import { buildIndexJsonLd, buildCvJsonLd, jsonLdScript } from "./templates/jsonld.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -143,6 +143,11 @@ function buildCvHtml() {
   // today; keep that behavior — always the English version.
   const jsonLdBody = jsonLdScript(buildCvJsonLd("en"));
   html = replaceMarker(html, "JSONLD", jsonLdBody, { style: "html" });
+
+  // <noscript> fallback for non-JS clients that fetch this page directly
+  // — same "always English" reasoning as the JSON-LD block above.
+  const noscriptBody = renderCvNoscript("en");
+  html = replaceMarker(html, "NOSCRIPT", noscriptBody, { style: "html" });
 
   write("cv.html", html);
 }
