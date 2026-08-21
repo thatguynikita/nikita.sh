@@ -974,7 +974,7 @@ and SRE practices into reality.`;
       langUsage: `usage: lang &lt;ru|en&gt;  /  использование: lang &lt;ru|en&gt;`,
       langSet: `language switched to <span class="glow">English</span>`,
       sudo: `<span class="amber">This incident will be reported.</span>`,
-      gameDenied: `bash: ./nikita.sh: Permission denied`,
+      gameDenied: `bash: ./milk-quest.sh: Permission denied`,
       loggingOut: "logging out...",
       connClosed: "connection to nikita.sh closed.",
       notFound: (b)=>`command not found: <span class="accent">${b}</span>`,
@@ -997,7 +997,7 @@ and SRE practices into reality.`;
       langUsage: `usage: lang &lt;ru|en&gt;  /  использование: lang &lt;ru|en&gt;`,
       langSet: `язык переключён на <span class="glow">русский</span>`,
       sudo: `<span class="amber">Об этом инциденте будет доложено.</span>`,
-      gameDenied: `bash: ./nikita.sh: отказано в доступе`,
+      gameDenied: `bash: ./milk-quest.sh: отказано в доступе`,
       loggingOut: "выхожу из системы...",
       connClosed: "соединение с nikita.sh закрыто.",
       notFound: (b)=>`команда не найдена: <span class="accent">${b}</span>`,
@@ -1011,7 +1011,7 @@ and SRE practices into reality.`;
     return typeof v === 'function' ? v(...args) : v;
   }
 
-  const COMMANDS = ["about","skills","contact","cv","neofetch","whoami","ls","cat","history","matrix","theme","lang","sudo","fortune","top","kubectl","terraform","ssh","claude","./nikita.sh","clear","help"];
+  const COMMANDS = ["about","skills","contact","cv","neofetch","whoami","ls","cat","history","matrix","theme","lang","sudo","fortune","top","kubectl","terraform","ssh","claude","clear","help"];
 
   const POD_NAMES = ["cat-deployment-7f9d8c-x2m4q","condensed-milk-store-0","sre-sanity-canary","deploy-friday-afternoon"];
 
@@ -1030,18 +1030,18 @@ and SRE practices into reality.`;
     "alias ps='ps aux'",
     "alias env='env'",
     "alias rm='rm -i'",
+    "alias game='sudo ./milk-quest.sh'",
   ];
 
   function getArgCandidates(base, remainderLower){
     switch(base){
       case "cat": {
-        const files = ["about.txt","skills.txt","contact.txt","cv.html","nikita.sh"];
+        const files = ["about.txt","skills.txt","contact.txt","cv.html","milk-quest.sh"];
         return remainderLower.startsWith('.') ? [".bashrc", ...files] : files;
       }
       case "theme": return sabbaticalUnlocked ? ["green","amber","cyan",SECRET_THEME_NAME] : ["green","amber","cyan"];
       case "matrix": return ["on","off"];
       case "lang": return ["ru","en"];
-      case "sudo": return ["./nikita.sh"];
       case "ssh": return Object.values(PERSONAS).map(p => p.host);
       case "terraform": return ["apply","destroy"];
       case "claude": return ["log --oneline","--confess","\"add light theme\"","\"fix the bug\"","\"add tests\""];
@@ -1089,7 +1089,7 @@ and SRE practices into reality.`;
       { name:'skills.txt', perms:'-rw-r--r--', size: 237 },
       { name:'contact.txt', perms:'-rw-r--r--', size: 184 },
       { name:'cv.html', perms:'-rw-r--r--', size: 14336 },
-      { name:'nikita.sh', perms:'-rwxr--r--', size: 185, accent:true },
+      { name:'milk-quest.sh', perms:'-rwxr--r--', size: 186, accent:true },
     ];
   }
 
@@ -1494,8 +1494,13 @@ and SRE practices into reality.`;
         setTimeout(()=>{ window.location.href = "cv.html"; }, 400);
         break;
       }
-      case "game": case "./nikita.sh": {
+      case "./milk-quest.sh": {
         printLine(t('gameDenied'));
+        break;
+      }
+      case "game": {
+        printLine(t('launchingGame'));
+        openGame();
         break;
       }
       case "neofetch": {
@@ -1528,17 +1533,17 @@ and SRE practices into reality.`;
           printLine('&nbsp;');
           ALIASES.forEach(line => printLine(line));
         }
-        else if(arg === "nikita.sh" || arg === "./nikita.sh") {
+        else if(arg === "milk-quest.sh" || arg === "./milk-quest.sh") {
           const lines = lang === 'ru' ? [
             `#!/bin/bash`,
-            `# nikita.sh — ой, да не читай, просто запусти`,
+            `# milk-quest.sh — ой, да не читай, просто запусти`,
             `# см. также: <a href="https://cat.nikita.sh" target="_blank" rel="noopener">cat.nikita.sh</a>`,
             `# заметка: понадобится sudo`,
             `echo "открываю маленький сюрприз..."`,
             `xdg-open https://cat.nikita.sh 2&gt;/dev/null`,
           ] : [
             `#!/bin/bash`,
-            `# nikita.sh — don't read it, just run it`,
+            `# milk-quest.sh — don't read it, just run it`,
             `# see also: <a href="https://cat.nikita.sh" target="_blank" rel="noopener">cat.nikita.sh</a>`,
             `# note: you'll need sudo`,
             `echo "opening a little surprise..."`,
@@ -1708,7 +1713,7 @@ and SRE practices into reality.`;
         const normalized = arg.trim().toLowerCase().replace(/\s+/g,' ');
         if(isCatastrophicRm(normalized)){
           await sudoRmRfPanic();
-        } else if(normalized === 'game' || normalized === './nikita.sh'){
+        } else if(normalized === './milk-quest.sh'){
           printLine(t('launchingGame'));
           openGame();
         } else {
