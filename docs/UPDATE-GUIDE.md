@@ -11,6 +11,13 @@ comments; the 4 crawler mirrors under `/llm/` are fully generated files.
 Nothing under those markers, and none of the `llm/*.html` files, should be
 hand-edited — the next build overwrites it.
 
+**Layout note:** everything actually deployed lives under `public/`
+(`public/index.html`, `public/llm/*`, etc.) — `content/`, `scripts/`,
+`docs/`, and this guide live outside `public/` and are never deployed.
+S3 keys and the `npm run deploy -- ... index.html cv.html` argument
+style below stay unprefixed (`public/` is stripped for the key), same
+as `--dry-run` output.
+
 ## Workflow
 
 1. **Edit `content/site-data.mjs`.** This is the only file you should be
@@ -50,11 +57,10 @@ hand-edited — the next build overwrites it.
    npm run deploy -- --bucket <your-bucket-name>
    ```
    (or `export NIKITASH_BUCKET=<your-bucket-name>` once per shell and
-   drop `-- --bucket ...` for `npm run deploy` alone). This uploads the
-   full fixed set of
-   deployable files — `index.html`, `cv.html`, `404.html`, `theme.css`,
-   `theme.js`, `favicon.ico`, `robots.txt`, `sitemap.xml`, `site.webmanifest`,
-   `llms.txt`, and everything under `assets/` and `llm/` — via
+   drop `-- --bucket ...` for `npm run deploy` alone). This uploads
+   everything under `public/` (`index.html`, `cv.html`, `404.html`,
+   `theme.css`, `theme.js`, `favicon.ico`, `robots.txt`, `sitemap.xml`,
+   `site.webmanifest`, `llms.txt`, `assets/`, `llm/`) — via
    `yc storage s3api put-object`, one call per file, with the
    `--content-type` picked automatically from a table in the script
    (this is exactly what caused the `llms.txt` charset-garbling bug in
@@ -69,8 +75,8 @@ hand-edited — the next build overwrites it.
    one, and prints a pass/fail summary at the end.
 
    To deploy only specific files instead of the full manifest, pass them
-   as extra arguments (repo-relative paths, same as they appear in
-   `--dry-run` output):
+   as extra arguments (`public/`-relative paths with the prefix dropped,
+   same as they appear in `--dry-run` output):
    ```bash
    npm run deploy -- --bucket <your-bucket-name> index.html cv.html
    ```
@@ -78,9 +84,10 @@ hand-edited — the next build overwrites it.
    outside the allowlist (e.g. `content/site-data.mjs`) errors out rather
    than silently deploying nothing or something unintended.
 
-   `content/`, `scripts/`, `docs/`, `README.md`, and `.claude/`
-   are never part of the deploy — the manifest is an explicit allowlist
-   in `scripts/deploy.mjs`, not everything-minus-some-exclusions.
+   `content/`, `scripts/`, `docs/`, `README.md`, and `.claude/` are never
+   part of the deploy — the manifest is a recursive walk of everything
+   under `public/` in `scripts/deploy.mjs`, and anything outside `public/`
+   simply isn't reachable by it, not an explicit list with exclusions.
 
 5. **Ask for a recrawl** instead of waiting. In Google Search Console,
    use URL Inspection → Request Indexing on each changed URL. Bing and
@@ -113,7 +120,7 @@ form for markers sitting outside a `<script>` tag), then add a matching
 ## Local preview
 
 `.claude/launch.json` defines a `static` preview config
-(`python3 -m http.server`) so the terminal, cv.html, and 404.html can be
+(`python3 -m http.server --directory public`) so the terminal, cv.html, and 404.html can be
 exercised in a real browser — `file://` won't execute the page's
 JavaScript.
 

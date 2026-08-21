@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: 20
 
-      - name: Run content build (content/site-data.mjs -> index.html, cv.html, llm/*, sitemap.xml)
+      - name: Run content build (content/site-data.mjs -> public/index.html, public/cv.html, public/llm/*, public/sitemap.xml)
         run: npm run build
 
       - name: Fail if the build produced any drift

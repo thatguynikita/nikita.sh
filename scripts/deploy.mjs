@@ -26,41 +26,26 @@ import { fileURLToPath } from "node:url";
 import { dirname, join, extname, relative } from "node:path";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+const PUBLIC_ROOT = join(ROOT, "public");
 
 // -------- manifest: explicit allowlist, not a blocklist --------
-// content/, scripts/, docs/, README.md, .claude/, .git etc.
-// can never end up here by accident.
-
-const ROOT_FILES = [
-  "index.html",
-  "cv.html",
-  "404.html",
-  "theme.css",
-  "theme.js",
-  "favicon.ico",
-  "robots.txt",
-  "sitemap.xml",
-  "site.webmanifest",
-  "llms.txt",
-];
-
-const DIRS = ["assets", "llm"];
+// Everything deployable lives under public/; content/, scripts/, docs/,
+// README.md, .claude/, .git etc. sit outside it and can never end up
+// here by accident — "under public/" is the allowlist.
 
 function walk(dir) {
   const out = [];
-  for (const name of readdirSync(join(ROOT, dir), { recursive: true })) {
+  for (const name of readdirSync(dir, { recursive: true })) {
     if (name.split(/[\\/]/).some((part) => part.startsWith("."))) continue; // .DS_Store etc.
-    const full = join(ROOT, dir, name);
+    const full = join(dir, name);
     if (statSync(full).isDirectory()) continue;
-    out.push(relative(ROOT, full).split("\\").join("/"));
+    out.push(relative(PUBLIC_ROOT, full).split("\\").join("/"));
   }
   return out;
 }
 
 function buildManifest() {
-  const files = [...ROOT_FILES];
-  for (const dir of DIRS) files.push(...walk(dir));
-  return files.sort();
+  return walk(PUBLIC_ROOT).sort();
 }
 
 // -------- content-type table --------
@@ -166,7 +151,7 @@ function main() {
   const results = { ok: [], failed: [] };
   for (const key of manifest) {
     const contentType = contentTypeFor(key);
-    const body = join(ROOT, key);
+    const body = join(PUBLIC_ROOT, key);
     const cmd = ["storage", "s3api", "put-object", "--body", body, "--bucket", args.bucket, "--key", key, "--content-type", contentType];
     if (args.profile) cmd.push("--profile", args.profile);
 

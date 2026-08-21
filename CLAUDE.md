@@ -4,18 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-**nikita.sh** is a DevOps/SRE portfolio dressed up as an interactive terminal — a playful homage, not a real shell. `index.html` is the terminal; `cv.html` is a proper résumé underneath it; `404.html` is a themed error page. All three are bilingual (EN/RU), hand-authored HTML/CSS/JS with **zero runtime dependencies and no build step for the live pages themselves** — `theme.css`/`theme.js` are shared between them. A small Node pipeline (zero npm dependencies) keeps facts that appear in multiple places in sync, and generates a plain-HTML mirror for crawlers/LLM agents that don't execute JavaScript.
+**nikita.sh** is a DevOps/SRE portfolio dressed up as an interactive terminal — a playful homage, not a real shell. `public/index.html` is the terminal; `public/cv.html` is a proper résumé underneath it; `public/404.html` is a themed error page. All three are bilingual (EN/RU), hand-authored HTML/CSS/JS with **zero runtime dependencies and no build step for the live pages themselves** — `theme.css`/`theme.js` are shared between them. A small Node pipeline (zero npm dependencies) keeps facts that appear in multiple places in sync, and generates a plain-HTML mirror for crawlers/LLM agents that don't execute JavaScript. Everything under `public/` is what actually gets deployed (its contents map 1:1 to the site's root — `public/theme.css` -> `nikita.sh/theme.css`); everything else in the repo (`content/`, `scripts/`, `docs/`, this file) is source/tooling and never deployed.
 
 ## Commands
 
 ```bash
-npm run build          # propagate content/site-data.mjs -> index.html, cv.html, llm/*, sitemap.xml
+npm run build          # propagate content/site-data.mjs -> public/index.html, public/cv.html, public/llm/*, public/sitemap.xml
 npm run deploy:dry-run # preview the full deploy manifest (file -> bucket key -> content-type), no network calls, no bucket needed
 npm run deploy -- --bucket <bucket-name>   # deploy everything (or set NIKITASH_BUCKET env var and drop --bucket)
-npm run deploy -- --bucket <bucket-name> index.html cv.html   # deploy only specific files (still checked against the allowlist)
+npm run deploy -- --bucket <bucket-name> index.html cv.html   # deploy only specific files (still checked against the allowlist) — unprefixed, same as --dry-run output
 ```
 
-There is no test suite, linter, or bundler — no dependencies are installed (`node_modules/` is gitignored but nothing populates it). "Correctness" is verified by `git diff` after a build (should be empty on a no-op run) and by exercising pages in a real browser (`file://` won't execute the JS — use the `static` preview config in `.claude/launch.json`, `python3 -m http.server` on port 8934, which serves `index.html`/`cv.html`/`404.html`).
+There is no test suite, linter, or bundler — no dependencies are installed (`node_modules/` is gitignored but nothing populates it). "Correctness" is verified by `git diff` after a build (should be empty on a no-op run) and by exercising pages in a real browser (`file://` won't execute the JS — use the `static` preview config in `.claude/launch.json`, `python3 -m http.server --directory public` on port 8934, which serves `public/index.html`/`public/cv.html`/`public/404.html`).
 
 CI (`.github/workflows/ci.yml`) runs `npm run build` then fails if `git status --porcelain` is non-empty — this is the drift check that catches a hand-edited `GENERATED:*` block or `llm/*` mirror page. It also runs `npm run deploy:dry-run` as a smoke test.
 
@@ -23,7 +23,7 @@ CI (`.github/workflows/ci.yml`) runs `npm run build` then fails if `git status -
 
 This is the part that requires reading multiple files to understand. Facts that appear in more than one place (bio, socials, skills, job history, certs, languages, JSON-LD) live in **one file: `content/site-data.mjs`**. Everything else reads from it:
 
-- `scripts/build.mjs` is the orchestrator. It imports from `content/site-data.mjs`, formats each field to match the hand-written array/object style already used in `index.html`/`cv.html` (compact, unquoted keys — see the `tupleRow`/`certRow`/`legacyJobRow` etc. formatter functions), and writes the result into two kinds of targets:
+- `scripts/build.mjs` is the orchestrator. It imports from `content/site-data.mjs`, formats each field to match the hand-written array/object style already used in `public/index.html`/`public/cv.html` (compact, unquoted keys — see the `tupleRow`/`certRow`/`legacyJobRow` etc. formatter functions), and writes the result into two kinds of targets (all under `public/`, resolved via the script's `PUBLIC_ROOT`):
   - **`index.html` and `cv.html`**: only the regions between `/* GENERATED:NAME:START */ ... /* GENERATED:NAME:END */` comments (or `<!-- -->` for the one marker sitting in markup, cv.html's head JSON-LD) are touched, via `scripts/lib/markers.mjs`'s `replaceMarker()`. Everything else in those files — layout, terminal logic, styling, `404.html` in its entirety — is hand-authored and the build never touches it.
   - **`llm/index.html`, `llm/cv.html`, `llm/ru/index.html`, `llm/ru/cv.html`**: fully regenerated every run from `scripts/templates/mirror-index.mjs` / `mirror-cv.mjs`. Never hand-edit these — the next build overwrites them. Page-chrome strings (headings, button labels) for the mirrors live in small `UI` objects at the top of those template files, not in `content/site-data.mjs`.
 - `sitemap.xml`'s `<lastmod>` gets bumped to today, but only for the sitemapped URLs whose backing file actually changed in the git working tree (`git status --porcelain` decides this — no separate cache file).
@@ -36,7 +36,7 @@ Full workflow and the "adding a new generated field" recipe: `docs/UPDATE-GUIDE.
 
 ## Deploy
 
-`scripts/deploy.mjs` shells out to `yc storage s3api put-object` (Yandex Object Storage) — one call per file, zero dependencies. The manifest is an **explicit allowlist**, not a blocklist: root files (`index.html`, `cv.html`, `404.html`, `theme.css`, `theme.js`, `favicon.ico`, `robots.txt`, `sitemap.xml`, `site.webmanifest`, `llms.txt`) plus everything under `assets/` and `llm/`. `content/`, `scripts/`, `docs/`, `README.md`, `.claude/` can never end up in a deploy by accident. Content-Type is picked from a table keyed by extension (this replaced a manual process that once garbled `llms.txt`'s charset). Always deploys the full manifest, not a diff — git only knows local history, not what's actually live in the bucket.
+`scripts/deploy.mjs` shells out to `yc storage s3api put-object` (Yandex Object Storage) — one call per file, zero dependencies. The manifest is a recursive walk of everything under `public/` (`index.html`, `cv.html`, `404.html`, `theme.css`, `theme.js`, `favicon.ico`, `robots.txt`, `sitemap.xml`, `site.webmanifest`, `llms.txt`, `assets/`, `llm/`) — "outside `public/`" is the allowlist boundary, so `content/`, `scripts/`, `docs/`, `README.md`, `.claude/` can never end up in a deploy by accident. **S3 keys stay unprefixed** (`index.html`, not `public/index.html`) — only the local file read resolves under `public/` (via `PUBLIC_ROOT`), so the live URL layout is untouched by where the files sit in the repo. Content-Type is picked from a table keyed by extension (this replaced a manual process that once garbled `llms.txt`'s charset). Always deploys the full manifest, not a diff — git only knows local history, not what's actually live in the bucket.
 
 ## Theming and shared JS (`theme.js` / `theme.css`)
 
