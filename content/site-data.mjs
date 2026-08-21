@@ -50,7 +50,7 @@ export const PERSON = {
 // otherwise the browser silently blocks the fetch. That header lives on
 // the VPS, not in this repo, so it won't show up in `git diff` here.
 export const NOW_PLAYING = {
-  endpoint: "/now-playing.json",
+  endpoint: "https://functions.yandexcloud.net/d4e5vur1qk4p911pcu58",
   pollMs: 20000,
 };
 
