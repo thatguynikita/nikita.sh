@@ -31,6 +31,7 @@ export const PERSON = {
   },
   email: "me@nikita.sh",
   website: "https://nikita.sh",
+  photoUrl: "https://nikita.sh/assets/img/nikita-photo.png",
   addressLocality: { en: "Saint Petersburg", ru: "Санкт-Петербург" },
   addressCountry: "RU",
 };

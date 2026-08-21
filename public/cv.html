@@ -33,6 +33,7 @@
     "name": "Nikita Chernozipunnikov",
     "jobTitle": "DevOps / SRE — Systems Engineer",
     "url": "https://nikita.sh/",
+    "image": "https://nikita.sh/assets/img/nikita-photo.png",
     "email": "mailto:me@nikita.sh",
     "address": {
       "@type": "PostalAddress",
@@ -621,6 +622,7 @@
   const UI = {
     en: {
       name: "Nikita Chernozipunnikov",
+      photoAlt: "Nikita Chernozipunnikov, DevOps / SRE engineer — portrait photo",
       tagline: `<span class="accent">DevOps / SRE</span> <span class="dim">&mdash; Systems Engineer &middot; 11y experience</span>`,
       metaLine: `Saint Petersburg, Russia &middot; Citizenship: Russia &middot; hybrid, full day &middot; not available for relocation or business trips`,
       about: ABOUT_CV_EN,
@@ -639,6 +641,7 @@
     },
     ru: {
       name: "Никита Чернозипунников",
+      photoAlt: "Никита Чернозипунников, инженер DevOps / SRE — портретное фото",
       tagline: `<span class="accent">DevOps / SRE</span> <span class="dim">&mdash; Системный инженер &middot; 11 лет опыта</span>`,
       metaLine: `Санкт-Петербург, Россия &middot; Гражданство: Россия &middot; гибридный график, полный день &middot; не готов к переезду или командировкам`,
       about: ABOUT_CV_RU,
@@ -678,7 +681,7 @@
     html += `</div>`;
     html += `<div class="meta-line">${U.metaLine}</div>`;
     html += `</div>`;
-    html += `<div class="avatar-frame"><img class="avatar" src="assets/img/nikita-photo.png" alt="${U.name}"></div>`;
+    html += `<div class="avatar-frame"><img class="avatar" src="assets/img/nikita-photo.png" alt="${U.photoAlt}"></div>`;
     html += `</div>`;
     html += `<hr class="rule strong">`;
 
