@@ -18,7 +18,8 @@ import { renderCvMirror } from "./templates/mirror-cv.mjs";
 import { buildCvJsonLd, jsonLdScript } from "./templates/jsonld.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
-const path = (p) => join(ROOT, p);
+const PUBLIC_ROOT = join(ROOT, "public");
+const path = (p) => join(PUBLIC_ROOT, p);
 const read = (p) => readFileSync(path(p), "utf8");
 const write = (p, content) => writeFileSync(path(p), content);
 
@@ -155,12 +156,12 @@ function buildMirrors() {
 // is the source of truth, no separate cache file needed.
 
 const SITEMAP_URLS = [
-  { url: "https://nikita.sh/", file: "index.html" },
-  { url: "https://nikita.sh/cv.html", file: "cv.html" },
-  { url: "https://nikita.sh/llm/", file: "llm/index.html" },
-  { url: "https://nikita.sh/llm/cv.html", file: "llm/cv.html" },
-  { url: "https://nikita.sh/llm/ru/", file: "llm/ru/index.html" },
-  { url: "https://nikita.sh/llm/ru/cv.html", file: "llm/ru/cv.html" },
+  { url: "https://nikita.sh/", file: "public/index.html" },
+  { url: "https://nikita.sh/cv.html", file: "public/cv.html" },
+  { url: "https://nikita.sh/llm/", file: "public/llm/index.html" },
+  { url: "https://nikita.sh/llm/cv.html", file: "public/llm/cv.html" },
+  { url: "https://nikita.sh/llm/ru/", file: "public/llm/ru/index.html" },
+  { url: "https://nikita.sh/llm/ru/cv.html", file: "public/llm/ru/cv.html" },
 ];
 
 function changedFiles() {

@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <img src="assets/img/og-terminal.png" width="560" alt="nikita.sh — the neofetch card in the live terminal, showing an ASCII portrait, role, uptime, and now-playing track">
+  <img src="public/assets/img/og-terminal.png" width="560" alt="nikita.sh — the neofetch card in the live terminal, showing an ASCII portrait, role, uptime, and now-playing track">
 </p>
 
 **[nikita.sh](https://nikita.sh)** is a DevOps/SRE portfolio dressed up
@@ -19,13 +19,16 @@ proper résumé lives underneath it too (`cv.html`).
 Bilingual (EN/RU), hand-authored HTML/CSS/JS with zero runtime
 dependencies or build step, plus a generated plain-HTML mirror so
 crawlers and AI agents that skip JavaScript still get the real content.
+Everything that's actually deployed lives under `public/` — the repo
+root is source/tooling only.
 
 ## What's in this repo
 
-- the interactive terminal portfolio (`index.html`) and résumé (`cv.html`)
-- a themed 404 page (`404.html`) — same terminal look, its own cat-themed
-  scene, fully hand-authored
-- a generated bilingual plain-HTML mirror for crawlers/LLMs (`llm/`)
+- the interactive terminal portfolio (`public/index.html`) and résumé
+  (`public/cv.html`)
+- a themed 404 page (`public/404.html`) — same terminal look, its own
+  cat-themed scene, fully hand-authored
+- a generated bilingual plain-HTML mirror for crawlers/LLMs (`public/llm/`)
 - a small zero-dependency Node pipeline that keeps content and structured
   data in sync across all of the above from one source of truth
   (`content/`, `scripts/`)
@@ -47,35 +50,36 @@ crawlers and AI agents that skip JavaScript still get the real content.
 
 | Path | What it is |
 |---|---|
-| `index.html`, `cv.html` | The live site — hand-authored; only their `GENERATED:*` data blocks are generator-owned |
-| `404.html` | Custom error page — fully hand-authored, no `GENERATED:*` blocks (`content/site-data.mjs` doesn't apply to it) |
-| `theme.css`, `theme.js` | Shared styling/JS for all three live pages |
-| `favicon.ico`, `robots.txt`, `site.webmanifest`, `sitemap.xml`, `llms.txt` | Pinned to root — browser/crawler convention requires it, not a choice |
-| `assets/icons/` | Favicons, apple-touch-icon, android-chrome |
-| `assets/img/` | `nikita-photo.png`, `og-terminal.png` (OG images), `404-cat.png` (404 page art) |
+| `public/` | Everything actually deployed — its contents map 1:1 to the site's root (`public/index.html` -> `nikita.sh/index.html`, `public/assets/...` -> `nikita.sh/assets/...`); see `scripts/deploy.mjs` |
+| `public/index.html`, `public/cv.html` | The live site — hand-authored; only their `GENERATED:*` data blocks are generator-owned |
+| `public/404.html` | Custom error page — fully hand-authored, no `GENERATED:*` blocks (`content/site-data.mjs` doesn't apply to it) |
+| `public/theme.css`, `public/theme.js` | Shared styling/JS for all three live pages |
+| `public/favicon.ico`, `public/robots.txt`, `public/site.webmanifest`, `public/sitemap.xml`, `public/llms.txt` | Deployed to the site root as `/favicon.ico` etc. — browser/crawler convention requires it, not a choice |
+| `public/assets/icons/` | Favicons, apple-touch-icon, android-chrome |
+| `public/assets/img/` | `nikita-photo.png`, `og-terminal.png` (OG images), `404-cat.png` (404 page art) |
 | `content/site-data.mjs` | Single source of truth for shared facts (bio, socials, skills, jobs, certs, JSON-LD) |
-| `scripts/` | `build.mjs` propagates `content/site-data.mjs` into `index.html`, `cv.html`, and `llm/*`; `deploy.mjs` pushes to Yandex Object Storage |
-| `llm/` | Plain-HTML crawler mirror (see below) |
+| `scripts/` | `build.mjs` propagates `content/site-data.mjs` into `public/index.html`, `public/cv.html`, and `public/llm/*`; `deploy.mjs` pushes everything under `public/` to Yandex Object Storage |
+| `public/llm/` | Plain-HTML crawler mirror (see below) |
 | `docs/UPDATE-GUIDE.md` | The content-update + deploy workflow |
 
 ## Crawler mirror (`/llm/`)
 
-`index.html` and `cv.html` are the live, JS-rendered site. `llm/` is a
-generated plain-HTML mirror of the same content — English at `/llm/`,
-Russian at `/llm/ru/` — for crawlers and AI agents that don't execute
-JavaScript. It's generated from `content/site-data.mjs` by
+`index.html` and `cv.html` are the live, JS-rendered site. `public/llm/`
+is a generated plain-HTML mirror of the same content — English at
+`/llm/`, Russian at `/llm/ru/` — for crawlers and AI agents that don't
+execute JavaScript. It's generated from `content/site-data.mjs` by
 `node scripts/build.mjs`, not hand-maintained (see `docs/UPDATE-GUIDE.md`).
 
 | File | What it is |
 |---|---|
-| `robots.txt` | Allows named AI/search crawlers, points to sitemap |
-| `llms.txt` | Summary + direct links, both languages |
-| `sitemap.xml` | Lists live pages + both mirrors, with hreflang alternates |
-| `llm/style.css` | Shared stylesheet for the mirror pages |
-| `llm/index.html` | EN profile (about, skills, contact) |
-| `llm/cv.html` | EN full CV (experience, education, certs, languages, skills) |
-| `llm/ru/index.html` | RU profile |
-| `llm/ru/cv.html` | RU full CV |
+| `public/robots.txt` | Allows named AI/search crawlers, points to sitemap |
+| `public/llms.txt` | Summary + direct links, both languages |
+| `public/sitemap.xml` | Lists live pages + both mirrors, with hreflang alternates |
+| `public/llm/style.css` | Shared stylesheet for the mirror pages |
+| `public/llm/index.html` | EN profile (about, skills, contact) |
+| `public/llm/cv.html` | EN full CV (experience, education, certs, languages, skills) |
+| `public/llm/ru/index.html` | RU profile |
+| `public/llm/ru/cv.html` | RU full CV |
 
 **Discovery**: `index.html`/`cv.html` never link to `/llm/` on purpose —
 a JS page and a plain-HTML page serving the same content differently at

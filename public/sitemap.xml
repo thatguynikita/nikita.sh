@@ -3,33 +3,33 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://nikita.sh/</loc>
-    <lastmod>2026-08-17</lastmod>
+    <lastmod>2026-08-21</lastmod>
   </url>
   <url>
     <loc>https://nikita.sh/cv.html</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-21</lastmod>
   </url>
   <url>
     <loc>https://nikita.sh/llm/</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-21</lastmod>
     <xhtml:link rel="alternate" hreflang="en" href="https://nikita.sh/llm/"/>
     <xhtml:link rel="alternate" hreflang="ru" href="https://nikita.sh/llm/ru/"/>
   </url>
   <url>
     <loc>https://nikita.sh/llm/cv.html</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-21</lastmod>
     <xhtml:link rel="alternate" hreflang="en" href="https://nikita.sh/llm/cv.html"/>
     <xhtml:link rel="alternate" hreflang="ru" href="https://nikita.sh/llm/ru/cv.html"/>
   </url>
   <url>
     <loc>https://nikita.sh/llm/ru/</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-21</lastmod>
     <xhtml:link rel="alternate" hreflang="en" href="https://nikita.sh/llm/"/>
     <xhtml:link rel="alternate" hreflang="ru" href="https://nikita.sh/llm/ru/"/>
   </url>
   <url>
     <loc>https://nikita.sh/llm/ru/cv.html</loc>
-    <lastmod>2026-08-16</lastmod>
+    <lastmod>2026-08-21</lastmod>
     <xhtml:link rel="alternate" hreflang="en" href="https://nikita.sh/llm/cv.html"/>
     <xhtml:link rel="alternate" hreflang="ru" href="https://nikita.sh/llm/ru/cv.html"/>
   </url>
