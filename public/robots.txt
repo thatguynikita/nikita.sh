@@ -16,6 +16,7 @@ User-agent: DuckDuckBot
 Allow: /
 
 User-agent: *
+Content-Signal: search=yes, ai-train=yes, ai-input=yes
 Allow: /
 
 Sitemap: https://nikita.sh/sitemap.xml
