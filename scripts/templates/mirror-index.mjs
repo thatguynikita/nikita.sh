@@ -70,9 +70,9 @@ export function renderIndexMirror(lang) {
 <meta name="description" content="${escapeHtml(U.description)}">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="${canonicalHref}">
-<link rel="alternate" hreflang="en" href="https://nikita.sh/llm/">
+<link rel="alternate" hreflang="en" href="https://nikita.sh/">
 <link rel="alternate" hreflang="ru" href="https://nikita.sh/llm/ru/">
-<link rel="alternate" hreflang="x-default" href="https://nikita.sh/llm/">
+<link rel="alternate" hreflang="x-default" href="https://nikita.sh/">
 <link rel="stylesheet" href="${stylesheetHref}">
 
 ${jsonLdScript(buildIndexJsonLd(lang))}

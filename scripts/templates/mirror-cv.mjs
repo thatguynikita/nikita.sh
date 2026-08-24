@@ -162,9 +162,9 @@ export function renderCvMirror(lang) {
 <meta name="description" content="${escapeHtml(U.description)}">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="${canonicalHref}">
-<link rel="alternate" hreflang="en" href="https://nikita.sh/llm/cv.html">
+<link rel="alternate" hreflang="en" href="https://nikita.sh/cv.html">
 <link rel="alternate" hreflang="ru" href="https://nikita.sh/llm/ru/cv.html">
-<link rel="alternate" hreflang="x-default" href="https://nikita.sh/llm/cv.html">
+<link rel="alternate" hreflang="x-default" href="https://nikita.sh/cv.html">
 <link rel="stylesheet" href="${stylesheetHref}">
 
 ${jsonLdScript(buildCvJsonLd(lang))}
