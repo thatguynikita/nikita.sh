@@ -43,10 +43,69 @@ function licenseText(lang) {
     : `© ${year} ${holder}. Content licensed <a href="${url}">${name}</a> — view and share with attribution, no commercial use, no derivatives.`;
 }
 
+// Shared building blocks for both the full llm/index.html mirror and the
+// live index.html's <noscript> fallback — kept as named fragments (not one
+// flat string) so each caller can compose only the pieces it needs, in the
+// order it needs, without regex-stripping the other's markup. Mirrors the
+// buildCvFragments pattern in mirror-cv.mjs.
+function buildIndexFragments(lang) {
+  const U = UI[lang];
+  const name = lang === "ru" ? PERSON.nameRu : PERSON.nameEn;
+
+  const skillsRows = SKILLS.filter((s) => s.contexts.includes("index")).map((s) => [s.key[lang], escapeHtml(s.val)]);
+  const contactRows = SOCIALS.filter((s) => s.contexts.includes("index")).map((s) => [
+    s.label,
+    `<a href="${s.href}"${s.key === "email" ? "" : ' rel="me noopener noreferrer"'}>${escapeHtml(s.display)}</a>`,
+  ]);
+
+  return {
+    // Kept apart so renderIndexNoscript can skip the <h1> — the live
+    // index.html already has a permanent, always-present
+    // <h1 class="sr-only"> of its own (added for screen readers/SEO
+    // regardless of JS state), so repeating one inside <noscript> would
+    // put two <h1>s in the parsed HTML whenever JS doesn't execute.
+    // renderIndexMirror (the standalone /llm/ page, which has no other
+    // heading) still uses both.
+    nameHeading: `  <h1>${escapeHtml(name)}</h1>`,
+    roleMeta: `  <p class="role">${PERSON.roleTagline[lang]}</p>
+  <p class="meta">${PERSON.metaLine[lang]}</p>`,
+
+    langs: `  <ul class="langs" aria-label="${U.langsAria}">
+    <li><a href="https://nikita.sh/llm/" hreflang="en">EN</a></li>
+    <li><a href="https://nikita.sh/llm/ru/" hreflang="ru">RU</a></li>
+  </ul>`,
+
+    content: `  <h2>${U.about}</h2>
+  <p>
+${escapeHtml(aboutParagraph(lang))}
+  </p>
+
+  <h2>${U.skills}</h2>
+  <table>
+${skillsRows.map(([k, v]) => `    <tr><th>${escapeHtml(k)}</th><td>${v}</td></tr>`).join("\n")}
+  </table>
+  <p>${U.skillsBreakdown}</p>
+
+  <h2>${U.contact}</h2>
+  <table>
+${contactRows.map(([k, v]) => `    <tr><th>${escapeHtml(k)}</th><td>${v}</td></tr>`).join("\n")}
+  </table>`,
+
+    resumePointer: `  <h2>${U.resume}</h2>
+  <p>${U.resumeLine("cv.html", `nikita.sh/llm/${lang === "ru" ? "ru/" : ""}cv.html`)}</p>`,
+
+    notices: `  <p class="notice">
+    ${noticeText(lang)}
+  </p>
+  <p class="notice license">
+    ${licenseText(lang)}
+  </p>`,
+  };
+}
+
 export function renderIndexMirror(lang) {
   const U = UI[lang];
   const stylesheetHref = lang === "ru" ? "../style.css" : "style.css";
-  const name = lang === "ru" ? PERSON.nameRu : PERSON.nameEn;
   // EN defers to the live (JS-rendered) homepage, since it's the same
   // content; RU has no distinct live URL to defer to (the live site
   // switches language client-side on the same URL), so it self-canonicalizes
@@ -54,12 +113,7 @@ export function renderIndexMirror(lang) {
   // same-content duplicates, not cross-language relationships (that's what
   // hreflang, below, is for).
   const canonicalHref = lang === "ru" ? "https://nikita.sh/llm/ru/" : "https://nikita.sh/";
-
-  const skillsRows = SKILLS.filter((s) => s.contexts.includes("index")).map((s) => [s.key[lang], escapeHtml(s.val)]);
-  const contactRows = SOCIALS.filter((s) => s.contexts.includes("index")).map((s) => [
-    s.label,
-    `<a href="${s.href}"${s.key === "email" ? "" : ' rel="me noopener noreferrer"'}>${escapeHtml(s.display)}</a>`,
-  ]);
+  const f = buildIndexFragments(lang);
 
   return `<!DOCTYPE html>
 <html lang="${lang}">
@@ -79,42 +133,31 @@ ${jsonLdScript(buildIndexJsonLd(lang))}
 </head>
 <body>
 <main>
-  <h1>${escapeHtml(name)}</h1>
-  <p class="role">${PERSON.roleTagline[lang]}</p>
-  <p class="meta">${PERSON.metaLine[lang]}</p>
+${f.nameHeading}
+${f.roleMeta}
 
-  <ul class="langs" aria-label="${U.langsAria}">
-    <li><a href="https://nikita.sh/llm/" hreflang="en">EN</a></li>
-    <li><a href="https://nikita.sh/llm/ru/" hreflang="ru">RU</a></li>
-  </ul>
+${f.langs}
 
-  <h2>${U.about}</h2>
-  <p>
-${escapeHtml(aboutParagraph(lang))}
-  </p>
+${f.content}
 
-  <h2>${U.skills}</h2>
-  <table>
-${skillsRows.map(([k, v]) => `    <tr><th>${escapeHtml(k)}</th><td>${v}</td></tr>`).join("\n")}
-  </table>
-  <p>${U.skillsBreakdown}</p>
+${f.resumePointer}
 
-  <h2>${U.contact}</h2>
-  <table>
-${contactRows.map(([k, v]) => `    <tr><th>${escapeHtml(k)}</th><td>${v}</td></tr>`).join("\n")}
-  </table>
-
-  <h2>${U.resume}</h2>
-  <p>${U.resumeLine("cv.html", `nikita.sh/llm/${lang === "ru" ? "ru/" : ""}cv.html`)}</p>
-
-  <p class="notice">
-    ${noticeText(lang)}
-  </p>
-  <p class="notice license">
-    ${licenseText(lang)}
-  </p>
+${f.notices}
 </main>
 </body>
 </html>
 `;
+}
+
+// <noscript> fallback for the live index.html — header + the substantive
+// About/Skills/Contact content only. Omits the langs switcher and the
+// mirror/license notices, matching cv.html's noscript precedent (dead
+// weight for the one audience — non-JS clients — this is for).
+export function renderIndexNoscript(lang) {
+  const f = buildIndexFragments(lang);
+  return `<noscript>
+${f.roleMeta}
+
+${f.content}
+</noscript>`;
 }
