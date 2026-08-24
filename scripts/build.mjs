@@ -13,7 +13,7 @@ import { dirname, join } from "node:path";
 import { ABOUT, SOCIALS, SKILLS, JOBS, CERTS, LANGUAGES, EDUCATION, TRAITS, NOW_PLAYING } from "../content/site-data.mjs";
 import { aboutCvParagraph, jobLocationText } from "./lib/content.mjs";
 import { replaceMarker } from "./lib/markers.mjs";
-import { renderIndexMirror } from "./templates/mirror-index.mjs";
+import { renderIndexMirror, renderIndexNoscript } from "./templates/mirror-index.mjs";
 import { renderCvMirror, renderCvNoscript } from "./templates/mirror-cv.mjs";
 import { buildIndexJsonLd, buildCvJsonLd, jsonLdScript } from "./templates/jsonld.mjs";
 
@@ -60,6 +60,11 @@ function buildIndexHtml() {
   // cv.html's precedent).
   const jsonLdBody = jsonLdScript(buildIndexJsonLd("en"));
   html = replaceMarker(html, "JSONLD", jsonLdBody, { style: "html" });
+
+  // <noscript> fallback for non-JS clients that fetch this page directly
+  // — same "always English" reasoning as the JSON-LD block above.
+  const noscriptBody = renderIndexNoscript("en");
+  html = replaceMarker(html, "NOSCRIPT", noscriptBody, { style: "html" });
 
   write("index.html", html);
 }

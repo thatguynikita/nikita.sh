@@ -4,11 +4,11 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://nikita.sh/</loc>
-    <lastmod>2026-08-22</lastmod>
+    <lastmod>2026-08-24</lastmod>
   </url>
   <url>
     <loc>https://nikita.sh/cv.html</loc>
-    <lastmod>2026-08-22</lastmod>
+    <lastmod>2026-08-24</lastmod>
     <image:image>
       <image:loc>https://nikita.sh/assets/img/nikita-photo.png</image:loc>
       <image:title>Nikita Chernozipunnikov — DevOps / SRE portrait photo</image:title>
@@ -16,26 +16,26 @@
   </url>
   <url>
     <loc>https://nikita.sh/llm/</loc>
-    <lastmod>2026-08-21</lastmod>
-    <xhtml:link rel="alternate" hreflang="en" href="https://nikita.sh/llm/"/>
+    <lastmod>2026-08-24</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nikita.sh/"/>
     <xhtml:link rel="alternate" hreflang="ru" href="https://nikita.sh/llm/ru/"/>
   </url>
   <url>
     <loc>https://nikita.sh/llm/cv.html</loc>
-    <lastmod>2026-08-21</lastmod>
-    <xhtml:link rel="alternate" hreflang="en" href="https://nikita.sh/llm/cv.html"/>
+    <lastmod>2026-08-24</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nikita.sh/cv.html"/>
     <xhtml:link rel="alternate" hreflang="ru" href="https://nikita.sh/llm/ru/cv.html"/>
   </url>
   <url>
     <loc>https://nikita.sh/llm/ru/</loc>
-    <lastmod>2026-08-21</lastmod>
-    <xhtml:link rel="alternate" hreflang="en" href="https://nikita.sh/llm/"/>
+    <lastmod>2026-08-24</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nikita.sh/"/>
     <xhtml:link rel="alternate" hreflang="ru" href="https://nikita.sh/llm/ru/"/>
   </url>
   <url>
     <loc>https://nikita.sh/llm/ru/cv.html</loc>
-    <lastmod>2026-08-21</lastmod>
-    <xhtml:link rel="alternate" hreflang="en" href="https://nikita.sh/llm/cv.html"/>
+    <lastmod>2026-08-24</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://nikita.sh/cv.html"/>
     <xhtml:link rel="alternate" hreflang="ru" href="https://nikita.sh/llm/ru/cv.html"/>
   </url>
 </urlset>

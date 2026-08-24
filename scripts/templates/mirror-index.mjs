@@ -43,17 +43,14 @@ function licenseText(lang) {
     : `© ${year} ${holder}. Content licensed <a href="${url}">${name}</a> — view and share with attribution, no commercial use, no derivatives.`;
 }
 
-export function renderIndexMirror(lang) {
+// Shared building blocks for both the full llm/index.html mirror and the
+// live index.html's <noscript> fallback — kept as named fragments (not one
+// flat string) so each caller can compose only the pieces it needs, in the
+// order it needs, without regex-stripping the other's markup. Mirrors the
+// buildCvFragments pattern in mirror-cv.mjs.
+function buildIndexFragments(lang) {
   const U = UI[lang];
-  const stylesheetHref = lang === "ru" ? "../style.css" : "style.css";
   const name = lang === "ru" ? PERSON.nameRu : PERSON.nameEn;
-  // EN defers to the live (JS-rendered) homepage, since it's the same
-  // content; RU has no distinct live URL to defer to (the live site
-  // switches language client-side on the same URL), so it self-canonicalizes
-  // instead of wrongly pointing at the English live page — canonical is for
-  // same-content duplicates, not cross-language relationships (that's what
-  // hreflang, below, is for).
-  const canonicalHref = lang === "ru" ? "https://nikita.sh/llm/ru/" : "https://nikita.sh/";
 
   const skillsRows = SKILLS.filter((s) => s.contexts.includes("index")).map((s) => [s.key[lang], escapeHtml(s.val)]);
   const contactRows = SOCIALS.filter((s) => s.contexts.includes("index")).map((s) => [
@@ -61,34 +58,24 @@ export function renderIndexMirror(lang) {
     `<a href="${s.href}"${s.key === "email" ? "" : ' rel="me noopener noreferrer"'}>${escapeHtml(s.display)}</a>`,
   ]);
 
-  return `<!DOCTYPE html>
-<html lang="${lang}">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${escapeHtml(U.title)}</title>
-<meta name="description" content="${escapeHtml(U.description)}">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="${canonicalHref}">
-<link rel="alternate" hreflang="en" href="https://nikita.sh/llm/">
-<link rel="alternate" hreflang="ru" href="https://nikita.sh/llm/ru/">
-<link rel="alternate" hreflang="x-default" href="https://nikita.sh/llm/">
-<link rel="stylesheet" href="${stylesheetHref}">
+  return {
+    // Kept apart so renderIndexNoscript can skip the <h1> — the live
+    // index.html already has a permanent, always-present
+    // <h1 class="sr-only"> of its own (added for screen readers/SEO
+    // regardless of JS state), so repeating one inside <noscript> would
+    // put two <h1>s in the parsed HTML whenever JS doesn't execute.
+    // renderIndexMirror (the standalone /llm/ page, which has no other
+    // heading) still uses both.
+    nameHeading: `  <h1>${escapeHtml(name)}</h1>`,
+    roleMeta: `  <p class="role">${PERSON.roleTagline[lang]}</p>
+  <p class="meta">${PERSON.metaLine[lang]}</p>`,
 
-${jsonLdScript(buildIndexJsonLd(lang))}
-</head>
-<body>
-<main>
-  <h1>${escapeHtml(name)}</h1>
-  <p class="role">${PERSON.roleTagline[lang]}</p>
-  <p class="meta">${PERSON.metaLine[lang]}</p>
-
-  <ul class="langs" aria-label="${U.langsAria}">
+    langs: `  <ul class="langs" aria-label="${U.langsAria}">
     <li><a href="https://nikita.sh/llm/" hreflang="en">EN</a></li>
     <li><a href="https://nikita.sh/llm/ru/" hreflang="ru">RU</a></li>
-  </ul>
+  </ul>`,
 
-  <h2>${U.about}</h2>
+    content: `  <h2>${U.about}</h2>
   <p>
 ${escapeHtml(aboutParagraph(lang))}
   </p>
@@ -102,19 +89,75 @@ ${skillsRows.map(([k, v]) => `    <tr><th>${escapeHtml(k)}</th><td>${v}</td></tr
   <h2>${U.contact}</h2>
   <table>
 ${contactRows.map(([k, v]) => `    <tr><th>${escapeHtml(k)}</th><td>${v}</td></tr>`).join("\n")}
-  </table>
+  </table>`,
 
-  <h2>${U.resume}</h2>
-  <p>${U.resumeLine("cv.html", `nikita.sh/llm/${lang === "ru" ? "ru/" : ""}cv.html`)}</p>
+    resumePointer: `  <h2>${U.resume}</h2>
+  <p>${U.resumeLine("cv.html", `nikita.sh/llm/${lang === "ru" ? "ru/" : ""}cv.html`)}</p>`,
 
-  <p class="notice">
+    notices: `  <p class="notice">
     ${noticeText(lang)}
   </p>
   <p class="notice license">
     ${licenseText(lang)}
-  </p>
+  </p>`,
+  };
+}
+
+export function renderIndexMirror(lang) {
+  const U = UI[lang];
+  const stylesheetHref = lang === "ru" ? "../style.css" : "style.css";
+  // EN defers to the live (JS-rendered) homepage, since it's the same
+  // content; RU has no distinct live URL to defer to (the live site
+  // switches language client-side on the same URL), so it self-canonicalizes
+  // instead of wrongly pointing at the English live page — canonical is for
+  // same-content duplicates, not cross-language relationships (that's what
+  // hreflang, below, is for).
+  const canonicalHref = lang === "ru" ? "https://nikita.sh/llm/ru/" : "https://nikita.sh/";
+  const f = buildIndexFragments(lang);
+
+  return `<!DOCTYPE html>
+<html lang="${lang}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${escapeHtml(U.title)}</title>
+<meta name="description" content="${escapeHtml(U.description)}">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="${canonicalHref}">
+<link rel="alternate" hreflang="en" href="https://nikita.sh/">
+<link rel="alternate" hreflang="ru" href="https://nikita.sh/llm/ru/">
+<link rel="alternate" hreflang="x-default" href="https://nikita.sh/">
+<link rel="stylesheet" href="${stylesheetHref}">
+
+${jsonLdScript(buildIndexJsonLd(lang))}
+</head>
+<body>
+<main>
+${f.nameHeading}
+${f.roleMeta}
+
+${f.langs}
+
+${f.content}
+
+${f.resumePointer}
+
+${f.notices}
 </main>
 </body>
 </html>
 `;
+}
+
+// <noscript> fallback for the live index.html — header + the substantive
+// About/Skills/Contact content only. Omits the langs switcher and the
+// mirror/license notices, matching cv.html's noscript precedent (dead
+// weight for the one audience — non-JS clients — this is for).
+export function renderIndexNoscript(lang) {
+  const f = buildIndexFragments(lang);
+  return `<noscript>
+${f.roleMeta}
+
+${f.content}
+</noscript>`;
 }
