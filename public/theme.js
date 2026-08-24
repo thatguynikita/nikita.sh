@@ -12,15 +12,8 @@
     cyan :{fg:"#5ff1ff",dim:"#2a8a9c",accent:"#3dff8a",warn:"#ffb454",gameHue:"137deg"},
     // Secret theme (easter egg — not listed anywhere). Full palette lives in
     // theme.css's :root[data-theme="sabbatical"] block.
-    sabbatical:{fg:"#5c6166",matrixColor:"#8a9199",matrixFade:"rgba(248,249,250,.12)",metaThemeColor:"#f8f9fa"},
+    sabbatical:{fg:"#5c6166",matrixColor:"#8a9199",matrixFade:"rgba(248,249,250,.12)"},
   };
-
-  // Matches theme.css's :root --bg for every theme except sabbatical (the
-  // only one that overrides --bg, via its own [data-theme] block) — kept
-  // here since mobile browser chrome tinting can't read CSS custom
-  // properties any more than the matrix-rain canvas can (see applyTheme's
-  // return value, used for the same reason).
-  const DEFAULT_META_THEME_COLOR = "#060a08";
 
   // Themes whose palette lives in theme.css's [data-theme] block instead
   // of being computed here from fg/dim/accent/warn.
@@ -62,10 +55,6 @@
       if(t.gameHue) root.setProperty('--game-hue', t.gameHue);
       else root.removeProperty('--game-hue');
     }
-
-    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
-    if(themeColorMeta) themeColorMeta.setAttribute('content', t.metaThemeColor || DEFAULT_META_THEME_COLOR);
-
     return t.fg;
   }
 
