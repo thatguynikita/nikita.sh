@@ -911,6 +911,62 @@ and SRE practices into reality.`;
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
+  // `man nikita` easter egg — a hidden command, not listed in `help` (same
+  // as `sudo`). Content stays instant (printLine, not typeLine): real
+  // man/less pages display paged content instantly, they don't "type" it.
+  function manPage(){
+    const L = lang === 'ru' ? {
+      manual: "Руководство DevOps/SRE",
+      name: "ИМЯ",
+      nameLine: "nikita-chernozipunnikov - инженер DevOps / SRE",
+      synopsis: "СИНОПСИС",
+      description: "ОПИСАНИЕ",
+      descBody: [
+        "Держит прод в рабочем состоянии, чтобы остальные могли спать. Одиннадцать",
+        "лет в Application Support и Operations, постепенно перерастающих в SRE",
+        "с растущим интересом к разработке ПО с применением ИИ. Замечен в",
+        "одинаково стабильной поставке как надёжных систем, так и сомнительных",
+        "каламбуров.",
+      ],
+      seeAlso: "СМОТРИТЕ ТАКЖЕ",
+      pointer: "наберите «cv», чтобы открыть полное резюме",
+    } : {
+      manual: "DevOps/SRE Manual",
+      name: "NAME",
+      nameLine: "nikita-chernozipunnikov - DevOps / SRE Systems Engineer",
+      synopsis: "SYNOPSIS",
+      description: "DESCRIPTION",
+      descBody: [
+        "Keeps production upright so everyone else can sleep. Eleven years of",
+        "Application Support and Operations, gradually evolving into SRE with a",
+        "growing interest in AI-driven development. Known to ship reliable",
+        "systems and questionable puns in equal measure.",
+      ],
+      seeAlso: "SEE ALSO",
+      pointer: "type 'cv' to open the full manual",
+    };
+
+    const masthead = `NIKITA-CHERNOZIPUNNIKOV(1)        ${L.manual}        NIKITA-CHERNOZIPUNNIKOV(1)`;
+
+    return [
+      `<span class="dim">${masthead}</span>`,
+      "",
+      `<span class="accent">${L.name}</span>`,
+      `    ${L.nameLine}`,
+      "",
+      `<span class="accent">${L.synopsis}</span>`,
+      `    nikita [--role devops-sre] [--experience 11y] [--location st-petersburg]`,
+      "",
+      `<span class="accent">${L.description}</span>`,
+      ...L.descBody.map(line => `    ${line}`),
+      "",
+      `<span class="accent">${L.seeAlso}</span>`,
+      `    cv(1), about(1), skills(1)`,
+      "",
+      `    <span class="dim">${L.pointer}</span>`,
+    ];
+  }
+
   function topTable(){
     const H = lang === 'ru' ? ["PID","КОМАНДА","CPU%","MEM%","СТАТУС"] : ["PID","CMD","CPU%","MEM%","STATUS"];
     const running = lang === 'ru' ? "работает" : "running";
@@ -1091,6 +1147,9 @@ and SRE practices into reality.`;
       notFoundHint: `<span class="dim">this is a silly terminal held together by JavaScript, not a real shell. try <span class="glow">help</span> for what's here</span>`,
       welcome: "Welcome to my silly terminal. Type 'help' to see what's available.",
       welcomeWhisper: "(psst — 'help' is being modest. dig a little.)",
+      manUsage: "What manual page do you want?",
+      manExample: `For example, try <span class="glow">man nikita</span>.`,
+      manNotFound: (b)=>`No manual entry for ${b}`,
     },
     ru: {
       availableCommands: "Доступные команды:",
@@ -1114,6 +1173,9 @@ and SRE practices into reality.`;
       notFoundHint: `<span class="dim">это игрушечный терминал на JavaScript, а не настоящий шелл. попробуй <span class="glow">help</span>, чтобы увидеть, что здесь есть</span>`,
       welcome: "Добро пожаловать в мой игрушечный терминал. Введите «help», чтобы увидеть список команд.",
       welcomeWhisper: "(псс — «help» скромничает. покопайся немного.)",
+      manUsage: "Какую страницу справки вы хотите открыть?",
+      manExample: `Например, попробуйте <span class="glow">man nikita</span>.`,
+      manNotFound: (b)=>`Нет страницы справки для ${b}`,
     },
   };
   function t(key, ...args){
@@ -1121,7 +1183,7 @@ and SRE practices into reality.`;
     return typeof v === 'function' ? v(...args) : v;
   }
 
-  const COMMANDS = ["about","skills","contact","cv","neofetch","whoami","ls","cat","history","matrix","theme","lang","sudo","fortune","top","kubectl","terraform","ssh","claude","clear","help"];
+  const COMMANDS = ["about","skills","contact","cv","neofetch","whoami","ls","cat","history","matrix","theme","lang","sudo","fortune","man","top","kubectl","terraform","ssh","claude","clear","help"];
 
   const POD_NAMES = ["cat-deployment-7f9d8c-x2m4q","condensed-milk-store-0","sre-sanity-canary","deploy-friday-afternoon"];
 
@@ -2070,6 +2132,18 @@ and SRE practices into reality.`;
             sshFailCount++;
             await playSequence(sshFailureSequence(target, sshFailCount));
           }
+        }
+        break;
+      }
+      case "man": {
+        const topic = arg.trim().toLowerCase();
+        if(!topic){
+          printLine(t('manUsage'));
+          printLine(t('manExample'));
+        } else if(topic === 'nikita'){
+          manPage().forEach(line => printLine(line || "&nbsp;"));
+        } else {
+          printLine(t('manNotFound', escapeHtml(topic)));
         }
         break;
       }
