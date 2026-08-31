@@ -55,9 +55,11 @@ the same info as the commands above, "file" flavored.
 
 ## Look and feel
 
-- `theme green` / `amber` / `cyan` changes the color scheme.
-- There's a 4th, hidden theme — not listed in `theme`'s usage or
-  tab-completion. Ask `claude "add light theme"` multiple times to unlock 
+- `theme green` / `amber` / `cyan` / `pascal` / `commodore` / `solarized`
+  changes the color scheme — `pascal` and `commodore` are Turbo Pascal
+  and Commodore 64 pastiches, `solarized` is Ethan Schoonover's palette.
+- There's a 7th, hidden theme — not listed in `theme`'s usage or
+  tab-completion. Ask `claude "add light theme"` multiple times to unlock
   it, or guess its name directly with `theme sabbatical`.
 - `matrix on` / `off` toggles the background "digital rain" effect.
 - `lang en` / `ru` switches the whole site's language — same toggle as
