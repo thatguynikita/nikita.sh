@@ -291,8 +291,16 @@ body{
   96%{opacity:1;}
 }
 
+/* The .crt overlay's mix-blend-mode:multiply flicker is calibrated
+   against near-black backgrounds (green/amber/cyan) — the periodic
+   opacity dip is barely perceptible there, but against any bg that
+   isn't near-black it reads as a visible flash every ~6s. sabbatical
+   needed this fix first; pascal/commodore's saturated blue backgrounds
+   hit the same issue, as does solarized's teal. */
 :root[data-theme="sabbatical"] .crt,
-:root[data-theme="solarized"] .crt{
+:root[data-theme="solarized"] .crt,
+:root[data-theme="pascal"] .crt,
+:root[data-theme="commodore"] .crt{
   animation:none;
   opacity:.9;
 }
