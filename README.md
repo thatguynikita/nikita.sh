@@ -8,11 +8,11 @@
 </p>
 
 <p align="center">
-  <img src="public/assets/img/og-terminal.png" width="560" alt="nikita.sh — the neofetch card in the live terminal, showing an ASCII portrait, role, uptime, and now-playing track">
+  <img src="docs/media/theme-preview.gif" width="560" alt="nikita.sh cycling through all 7 terminal color themes — green, amber, pascal, commodore, solarized, ubuntu, and the hidden sabbatical theme">
 </p>
 
-**[nikita.sh](https://nikita.sh)** is a DevOps/SRE portfolio dressed up
-as a terminal — a playful homage, not a real shell. Type `help` once
+**[nikita.sh](https://nikita.sh)** is a DevOps/SRE portfolio built as an
+interactive terminal you can actually type into. Type `help` once
 you're in; there's more worth poking at than the obvious commands. A
 proper résumé lives underneath it too (`cv.html`).
 
@@ -61,6 +61,7 @@ root is source/tooling only.
 | `scripts/` | `build.mjs` propagates `content/site-data.mjs` into `public/index.html`, `public/cv.html`, and `public/llm/*`; `deploy.mjs` pushes everything under `public/` to Yandex Object Storage |
 | `public/llm/` | Plain-HTML crawler mirror (see below) |
 | `docs/UPDATE-GUIDE.md` | The content-update + deploy workflow |
+| `docs/media/` | Preview assets for this README (not deployed, not linked from the live site) |
 
 ## Crawler mirror (`/llm/`)
 
