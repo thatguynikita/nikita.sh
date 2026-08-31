@@ -8,19 +8,36 @@
 
   // Every theme's full palette lives in theme.css as one complete
   // :root[data-theme="name"] block — this registry only needs to know
-  // each theme's name and (for the ones that differ from plain fg) how
-  // to recolor the matrix-rain <canvas>, which can't read CSS custom
-  // properties.
+  // each theme's name, (for the ones that differ from plain fg) how to
+  // recolor the matrix-rain <canvas>, which can't read CSS custom
+  // properties, and a bg/glyph pair for the dynamic favicon (same
+  // reason — an SVG data URI can't reference CSS custom properties
+  // either). favicon values mirror each theme's own --bg/--fg from
+  // theme.css.
   const THEME_MAP = {
-    green:{fg:"#3dff8a"},
-    amber:{fg:"#ffb000"},
-    commodore:{fg:"#7869c4"},
-    pascal:{fg:"#ffff55"},
-    solarized:{fg:"#839496"},
-    ubuntu:{fg:"#eeeeec"},
+    green:{fg:"#3dff8a",favicon:{bg:"#050806",glyph:"#3dff8a"}},
+    amber:{fg:"#ffb000",favicon:{bg:"#120b00",glyph:"#ffb000"}},
+    commodore:{fg:"#7869c4",favicon:{bg:"#291f5a",glyph:"#9286d0"}},
+    pascal:{fg:"#ffff55",favicon:{bg:"#0000a8",glyph:"#ffff55"}},
+    solarized:{fg:"#839496",favicon:{bg:"#002b36",glyph:"#839496"}},
+    ubuntu:{fg:"#eeeeec",favicon:{bg:"#300a24",glyph:"#eeeeec"}},
     // Secret theme (easter egg — not listed anywhere).
-    sabbatical:{fg:"#5c6166",matrixColor:"#8a9199",matrixFade:"rgba(248,249,250,.12)"},
+    sabbatical:{fg:"#5c6166",matrixColor:"#8a9199",matrixFade:"rgba(248,249,250,.12)",favicon:{bg:"#f8f9fa",glyph:"#3199e1"}},
   };
+
+  // Builds the tab favicon as an inline SVG data URI (same shape as the
+  // site's static favicon files — a solid background rect + a monospace
+  // ">" text glyph — just recolored per theme) instead of shipping a
+  // separate binary icon file per theme. Only touches the dedicated
+  // #dynamicFavicon <link>; the static PNG <link> tags are untouched,
+  // left as the fallback for non-JS clients / browsers without SVG
+  // favicon support.
+  function setFavicon(bg, glyph){
+    const link = document.getElementById('dynamicFavicon');
+    if(!link) return;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="${bg}"/><text x="50%" y="62%" font-size="60" text-anchor="middle" fill="${glyph}" font-family="monospace">&gt;</text></svg>`;
+    link.href = `data:image/svg+xml,${encodeURIComponent(svg)}`;
+  }
 
   const THEME_STORAGE_KEY = 'nikita.sh:theme';
   const LANG_STORAGE_KEY = 'nikita.sh:lang';
@@ -37,6 +54,7 @@
     const t = THEME_MAP[name];
     if(!t) return null;
     document.documentElement.dataset.theme = name;
+    if(t.favicon) setFavicon(t.favicon.bg, t.favicon.glyph);
     return t.fg;
   }
 
