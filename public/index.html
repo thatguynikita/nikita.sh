@@ -1080,7 +1080,7 @@ and SRE practices into reality.`;
       matrixOn: "matrix rain: on",
       matrixUsage: "usage: matrix &lt;on|off&gt;",
       themeSet: (n)=>`theme set to <span class="glow">${n}</span>`,
-      themeUsage: `usage: theme &lt;green|amber|cyan&gt;`,
+      themeUsage: `usage: theme &lt;green|amber|cyan|pascal|commodore|solarized&gt;`,
       langUsage: `usage: lang &lt;ru|en&gt;  /  использование: lang &lt;ru|en&gt;`,
       langSet: `language switched to <span class="glow">English</span>`,
       sudo: `<span class="amber">This incident will be reported.</span>`,
@@ -1103,7 +1103,7 @@ and SRE practices into reality.`;
       matrixOn: "дождь из матрицы: вкл",
       matrixUsage: "использование: matrix &lt;on|off&gt;",
       themeSet: (n)=>`тема изменена на <span class="glow">${n}</span>`,
-      themeUsage: `использование: theme &lt;green|amber|cyan&gt;`,
+      themeUsage: `использование: theme &lt;green|amber|cyan|pascal|commodore|solarized&gt;`,
       langUsage: `usage: lang &lt;ru|en&gt;  /  использование: lang &lt;ru|en&gt;`,
       langSet: `язык переключён на <span class="glow">русский</span>`,
       sudo: `<span class="amber">Об этом инциденте будет доложено.</span>`,
@@ -1149,7 +1149,10 @@ and SRE practices into reality.`;
         const files = ["about.txt","skills.txt","contact.txt","cv.html","milk-quest.sh"];
         return remainderLower.startsWith('.') ? [".bashrc", ...files] : files;
       }
-      case "theme": return sabbaticalUnlocked ? ["green","amber","cyan",SECRET_THEME_NAME] : ["green","amber","cyan"];
+      case "theme": {
+        const visible = ["green","amber","cyan","pascal","commodore","solarized"];
+        return sabbaticalUnlocked ? [...visible, SECRET_THEME_NAME] : visible;
+      }
       case "matrix": return ["on","off"];
       case "lang": return ["ru","en"];
       case "ssh": return Object.values(PERSONAS).map(p => p.host);

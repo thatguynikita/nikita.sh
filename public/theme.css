@@ -130,6 +130,108 @@
   --game-filter:grayscale(1) brightness(1.05) contrast(1.02);
 }
 
+/* ---------- commodore (Commodore 64, 1982) ----------
+   Palette from https://github.com/TOQIR-AHMAD/Unix-Epoch's Commodore 64
+   terminal theme — deep blue-purple screen, light blue-lavender text. */
+:root[data-theme="commodore"]{
+  /* bg/fg lightened+darkened from the reference repo's literal C64 values
+     (#40318d/#7869c4, an authentically washed-out 2.26:1 on real hardware)
+     to clear WCAG AA (4.5:1) while keeping the same hue — real CRTs got a
+     pass on contrast a website doesn't. */
+  --bg:#291f5a;
+  --bg-rgb:41,31,90;
+  --fg:#9286d0;
+  --fg-dim:#7364c3;
+  --fg-dim2:#4a3b99;
+  --accent:#ffffb2;
+  --amber:#94e089;
+  --amber-glow:0 0 6px #94e08999;
+  --red:#b86962;
+  --border:#9286d047;
+  --glow:0 0 4px #9286d0, 0 0 12px #9286d088, 0 0 24px #9286d044;
+  --ambient:#9286d00f;
+  --ambient-inset:#9286d008;
+  --tint-rgb:146,134,208;
+  --term-g1:rgba(63,48,139,.92);
+  --term-g2:rgba(43,32,94,.96);
+  --term-head-bg:rgba(20,14,45,.35);
+  --chips-bg:rgba(15,10,35,.25);
+  --boot-bg:#1e1641;
+  --vignette-bg:radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
+  --game-frame-g1:rgba(63,48,139,.96);
+  --game-frame-g2:rgba(43,32,94,.98);
+  --game-hint-bg:rgba(15,10,35,.3);
+  --game-filter:grayscale(.55) sepia(.5) hue-rotate(-141deg) saturate(1.8) brightness(1.08) contrast(1.02);
+}
+
+/* ---------- pascal (Turbo Pascal, 1990) ----------
+   Palette from https://github.com/TOQIR-AHMAD/Unix-Epoch's Turbo Pascal
+   terminal theme — Borland's classic yellow-on-blue IDE. */
+:root[data-theme="pascal"]{
+  --bg:#0000a8;
+  --bg-rgb:0,0,168;
+  --fg:#ffff55;
+  --fg-dim:#b8ae3a;
+  --fg-dim2:#7a723f;
+  --accent:#54fcfc;
+  --amber:#54fc54;
+  --amber-glow:0 0 6px #54fc5499;
+  --red:#fc5454;
+  --border:#ffff5547;
+  --glow:0 0 4px #ffff55, 0 0 12px #ffff5588, 0 0 24px #ffff5544;
+  --ambient:#ffff550f;
+  --ambient-inset:#ffff5508;
+  --tint-rgb:255,255,85;
+  --term-g1:rgba(20,20,180,.92);
+  --term-g2:rgba(0,0,120,.96);
+  --term-head-bg:rgba(0,0,80,.35);
+  --chips-bg:rgba(0,0,60,.25);
+  --boot-bg:#000078;
+  --vignette-bg:radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
+  --game-frame-g1:rgba(20,20,180,.96);
+  --game-frame-g2:rgba(0,0,120,.98);
+  --game-hint-bg:rgba(0,0,60,.3);
+  --game-filter:grayscale(.55) sepia(.5) hue-rotate(22deg) saturate(1.8) brightness(1.08) contrast(1.02);
+}
+
+/* ---------- solarized (Solarized Dark, 2010) ----------
+   Ethan Schoonover's canonical palette (https://ethanschoonover.com/solarized/),
+   used as-is. Deliberately muted/low-contrast by design — unlike the neon
+   themes above, this one gets a minimal glow and no CRT flicker, same
+   treatment as sabbatical, since Solarized's whole identity is precision
+   and readability, not a retro CRT look. */
+:root[data-theme="solarized"]{
+  --bg:#002b36;
+  --bg-rgb:0,43,54;
+  --fg:#839496;
+  /* Schoonover's own base01 (#586e75, this site's secondary text color)
+     is only 2.79:1 against base03 — real but fails WCAG AA for the
+     body-adjacent text --fg-dim covers here (footer, term-title).
+     Lightened to clear 4.5:1 while staying in the same base0/base01
+     family. */
+  --fg-dim:#78929a;
+  --fg-dim2:#3a4d53;
+  --accent:#268bd2;
+  --amber:#b58900;
+  --amber-glow:0 0 6px #b5890099;
+  --red:#dc322f;
+  --border:rgba(131,148,150,.28);
+  --glow:0 0 1px rgba(131,148,150,.35);
+  --ambient:rgba(131,148,150,.05);
+  --ambient-inset:rgba(131,148,150,.03);
+  --tint-rgb:131,148,150;
+  --term-g1:rgba(7,54,66,.92);
+  --term-g2:rgba(0,43,54,.96);
+  --term-head-bg:rgba(7,54,66,.4);
+  --chips-bg:rgba(7,54,66,.3);
+  --boot-bg:#00212a;
+  --vignette-bg:none;
+  --game-frame-g1:rgba(7,54,66,.96);
+  --game-frame-g2:rgba(0,43,54,.98);
+  --game-hint-bg:rgba(7,54,66,.3);
+  --game-filter:grayscale(.55) sepia(.5) hue-rotate(138deg) saturate(1.8) brightness(1.08) contrast(1.02);
+}
+
 *{box-sizing:border-box;}
 html,body{height:100%;}
 html{
@@ -189,7 +291,8 @@ body{
   96%{opacity:1;}
 }
 
-:root[data-theme="sabbatical"] .crt{
+:root[data-theme="sabbatical"] .crt,
+:root[data-theme="solarized"] .crt{
   animation:none;
   opacity:.9;
 }
