@@ -6,18 +6,18 @@
 (function(){
   "use strict";
 
+  // Every theme's full palette lives in theme.css as one complete
+  // :root[data-theme="name"] block — this registry only needs to know
+  // each theme's name and (for the ones that differ from plain fg) how
+  // to recolor the matrix-rain <canvas>, which can't read CSS custom
+  // properties.
   const THEME_MAP = {
-    green:{fg:"#3dff8a",dim:"#2a9c60",accent:"#5ff1ff",warn:"#ffb454",gameHue:"75deg"},
-    amber:{fg:"#ffb454",dim:"#a06a1f",accent:"#ffe08a",warn:"#5ff1ff",gameHue:"-6deg"},
-    cyan :{fg:"#5ff1ff",dim:"#2a8a9c",accent:"#3dff8a",warn:"#ffb454",gameHue:"137deg"},
-    // Secret theme (easter egg — not listed anywhere). Full palette lives in
-    // theme.css's :root[data-theme="sabbatical"] block.
+    green:{fg:"#3dff8a"},
+    amber:{fg:"#ffb454"},
+    cyan :{fg:"#5ff1ff"},
+    // Secret theme (easter egg — not listed anywhere).
     sabbatical:{fg:"#5c6166",matrixColor:"#8a9199",matrixFade:"rgba(248,249,250,.12)"},
   };
-
-  // Themes whose palette lives in theme.css's [data-theme] block instead
-  // of being computed here from fg/dim/accent/warn.
-  const DATA_THEME_NAMES = new Set(['sabbatical']);
 
   const THEME_STORAGE_KEY = 'nikita.sh:theme';
   const LANG_STORAGE_KEY = 'nikita.sh:lang';
@@ -33,28 +33,7 @@
   function applyTheme(name){
     const t = THEME_MAP[name];
     if(!t) return null;
-    const root = document.documentElement.style;
-
-    if(DATA_THEME_NAMES.has(name)){
-      // Palette comes from theme.css's :root[data-theme="..."] block.
-      document.documentElement.dataset.theme = name;
-      ['--fg','--fg-dim','--accent','--amber','--amber-glow','--border',
-       '--glow','--ambient','--ambient-inset','--game-hue']
-        .forEach((p) => root.removeProperty(p));
-    } else {
-      document.documentElement.dataset.theme = '';
-      root.setProperty('--fg', t.fg);
-      root.setProperty('--fg-dim', t.dim);
-      root.setProperty('--accent', t.accent);
-      root.setProperty('--amber', t.warn);
-      root.setProperty('--amber-glow', `0 0 6px ${t.warn}99`);
-      root.setProperty('--border', `${t.fg}47`);
-      root.setProperty('--glow', `0 0 4px ${t.fg}, 0 0 12px ${t.fg}88, 0 0 24px ${t.fg}44`);
-      root.setProperty('--ambient', `${t.fg}0f`);
-      root.setProperty('--ambient-inset', `${t.fg}08`);
-      if(t.gameHue) root.setProperty('--game-hue', t.gameHue);
-      else root.removeProperty('--game-hue');
-    }
+    document.documentElement.dataset.theme = name;
     return t.fg;
   }
 
