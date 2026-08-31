@@ -49,9 +49,20 @@
     const lang = (storedLang === 'ru' || storedLang === 'en') ? storedLang : 'en';
     document.documentElement.lang = lang;
 
-    const storedTheme = readStored(THEME_STORAGE_KEY);
-    const t = storedTheme ? THEME_MAP[storedTheme] : null;
-    const fg = storedTheme ? applyTheme(storedTheme) : null;
+    let storedTheme = readStored(THEME_STORAGE_KEY);
+    if(!storedTheme){
+      // First-time visitor (no preference saved yet) — assign a random
+      // theme from every entry in THEME_MAP, sabbatical included, and
+      // persist it immediately so it stays consistent across reloads
+      // and other pages, same as if they'd typed `theme <name>`
+      // themselves. New themes only need adding to THEME_MAP — this
+      // picks them up automatically.
+      const names = Object.keys(THEME_MAP);
+      storedTheme = names[Math.floor(Math.random() * names.length)];
+      writeStored(THEME_STORAGE_KEY, storedTheme);
+    }
+    const t = THEME_MAP[storedTheme];
+    const fg = applyTheme(storedTheme);
     const matrixColor = t && t.matrixColor ? t.matrixColor : fg;
     const matrixFade = t && t.matrixFade ? t.matrixFade : null;
 
