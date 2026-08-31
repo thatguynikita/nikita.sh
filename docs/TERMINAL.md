@@ -63,6 +63,10 @@ the same info as the commands above, "file" flavored.
 - There's a 7th, hidden theme — not listed in `theme`'s usage or
   tab-completion. Ask `claude "add light theme"` multiple times to unlock
   it, or guess its name directly with `theme sabbatical`.
+- First-time visitors (no saved preference) get a random one of all 7
+  themes — sabbatical included — instead of always starting on green.
+  It's picked once and remembered, same as if you'd typed `theme <name>`
+  yourself; run `theme green` (or any other name) any time to override it.
 - `matrix on` / `off` toggles the background "digital rain" effect.
 - `lang en` / `ru` switches the whole site's language — same toggle as
   the language chip in the corner.
