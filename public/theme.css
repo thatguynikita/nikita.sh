@@ -17,88 +17,69 @@
    can't read CSS custom properties).
    ================================================================ */
 
-/* ---------- default theme: green ---------- */
+/* ---------- default theme: green ----------
+   Recolored to align with https://github.com/TOQIR-AHMAD/Unix-Epoch's
+   "Hacker Green (Matrix)" theme — pure black, saturated #00ff41. Accent
+   and the amber/warn slot borrow amber's fg/bright-white (see amber's
+   block below) for a distinct, non-monochrome UI, same cross-theme
+   pattern as before. */
 :root, :root[data-theme="green"]{
-  --bg:#050806;
-  --bg-rgb:5,8,6;
-  --fg:#3dff8a;
-  --fg-dim:#2a9c60;
-  --fg-dim2:#1f6b45;
-  --accent:#5ff1ff;
-  --amber:#ffb454;
-  --amber-glow:0 0 6px #ffb45499;
+  --bg:#000000;
+  --bg-rgb:0,0,0;
+  --fg:#00ff41;
+  --fg-dim:#009e28;
+  --fg-dim2:#00721d;
+  --accent:#ffb000;
+  --amber:#c2ffd1;
+  --amber-glow:0 0 6px #c2ffd199;
   --red:#ff5f56;
-  --border:rgba(61,255,138,.28);
-  --glow:0 0 4px rgba(61,255,138,.85), 0 0 12px rgba(61,255,138,.45), 0 0 24px rgba(61,255,138,.25);
-  --ambient:rgba(61,255,138,.06);
-  --ambient-inset:rgba(61,255,138,.03);
-  --tint-rgb:61,255,138;
-  --term-g1:rgba(15,25,17,.92);
-  --term-g2:rgba(6,10,8,.96);
-  --term-head-bg:rgba(0,0,0,.35);
-  --chips-bg:rgba(0,0,0,.25);
-  --boot-bg:#020402;
+  --border:#00ff4147;
+  --glow:0 0 4px #00ff41, 0 0 12px #00ff4188, 0 0 24px #00ff4144;
+  --ambient:#00ff410f;
+  --ambient-inset:#00ff4108;
+  --tint-rgb:0,255,65;
+  --term-g1:rgba(10,20,12,.92);
+  --term-g2:rgba(2,4,3,.96);
+  --term-head-bg:rgba(0,0,0,.4);
+  --chips-bg:rgba(0,0,0,.3);
+  --boot-bg:#010200;
   --vignette-bg:radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
-  --game-frame-g1:rgba(15,25,17,.96);
-  --game-frame-g2:rgba(6,10,8,.98);
+  --game-frame-g1:rgba(10,20,12,.96);
+  --game-frame-g2:rgba(2,4,3,.98);
   --game-hint-bg:rgba(0,0,0,.3);
-  --game-filter:grayscale(.55) sepia(.5) hue-rotate(75deg) saturate(1.8) brightness(1.08) contrast(1.02);
+  --game-filter:grayscale(.55) sepia(.5) hue-rotate(83deg) saturate(1.8) brightness(1.08) contrast(1.02);
 }
 
-/* ---------- amber ---------- */
+/* ---------- amber ----------
+   Recolored to align with https://github.com/TOQIR-AHMAD/Unix-Epoch's
+   "DEC VT52 Amber" theme — warm near-black, #ffb000 phosphor. Accent
+   and the amber/warn slot borrow green's fg/bright-white, mirroring
+   green's block above. */
 :root[data-theme="amber"]{
-  --bg:#050806;
-  --bg-rgb:5,8,6;
-  --fg:#ffb454;
-  --fg-dim:#a06a1f;
-  --fg-dim2:#6b4a1f;
-  --accent:#ffe08a;
-  --amber:#5ff1ff;
-  --amber-glow:0 0 6px #5ff1ff99;
+  --bg:#120b00;
+  --bg-rgb:18,11,0;
+  --fg:#ffb000;
+  --fg-dim:#a27000;
+  --fg-dim2:#724f00;
+  --accent:#00ff41;
+  --amber:#ffe0a3;
+  --amber-glow:0 0 6px #ffe0a399;
   --red:#ff5f56;
-  --border:#ffb45447;
-  --glow:0 0 4px #ffb454, 0 0 12px #ffb45488, 0 0 24px #ffb45444;
-  --ambient:#ffb4540f;
-  --ambient-inset:#ffb45408;
-  --tint-rgb:255,180,84;
-  --term-g1:rgba(15,25,17,.92);
-  --term-g2:rgba(6,10,8,.96);
-  --term-head-bg:rgba(0,0,0,.35);
-  --chips-bg:rgba(0,0,0,.25);
-  --boot-bg:#020402;
+  --border:#ffb00047;
+  --glow:0 0 4px #ffb000, 0 0 12px #ffb00088, 0 0 24px #ffb00044;
+  --ambient:#ffb0000f;
+  --ambient-inset:#ffb00008;
+  --tint-rgb:255,176,0;
+  --term-g1:rgba(35,22,4,.92);
+  --term-g2:rgba(14,8,0,.96);
+  --term-head-bg:rgba(10,6,0,.35);
+  --chips-bg:rgba(8,5,0,.25);
+  --boot-bg:#0a0600;
   --vignette-bg:radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
-  --game-frame-g1:rgba(15,25,17,.96);
-  --game-frame-g2:rgba(6,10,8,.98);
-  --game-hint-bg:rgba(0,0,0,.3);
-  --game-filter:grayscale(.55) sepia(.5) hue-rotate(-6deg) saturate(1.8) brightness(1.08) contrast(1.02);
-}
-
-/* ---------- cyan ---------- */
-:root[data-theme="cyan"]{
-  --bg:#050806;
-  --bg-rgb:5,8,6;
-  --fg:#5ff1ff;
-  --fg-dim:#2a8a9c;
-  --fg-dim2:#1f5f6b;
-  --accent:#3dff8a;
-  --amber:#ffb454;
-  --amber-glow:0 0 6px #ffb45499;
-  --red:#ff5f56;
-  --border:#5ff1ff47;
-  --glow:0 0 4px #5ff1ff, 0 0 12px #5ff1ff88, 0 0 24px #5ff1ff44;
-  --ambient:#5ff1ff0f;
-  --ambient-inset:#5ff1ff08;
-  --tint-rgb:95,241,255;
-  --term-g1:rgba(15,25,17,.92);
-  --term-g2:rgba(6,10,8,.96);
-  --term-head-bg:rgba(0,0,0,.35);
-  --chips-bg:rgba(0,0,0,.25);
-  --boot-bg:#020402;
-  --vignette-bg:radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
-  --game-frame-g1:rgba(15,25,17,.96);
-  --game-frame-g2:rgba(6,10,8,.98);
-  --game-hint-bg:rgba(0,0,0,.3);
-  --game-filter:grayscale(.55) sepia(.5) hue-rotate(137deg) saturate(1.8) brightness(1.08) contrast(1.02);
+  --game-frame-g1:rgba(35,22,4,.96);
+  --game-frame-g2:rgba(14,8,0,.98);
+  --game-hint-bg:rgba(8,5,0,.3);
+  --game-filter:grayscale(.55) sepia(.5) hue-rotate(3deg) saturate(1.8) brightness(1.08) contrast(1.02);
 }
 
 /* ---------- secret theme: sabbatical (easter egg — not listed anywhere) ----------
@@ -128,6 +109,144 @@
   --game-frame-g2:rgba(240,242,244,.98);
   --game-hint-bg:rgba(92,97,102,.06);
   --game-filter:grayscale(1) brightness(1.05) contrast(1.02);
+}
+
+/* ---------- commodore (Commodore 64, 1982) ----------
+   Palette from https://github.com/TOQIR-AHMAD/Unix-Epoch's Commodore 64
+   terminal theme — deep blue-purple screen, light blue-lavender text. */
+:root[data-theme="commodore"]{
+  /* bg/fg lightened+darkened from the reference repo's literal C64 values
+     (#40318d/#7869c4, an authentically washed-out 2.26:1 on real hardware)
+     to clear WCAG AA (4.5:1) while keeping the same hue — real CRTs got a
+     pass on contrast a website doesn't. */
+  --bg:#291f5a;
+  --bg-rgb:41,31,90;
+  --fg:#9286d0;
+  --fg-dim:#7364c3;
+  --fg-dim2:#4a3b99;
+  --accent:#ffffb2;
+  --amber:#94e089;
+  --amber-glow:0 0 6px #94e08999;
+  --red:#b86962;
+  --border:#9286d047;
+  --glow:0 0 4px #9286d0, 0 0 12px #9286d088, 0 0 24px #9286d044;
+  --ambient:#9286d00f;
+  --ambient-inset:#9286d008;
+  --tint-rgb:146,134,208;
+  --term-g1:rgba(63,48,139,.92);
+  --term-g2:rgba(43,32,94,.96);
+  --term-head-bg:rgba(20,14,45,.35);
+  --chips-bg:rgba(15,10,35,.25);
+  --boot-bg:#1e1641;
+  --vignette-bg:radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
+  --game-frame-g1:rgba(63,48,139,.96);
+  --game-frame-g2:rgba(43,32,94,.98);
+  --game-hint-bg:rgba(15,10,35,.3);
+  --game-filter:grayscale(.55) sepia(.5) hue-rotate(-141deg) saturate(1.8) brightness(1.08) contrast(1.02);
+}
+
+/* ---------- pascal (Turbo Pascal, 1990) ----------
+   Palette from https://github.com/TOQIR-AHMAD/Unix-Epoch's Turbo Pascal
+   terminal theme — Borland's classic yellow-on-blue IDE. */
+:root[data-theme="pascal"]{
+  --bg:#0000a8;
+  --bg-rgb:0,0,168;
+  --fg:#ffff55;
+  --fg-dim:#b8ae3a;
+  --fg-dim2:#7a723f;
+  --accent:#54fcfc;
+  --amber:#54fc54;
+  --amber-glow:0 0 6px #54fc5499;
+  --red:#fc5454;
+  --border:#ffff5547;
+  --glow:0 0 4px #ffff55, 0 0 12px #ffff5588, 0 0 24px #ffff5544;
+  --ambient:#ffff550f;
+  --ambient-inset:#ffff5508;
+  --tint-rgb:255,255,85;
+  --term-g1:rgba(20,20,180,.92);
+  --term-g2:rgba(0,0,120,.96);
+  --term-head-bg:rgba(0,0,80,.35);
+  --chips-bg:rgba(0,0,60,.25);
+  --boot-bg:#000078;
+  --vignette-bg:radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
+  --game-frame-g1:rgba(20,20,180,.96);
+  --game-frame-g2:rgba(0,0,120,.98);
+  --game-hint-bg:rgba(0,0,60,.3);
+  --game-filter:grayscale(.55) sepia(.5) hue-rotate(22deg) saturate(1.8) brightness(1.08) contrast(1.02);
+}
+
+/* ---------- solarized (Solarized Dark, 2010) ----------
+   Ethan Schoonover's canonical palette (https://ethanschoonover.com/solarized/),
+   used as-is. Deliberately muted/low-contrast by design — unlike the neon
+   themes above, this one gets a minimal glow and no CRT flicker, same
+   treatment as sabbatical, since Solarized's whole identity is precision
+   and readability, not a retro CRT look. */
+:root[data-theme="solarized"]{
+  --bg:#002b36;
+  --bg-rgb:0,43,54;
+  --fg:#839496;
+  /* Schoonover's own base01 (#586e75, this site's secondary text color)
+     is only 2.79:1 against base03 — real but fails WCAG AA for the
+     body-adjacent text --fg-dim covers here (footer, term-title).
+     Lightened to clear 4.5:1 while staying in the same base0/base01
+     family. */
+  --fg-dim:#78929a;
+  --fg-dim2:#3a4d53;
+  --accent:#268bd2;
+  --amber:#b58900;
+  --amber-glow:0 0 6px #b5890099;
+  --red:#dc322f;
+  --border:rgba(131,148,150,.28);
+  --glow:0 0 1px rgba(131,148,150,.35);
+  --ambient:rgba(131,148,150,.05);
+  --ambient-inset:rgba(131,148,150,.03);
+  --tint-rgb:131,148,150;
+  --term-g1:rgba(7,54,66,.92);
+  --term-g2:rgba(0,43,54,.96);
+  --term-head-bg:rgba(7,54,66,.4);
+  --chips-bg:rgba(7,54,66,.3);
+  --boot-bg:#00212a;
+  --vignette-bg:none;
+  --game-frame-g1:rgba(7,54,66,.96);
+  --game-frame-g2:rgba(0,43,54,.98);
+  --game-hint-bg:rgba(7,54,66,.3);
+  --game-filter:grayscale(.55) sepia(.5) hue-rotate(138deg) saturate(1.8) brightness(1.08) contrast(1.02);
+}
+
+/* ---------- ubuntu (Ubuntu Human, 2004) ----------
+   Palette from https://github.com/TOQIR-AHMAD/Unix-Epoch's Ubuntu Human
+   terminal theme — the Warty-era aubergine background with Human-theme
+   orange accents. --fg is near-white with no real hue (low saturation),
+   so unlike the other themes here --accent (the actual orange) carries
+   the identity, not --fg — --game-filter's hue-rotate is calibrated
+   against --accent for the same reason. Deliberately muted like
+   sabbatical/solarized (minimal glow, no CRT flicker) — 2004 GNOME
+   Terminal is a flat desktop look, not a CRT-phosphor one. */
+:root[data-theme="ubuntu"]{
+  --bg:#300a24;
+  --bg-rgb:48,10,36;
+  --fg:#eeeeec;
+  --fg-dim:#afafa6;
+  --fg-dim2:#7d7d70;
+  --accent:#f57900;
+  --amber:#fce94f;
+  --amber-glow:0 0 6px #fce94f99;
+  --red:#cc0000;
+  --border:rgba(238,238,236,.28);
+  --glow:0 0 1px rgba(238,238,236,.35);
+  --ambient:rgba(238,238,236,.05);
+  --ambient-inset:rgba(238,238,236,.03);
+  --tint-rgb:238,238,236;
+  --term-g1:rgba(60,15,45,.92);
+  --term-g2:rgba(35,8,26,.96);
+  --term-head-bg:rgba(20,5,15,.4);
+  --chips-bg:rgba(20,5,15,.3);
+  --boot-bg:#230719;
+  --vignette-bg:none;
+  --game-frame-g1:rgba(60,15,45,.96);
+  --game-frame-g2:rgba(35,8,26,.98);
+  --game-hint-bg:rgba(20,5,15,.3);
+  --game-filter:grayscale(.55) sepia(.5) hue-rotate(-11deg) saturate(1.8) brightness(1.08) contrast(1.02);
 }
 
 *{box-sizing:border-box;}
@@ -189,7 +308,17 @@ body{
   96%{opacity:1;}
 }
 
-:root[data-theme="sabbatical"] .crt{
+/* The .crt overlay's mix-blend-mode:multiply flicker is calibrated
+   against near-black backgrounds (green/amber) — the periodic opacity
+   dip is barely perceptible there, but against any bg that isn't
+   near-black it reads as a visible flash every ~6s. sabbatical needed
+   this fix first; pascal/commodore's saturated blue backgrounds hit the
+   same issue, as does solarized's teal and ubuntu's aubergine. */
+:root[data-theme="sabbatical"] .crt,
+:root[data-theme="solarized"] .crt,
+:root[data-theme="pascal"] .crt,
+:root[data-theme="commodore"] .crt,
+:root[data-theme="ubuntu"] .crt{
   animation:none;
   opacity:.9;
 }

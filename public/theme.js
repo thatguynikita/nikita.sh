@@ -12,9 +12,12 @@
   // to recolor the matrix-rain <canvas>, which can't read CSS custom
   // properties.
   const THEME_MAP = {
-    green:{fg:"#3dff8a"},
-    amber:{fg:"#ffb454"},
-    cyan :{fg:"#5ff1ff"},
+    green:{fg:"#00ff41"},
+    amber:{fg:"#ffb000"},
+    commodore:{fg:"#7869c4"},
+    pascal:{fg:"#ffff55"},
+    solarized:{fg:"#839496"},
+    ubuntu:{fg:"#eeeeec"},
     // Secret theme (easter egg — not listed anywhere).
     sabbatical:{fg:"#5c6166",matrixColor:"#8a9199",matrixFade:"rgba(248,249,250,.12)"},
   };
