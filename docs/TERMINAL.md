@@ -56,10 +56,10 @@ the same info as the commands above, "file" flavored.
 ## Look and feel
 
 - `theme green` / `amber` / `pascal` / `commodore` / `solarized` / `ubuntu`
-  changes the color scheme — `green`/`amber` are hacker-terminal/DEC-VT52
-  pastiches, `pascal` and `commodore` are Turbo Pascal and Commodore 64,
-  `solarized` is Ethan Schoonover's palette, `ubuntu` is GNOME Terminal's
-  classic aubergine.
+  changes the color scheme — `green` is the site's original default look,
+  `amber` is a DEC VT52 pastiche, `pascal` and `commodore` are Turbo
+  Pascal and Commodore 64, `solarized` is Ethan Schoonover's palette,
+  `ubuntu` is GNOME Terminal's classic aubergine.
 - There's a 7th, hidden theme — not listed in `theme`'s usage or
   tab-completion. Ask `claude "add light theme"` multiple times to unlock
   it, or guess its name directly with `theme sabbatical`.

@@ -12,7 +12,7 @@
   // to recolor the matrix-rain <canvas>, which can't read CSS custom
   // properties.
   const THEME_MAP = {
-    green:{fg:"#00ff41"},
+    green:{fg:"#3dff8a"},
     amber:{fg:"#ffb000"},
     commodore:{fg:"#7869c4"},
     pascal:{fg:"#ffff55"},
