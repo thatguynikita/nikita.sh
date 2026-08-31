@@ -7,28 +7,105 @@
    own <style> block.
    ================================================================ */
 
-:root{
+/* ================================================================
+   Theme architecture: every theme (including the default, "green") is
+   one complete, explicit block — no token is ever left to an implicit
+   fallback. Adding a new theme means adding one full block below,
+   copying this same token list. `theme.js` only ever sets `data-theme`
+   on <html> to the theme's name; it no longer computes any CSS values
+   itself (except returning --fg for the matrix-rain <canvas>, which
+   can't read CSS custom properties).
+   ================================================================ */
+
+/* ---------- default theme: green ---------- */
+:root, :root[data-theme="green"]{
   --bg:#050806;
   --bg-rgb:5,8,6;
-  --panel:#070d09;
   --fg:#3dff8a;
   --fg-dim:#2a9c60;
   --fg-dim2:#1f6b45;
   --accent:#5ff1ff;
   --amber:#ffb454;
-  --amber-glow:0 0 6px rgba(255,180,84,.6);
+  --amber-glow:0 0 6px #ffb45499;
   --red:#ff5f56;
   --border:rgba(61,255,138,.28);
   --glow:0 0 4px rgba(61,255,138,.85), 0 0 12px rgba(61,255,138,.45), 0 0 24px rgba(61,255,138,.25);
   --ambient:rgba(61,255,138,.06);
   --ambient-inset:rgba(61,255,138,.03);
-  --game-hue:75deg;
+  --tint-rgb:61,255,138;
+  --term-g1:rgba(15,25,17,.92);
+  --term-g2:rgba(6,10,8,.96);
+  --term-head-bg:rgba(0,0,0,.35);
+  --chips-bg:rgba(0,0,0,.25);
+  --boot-bg:#020402;
+  --vignette-bg:radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
+  --game-frame-g1:rgba(15,25,17,.96);
+  --game-frame-g2:rgba(6,10,8,.98);
+  --game-hint-bg:rgba(0,0,0,.3);
+  --game-filter:grayscale(.55) sepia(.5) hue-rotate(75deg) saturate(1.8) brightness(1.08) contrast(1.02);
+}
+
+/* ---------- amber ---------- */
+:root[data-theme="amber"]{
+  --bg:#050806;
+  --bg-rgb:5,8,6;
+  --fg:#ffb454;
+  --fg-dim:#a06a1f;
+  --fg-dim2:#6b4a1f;
+  --accent:#ffe08a;
+  --amber:#5ff1ff;
+  --amber-glow:0 0 6px #5ff1ff99;
+  --red:#ff5f56;
+  --border:#ffb45447;
+  --glow:0 0 4px #ffb454, 0 0 12px #ffb45488, 0 0 24px #ffb45444;
+  --ambient:#ffb4540f;
+  --ambient-inset:#ffb45408;
+  --tint-rgb:255,180,84;
+  --term-g1:rgba(15,25,17,.92);
+  --term-g2:rgba(6,10,8,.96);
+  --term-head-bg:rgba(0,0,0,.35);
+  --chips-bg:rgba(0,0,0,.25);
+  --boot-bg:#020402;
+  --vignette-bg:radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
+  --game-frame-g1:rgba(15,25,17,.96);
+  --game-frame-g2:rgba(6,10,8,.98);
+  --game-hint-bg:rgba(0,0,0,.3);
+  --game-filter:grayscale(.55) sepia(.5) hue-rotate(-6deg) saturate(1.8) brightness(1.08) contrast(1.02);
+}
+
+/* ---------- cyan ---------- */
+:root[data-theme="cyan"]{
+  --bg:#050806;
+  --bg-rgb:5,8,6;
+  --fg:#5ff1ff;
+  --fg-dim:#2a8a9c;
+  --fg-dim2:#1f5f6b;
+  --accent:#3dff8a;
+  --amber:#ffb454;
+  --amber-glow:0 0 6px #ffb45499;
+  --red:#ff5f56;
+  --border:#5ff1ff47;
+  --glow:0 0 4px #5ff1ff, 0 0 12px #5ff1ff88, 0 0 24px #5ff1ff44;
+  --ambient:#5ff1ff0f;
+  --ambient-inset:#5ff1ff08;
+  --tint-rgb:95,241,255;
+  --term-g1:rgba(15,25,17,.92);
+  --term-g2:rgba(6,10,8,.96);
+  --term-head-bg:rgba(0,0,0,.35);
+  --chips-bg:rgba(0,0,0,.25);
+  --boot-bg:#020402;
+  --vignette-bg:radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%);
+  --game-frame-g1:rgba(15,25,17,.96);
+  --game-frame-g2:rgba(6,10,8,.98);
+  --game-hint-bg:rgba(0,0,0,.3);
+  --game-filter:grayscale(.55) sepia(.5) hue-rotate(137deg) saturate(1.8) brightness(1.08) contrast(1.02);
 }
 
 /* ---------- secret theme: sabbatical (easter egg — not listed anywhere) ----------
-   Toggled via theme.js's applyTheme() setting data-theme on <html>.
    Colors inspired by Ayu Light (https://terminalcolors.com/themes/ayu/light/). */
 :root[data-theme="sabbatical"]{
+  --bg:#f8f9fa;
+  --bg-rgb:248,249,250;
   --fg:#5c6166;
   --fg-dim:#8a9199;
   --fg-dim2:#aeb4ba;
@@ -36,8 +113,6 @@
   --amber:#eca944;
   --amber-glow:0 0 6px rgba(236,169,68,.35);
   --red:#c9484c;
-  --bg:#f8f9fa;
-  --bg-rgb:248,249,250;
   --border:rgba(92,97,102,.28);
   --glow:0 0 1px rgba(92,97,102,.35);
   --ambient:rgba(92,97,102,.05);
@@ -103,7 +178,7 @@ body{
 }
 .vignette{
   position:fixed; inset:0; z-index:4; pointer-events:none;
-  background:var(--vignette-bg, radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,.55) 100%));
+  background:var(--vignette-bg);
 }
 @keyframes flicker{
   0%,100%{opacity:.9;}
@@ -122,7 +197,7 @@ body{
 .wrap{position:relative; z-index:2; width:100%; max-width:880px;}
 
 .term{
-  background:linear-gradient(180deg, var(--term-g1, rgba(15,25,17,.92)), var(--term-g2, rgba(6,10,8,.96)));
+  background:linear-gradient(180deg, var(--term-g1), var(--term-g2));
   border:1px solid var(--border);
   border-radius:10px;
   box-shadow:var(--glow), 0 20px 60px rgba(0,0,0,.6), inset 0 0 40px var(--ambient-inset);
@@ -132,7 +207,7 @@ body{
 .term-head{
   display:flex; align-items:center; gap:8px;
   padding:10px 14px;
-  background:var(--term-head-bg, rgba(0,0,0,.35));
+  background:var(--term-head-bg);
   border-bottom:1px solid var(--border);
 }
 .dot{width:11px; height:11px; border-radius:50%; display:inline-block;}
@@ -160,7 +235,7 @@ a:hover{text-shadow:0 0 8px var(--accent);}
 }
 
 .topbar a{color:var(--fg-dim); text-decoration:none; padding:6px 8px; border-radius:4px;}
-.topbar a:hover{color:var(--fg); text-shadow:var(--glow); background:rgba(var(--tint-rgb, 61,255,138),.08);}
+.topbar a:hover{color:var(--fg); text-shadow:var(--glow); background:rgba(var(--tint-rgb),.08);}
 
 footer{
   margin-top:14px; font-size:11px; color:var(--fg-dim); text-align:center;
