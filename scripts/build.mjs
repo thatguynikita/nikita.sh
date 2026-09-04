@@ -5,7 +5,7 @@
 //
 // No npm dependencies — Node built-ins only.
 
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -22,7 +22,7 @@ import { renderRobotsTxt } from "./templates/robots-txt.mjs";
 import { renderLlmsTxt } from "./templates/llms-txt.mjs";
 import { renderWebmanifest } from "./templates/webmanifest.mjs";
 import { renderSitemapXml } from "./templates/sitemap-xml.mjs";
-import { siteUrl, mirrorUrl, mirrorPath, localeCodes, defaultLocale } from "./lib/site-urls.mjs";
+import { siteUrl, mirrorUrl, mirrorPath, mirrorDir, localeCodes } from "./lib/site-urls.mjs";
 import { SITE } from "../site.config.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -188,7 +188,23 @@ function buildNotFoundHtml() {
 // -------- llm/* mirrors (fully regenerated) --------
 
 function buildMirrors() {
+  // Off is a supported configuration, not a degraded one: the live
+  // pages already stop advertising hreflang alternates (head.mjs) and
+  // llms.txt/sitemap.xml already stop listing mirror URLs (PR 3), so
+  // the only thing left to do here is not write the files. The
+  // <noscript> fallbacks come out of these same templates and are
+  // unaffected — they never reference a mirror URL.
+  if (!SITE.mirrors.enabled) {
+    console.log(`mirrors: disabled in site.config.mjs — skipping public/${SITE.mirrors.path}/`);
+    return;
+  }
+
   for (const code of localeCodes) {
+    // A locale's mirror directory doesn't exist until something creates
+    // it, and adding a locale to site.config.mjs is exactly the moment
+    // nothing has. Without this the first build after that edit dies
+    // with a bare ENOENT naming a path the forker never typed.
+    mkdirSync(path(mirrorDir(code)), { recursive: true });
     write(mirrorPath(code, "index.html"), renderIndexMirror(code));
     write(mirrorPath(code, "cv.html"), renderCvMirror(code));
   }
