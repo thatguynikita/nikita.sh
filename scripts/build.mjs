@@ -21,6 +21,8 @@ import { buildIndexJsonLd, buildCvJsonLd, jsonLdScript } from "./templates/jsonl
 import { renderHead } from "./templates/head.mjs";
 import { renderI18n } from "./templates/i18n.mjs";
 import { renderLocalesBlock } from "./templates/locales-block.mjs";
+import { renderTerminalBlock } from "./templates/terminal-block.mjs";
+import { renderFooter, renderFooterBack, renderBackLink, renderTopbarLabel, renderTermTitle, renderGameTitle } from "./templates/footer.mjs";
 import { renderRobotsTxt } from "./templates/robots-txt.mjs";
 import { renderLlmsTxt } from "./templates/llms-txt.mjs";
 import { renderWebmanifest } from "./templates/webmanifest.mjs";
@@ -37,6 +39,7 @@ const I18N_SOURCE = "content/locales/*.mjs";
 
 // GENERATED:LOCALES comes from the locale list, not the strings.
 const LOCALES_SOURCE = "site.config.mjs";
+const CONFIG_SOURCE = "site.config.mjs";
 const read = (p) => readFileSync(path(p), "utf8");
 const write = (p, content) => writeFileSync(path(p), content);
 const exists = (p) => existsSync(path(p));
@@ -90,6 +93,11 @@ function buildIndexHtml() {
 
   html = replaceMarker(html, "I18N", renderI18n(LOCALES, "terminal"), { source: I18N_SOURCE });
   html = replaceMarker(html, "LOCALES", renderLocalesBlock(), { source: LOCALES_SOURCE });
+  html = replaceMarker(html, "TERMINAL", renderTerminalBlock(), { source: CONFIG_SOURCE });
+  html = replaceMarker(html, "FOOTER", renderFooter(), { style: "html" });
+  html = replaceMarker(html, "TERMTITLE", renderTermTitle("bash — 80×24"), { style: "html", source: CONFIG_SOURCE });
+  html = replaceMarker(html, "GAMETITLE", renderGameTitle(), { style: "html", source: CONFIG_SOURCE });
+  html = replaceMarker(html, "TOPBAR_LABEL", renderTopbarLabel(), { style: "html", source: CONFIG_SOURCE });
 
   const nowPlayingBody = `  const NP_ENDPOINT = ${JSON.stringify(NOW_PLAYING.endpoint)};\n  const NP_POLL_MS = ${JSON.stringify(NOW_PLAYING.pollMs)};`;
   html = replaceMarker(html, "NOWPLAYING", nowPlayingBody);
@@ -202,6 +210,11 @@ function buildCvHtml() {
 
   html = replaceMarker(html, "I18N", renderI18n(LOCALES, "cv"), { source: I18N_SOURCE });
   html = replaceMarker(html, "LOCALES", renderLocalesBlock(), { source: LOCALES_SOURCE });
+  html = replaceMarker(html, "TERMINAL", renderTerminalBlock(), { source: CONFIG_SOURCE });
+  html = replaceMarker(html, "FOOTER", renderFooter(), { style: "html" });
+  html = replaceMarker(html, "FOOTER_BACK", renderFooterBack(), { style: "html", source: CONFIG_SOURCE });
+  html = replaceMarker(html, "BACKLINK", renderBackLink(), { style: "html", source: CONFIG_SOURCE });
+  html = replaceMarker(html, "TERMTITLE", renderTermTitle("open cv.html"), { style: "html", source: CONFIG_SOURCE });
 
   // The live page's head JSON-LD isn't re-rendered by the language
   // toggle today; keep that behavior — always the default locale.
@@ -230,6 +243,11 @@ function buildNotFoundHtml() {
   html = replaceMarker(html, "HEAD", renderHead("notFound", { noindex: true, shareable: false }), { style: "html" });
   html = replaceMarker(html, "I18N", renderI18n(LOCALES, "notFound"), { source: I18N_SOURCE });
   html = replaceMarker(html, "LOCALES", renderLocalesBlock(), { source: LOCALES_SOURCE });
+  html = replaceMarker(html, "TERMINAL", renderTerminalBlock(), { source: CONFIG_SOURCE });
+  html = replaceMarker(html, "FOOTER", renderFooter(), { style: "html" });
+  html = replaceMarker(html, "FOOTER_BACK", renderFooterBack(), { style: "html", source: CONFIG_SOURCE });
+  html = replaceMarker(html, "BACKLINK", renderBackLink(), { style: "html", source: CONFIG_SOURCE });
+  html = replaceMarker(html, "TERMTITLE", renderTermTitle("bash — 404"), { style: "html", source: CONFIG_SOURCE });
   write("404.html", html);
 }
 

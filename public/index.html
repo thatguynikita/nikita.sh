@@ -319,11 +319,13 @@
 <div class="vignette" aria-hidden="true"></div>
 <div class="crt" aria-hidden="true"></div>
 
-<div id="boot" aria-hidden="true">&gt; booting nikita.sh ...</div>
+<div id="boot" aria-hidden="true"></div>
 
 <div class="wrap">
   <div class="topbar">
+    <!-- GENERATED:TOPBAR_LABEL:START — edit site.config.mjs, then run scripts/build.mjs -->
     <span class="glow" style="display:inline-block; padding:6px 8px;"><span aria-hidden="true" style="visibility:hidden">&larr; </span>nikita.sh</span>
+    <!-- GENERATED:TOPBAR_LABEL:END -->
     <a href="cv.html">cv.html<span aria-hidden="true" style="visibility:hidden"> &rarr;</span></a>
   </div>
 
@@ -331,7 +333,9 @@
     <h1 class="sr-only">Nikita Chernozipunnikov — DevOps / SRE</h1>
     <div class="term-head">
       <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+    <!-- GENERATED:TERMTITLE:START — edit site.config.mjs, then run scripts/build.mjs -->
       <span class="term-title">guest@nikita.sh — bash — 80×24</span>
+    <!-- GENERATED:TERMTITLE:END -->
     </div>
     <div class="term-body" id="termBody" role="log" aria-live="polite" aria-label="Terminal output"></div>
     <div class="chips" id="chips"></div>
@@ -370,8 +374,10 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
   </main>
 
   <footer>
-    © 2026 <a href="https://nikita.sh" target="_blank" rel="noopener">Nikita Chernozipunnikov</a> ·
+    <!-- GENERATED:FOOTER:START — edit content/site-data.mjs, then run scripts/build.mjs -->
+    © 2026 <a href="https://nikita.sh/" target="_blank" rel="noopener">Nikita Chernozipunnikov</a> ·
     <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0</a>
+    <!-- GENERATED:FOOTER:END -->
     · type <span class="accent">help</span> to explore
   </footer>
 </div>
@@ -380,18 +386,20 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
   <div class="game-frame">
     <div class="term-head">
       <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+    <!-- GENERATED:GAMETITLE:START — edit site.config.mjs, then run scripts/build.mjs -->
       <span class="term-title">guest@nikita.sh — cat.nikita.sh</span>
+    <!-- GENERATED:GAMETITLE:END -->
       <button class="game-close" id="gameClose" aria-label="close game">&times;</button>
     </div>
     <div class="game-view">
-      <iframe id="gameFrame" src="" title="Котик и Сгущенка" loading="lazy" allow="autoplay"></iframe>
+      <iframe id="gameFrame" src="" title="" loading="lazy" allow="autoplay"></iframe>
       <div class="game-scan"></div>
       <div class="game-vignette"></div>
     </div>
     <div class="game-hint dim">
       press <span class="accent">ESC</span> or click <span class="accent">&times;</span> to exit &middot;
       arrows / WASD to move &middot; space to jump &middot;
-      <a href="https://cat.nikita.sh" target="_blank" rel="noopener">open directly &#8599;</a>
+      <a href="" id="gameDirect" target="_blank" rel="noopener">open directly &#8599;</a>
     </div>
   </div>
 </div>
@@ -429,6 +437,12 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
   // A single-language site has nothing to switch between: the lang
   // command, its help row, and the switcher chip all disappear.
   const MULTILINGUAL = LOCALES.length > 1;
+
+  /* GENERATED:TERMINAL:START — edit site.config.mjs, then run scripts/build.mjs */
+  const TERMINAL_HOST = "nikita.sh";
+  const SITE_URL = "https://nikita.sh/";
+  const GAME = { enabled: true, url: "https://cat.nikita.sh", label: "cat.nikita.sh", title: "Котик и Сгущенка" };
+  /* GENERATED:TERMINAL:END */
 
   const matrixRain = window.TermTheme.createMatrixRain(document.getElementById('matrix'));
 
@@ -499,7 +513,7 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
   }
 
   const bootLines = [
-    "nikita.sh boot sequence — kernel 6.6.0-sre",
+    `${TERMINAL_HOST} boot sequence — kernel 6.6.0-sre`,
     "[  OK  ] loaded module: eleven_years_of_uptime.ko",
     '<span class="rm-line">[FAILED] mounted /dev/motivation: not found</span>',
     "[  OK  ] mounted /dev/coffee instead",
@@ -547,10 +561,19 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
   /* ================= game overlay ================= */
   const gameOverlay = document.getElementById('gameOverlay');
   const gameFrame = document.getElementById('gameFrame');
+  {
+    // "open directly ↗" — the game's real address, not this site's.
+    const direct = document.getElementById('gameDirect');
+    if(direct) direct.href = GAME.url;
+  }
   const gameClose = document.getElementById('gameClose');
 
   function openGame(){
-    gameFrame.src = "https://cat.nikita.sh/";
+    // Verbatim: the old hardcoded src ended in "/" because it was a bare
+    // host, but a configured URL may well have a path, where appending a
+    // slash is a 404 rather than a tidy-up.
+    gameFrame.src = GAME.url;
+    gameFrame.title = GAME.title;
     gameOverlay.classList.remove('hidden');
   }
   function closeGame(){
@@ -693,7 +716,7 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
     const html = `<div class="neofetch">
       <div class="nf-art">${NEOFETCH}</div>
       <div class="nf-info">
-        <div><span class="nf-key accent">guest</span>@<span class="accent">nikita.sh</span></div>
+        <div><span class="nf-key accent">guest</span>@<span class="accent">${TERMINAL_HOST}</span></div>
         <div class="dim">--------------------</div>
         <div><span class="nf-key">${L.name}</span> ${L.nameVal}</div>
         <div><span class="nf-key">${L.role}</span> ${L.roleVal}</div>
@@ -769,7 +792,7 @@ and SRE practices into reality.`,
     "en": {
       "availableCommands": "Available commands:",
       "openingCv": "opening <a href=\"cv.html\" class=\"glow\">cv.html</a> ...",
-      "launchingGame": "launching <span class=\"glow\">cat.nikita.sh</span> in a sandboxed CRT window...",
+      "launchingGame": "launching <span class=\"glow\">{game}</span> in a sandboxed CRT window...",
       "catNotText": "cat: cv.html: not a text file — use <span class=\"glow\">cv</span> to open it instead",
       "catUsage": "usage: cat &lt;file&gt;",
       "catNoFile": "cat: {file}: No such file or directory",
@@ -787,7 +810,7 @@ and SRE practices into reality.`,
       },
       "gameDenied": "bash: ./milk-quest.sh: Permission denied",
       "loggingOut": "logging out...",
-      "connClosed": "connection to nikita.sh closed.",
+      "connClosed": "connection to {host} closed.",
       "notFound": "command not found: <span class=\"accent\">{command}</span>",
       "notFoundHint": "<span class=\"dim\">this is a silly terminal held together by JavaScript, not a real shell. try <span class=\"glow\">help</span> for what's here</span>",
       "welcome": "Welcome to my silly terminal. Type 'help' to see what's available.",
@@ -1023,7 +1046,7 @@ and SRE practices into reality.`,
             "attemptNote": "<span class=\"amber\">[note]</span> this is attempt #{count} at a host that does not exist",
             "persistence": "<span class=\"amber\">[note]</span> impressive persistence, honestly",
             "neverExisted": "ssh: this host has never existed. I checked. Twice.",
-            "hint": "<span class=\"dim\">psst — maybe try: <span class=\"glow\">ssh recruiter@nikita.sh</span></span>"
+            "hint": "<span class=\"dim\">psst — maybe try: <span class=\"glow\">ssh {sshTarget}</span></span>"
           }
         }
       },
@@ -1031,10 +1054,10 @@ and SRE practices into reality.`,
         "script": [
           "#!/bin/bash",
           "# milk-quest.sh — don't read it, just run it",
-          "# see also: <a href=\"https://cat.nikita.sh\" target=\"_blank\" rel=\"noopener\">cat.nikita.sh</a>",
+          "# see also: <a href=\"{gameUrl}\" target=\"_blank\" rel=\"noopener\">{game}</a>",
           "# note: you'll need sudo",
           "echo \"opening a little surprise...\"",
-          "xdg-open https://cat.nikita.sh 2&gt;/dev/null"
+          "xdg-open {gameUrl} 2&gt;/dev/null"
         ]
       },
       "claude": {
@@ -1094,7 +1117,7 @@ and SRE practices into reality.`,
     "ru": {
       "availableCommands": "Доступные команды:",
       "openingCv": "открываю <a href=\"cv.html\" class=\"glow\">cv.html</a> ...",
-      "launchingGame": "запускаю <span class=\"glow\">cat.nikita.sh</span> в песочнице CRT-режима...",
+      "launchingGame": "запускаю <span class=\"glow\">{game}</span> в песочнице CRT-режима...",
       "catNotText": "cat: cv.html: не текстовый файл — используйте <span class=\"glow\">cv</span>, чтобы открыть его",
       "catUsage": "использование: cat &lt;файл&gt;",
       "catNoFile": "cat: {file}: Нет такого файла или каталога",
@@ -1112,7 +1135,7 @@ and SRE practices into reality.`,
       },
       "gameDenied": "bash: ./milk-quest.sh: отказано в доступе",
       "loggingOut": "выхожу из системы...",
-      "connClosed": "соединение с nikita.sh закрыто.",
+      "connClosed": "соединение с {host} закрыто.",
       "notFound": "команда не найдена: <span class=\"accent\">{command}</span>",
       "notFoundHint": "<span class=\"dim\">это игрушечный терминал на JavaScript, а не настоящий шелл. попробуй <span class=\"glow\">help</span>, чтобы увидеть, что здесь есть</span>",
       "welcome": "Добро пожаловать в мой игрушечный терминал. Введите «help», чтобы увидеть список команд.",
@@ -1348,7 +1371,7 @@ and SRE practices into reality.`,
             "attemptNote": "<span class=\"amber\">[note]</span> это попытка №{count} подключиться к хосту, которого не существует",
             "persistence": "<span class=\"amber\">[note]</span> впечатляющее упорство, если честно",
             "neverExisted": "ssh: этого хоста никогда не было. я проверил. дважды.",
-            "hint": "<span class=\"dim\">кстати — может, попробуете: <span class=\"glow\">ssh recruiter@nikita.sh</span></span>"
+            "hint": "<span class=\"dim\">кстати — может, попробуете: <span class=\"glow\">ssh {sshTarget}</span></span>"
           }
         }
       },
@@ -1356,10 +1379,10 @@ and SRE practices into reality.`,
         "script": [
           "#!/bin/bash",
           "# milk-quest.sh — ой, да не читай, просто запусти",
-          "# см. также: <a href=\"https://cat.nikita.sh\" target=\"_blank\" rel=\"noopener\">cat.nikita.sh</a>",
+          "# см. также: <a href=\"{gameUrl}\" target=\"_blank\" rel=\"noopener\">{game}</a>",
           "# заметка: понадобится sudo",
           "echo \"открываю маленький сюрприз...\"",
-          "xdg-open https://cat.nikita.sh 2&gt;/dev/null"
+          "xdg-open {gameUrl} 2&gt;/dev/null"
         ]
       },
       "claude": {
@@ -1507,7 +1530,11 @@ and SRE practices into reality.`,
 
   const PERSONAS = {
     recruiter: {
-      host: 'recruiter@nikita.sh',
+      // Derived, not typed: this is compared against what the user types
+      // in `ssh <target>`, printed as the prompt and window title, and
+      // named in the ssh hint. A literal here and a different
+      // terminalHost in the config would break the easter egg silently.
+      host: `recruiter@${TERMINAL_HOST}`,
       // These are dispatch keys, not copy: they're what the user types,
       // what renderChips offers, and what runPersonaCommand matches on.
       // They stay here so a translation cannot rename them — the locale
@@ -1552,7 +1579,7 @@ and SRE practices into reality.`,
   };
 
   function sshFailureSequence(target, count){
-    const params = { host: escapeHtml(target), count };
+    const params = { host: escapeHtml(target), count, sshTarget: PERSONAS.recruiter.host };
     const variant = count <= 2 ? 'first' : 'persistent';
     return SSH_FAILURE_STEPS[variant].map(step => ({
       ...step,
@@ -1598,13 +1625,17 @@ and SRE practices into reality.`,
     "alias ps='ps aux'",
     "alias env='env'",
     "alias rm='rm -i'",
-    "alias game='sudo ./milk-quest.sh'",
-  ];
+  ]
+    // Switching the game off in site.config.mjs removes it from the
+    // fiction too — the alias, the file listing, `cat`, and both launch
+    // paths. Half a feature is worse than none: a CRT window framing a
+    // dead URL is the one thing a forker can't debug from here.
+    .concat(GAME.enabled ? ["alias game='sudo ./milk-quest.sh'"] : []);
 
   function getArgCandidates(base, remainderLower){
     switch(base){
       case "cat": {
-        const files = ["about.txt","skills.txt","contact.txt","cv.html","milk-quest.sh"];
+        const files = ["about.txt","skills.txt","contact.txt","cv.html", ...(GAME.enabled ? ["milk-quest.sh"] : [])];
         return remainderLower.startsWith('.') ? [".bashrc", ...files] : files;
       }
       case "theme": {
@@ -1660,8 +1691,7 @@ and SRE practices into reality.`,
       { name:'skills.txt', perms:'-rw-r--r--', size: 237 },
       { name:'contact.txt', perms:'-rw-r--r--', size: 184 },
       { name:'cv.html', perms:'-rw-r--r--', size: 14336 },
-      { name:'milk-quest.sh', perms:'-rwxr--r--', size: 186, accent:true },
-    ];
+    ].concat(GAME.enabled ? [{ name:'milk-quest.sh', perms:'-rwxr--r--', size: 186, accent:true }] : []);
   }
 
   function humanSize(bytes){
@@ -1814,7 +1844,7 @@ and SRE practices into reality.`,
   function psHTML(){
     if(mode === 'ssh') return `${PERSONAS[sshPersonaKey].host} <span class="path">~</span> $`;
     if(mode === 'top') return `<span class="dim">${t('top.quitHint')}</span>`;
-    return `guest@nikita.sh <span class="path">~</span> $`;
+    return `guest@${TERMINAL_HOST} <span class="path">~</span> $`;
   }
   function updatePromptUI(){
     const label = document.getElementById('psLabel');
@@ -1823,8 +1853,8 @@ and SRE practices into reality.`,
     if(title) title.textContent = mode === 'ssh'
       ? `${PERSONAS[sshPersonaKey].host} — ssh — 80×24`
       : mode === 'top'
-        ? 'guest@nikita.sh — top — 80×24'
-        : 'guest@nikita.sh — bash — 80×24';
+        ? `guest@${TERMINAL_HOST} — top — 80×24`
+        : `guest@${TERMINAL_HOST} — bash — 80×24`;
     updateA11yLabels();
   }
 
@@ -2039,11 +2069,13 @@ and SRE practices into reality.`,
         break;
       }
       case "./milk-quest.sh": {
+        if(!GAME.enabled) { printLine(t('notFound', {command: escapeHtml(b)})); break; }
         printLine(t('gameDenied'));
         break;
       }
       case "game": {
-        printLine(t('launchingGame'));
+        if(!GAME.enabled) { printLine(t('notFound', {command: escapeHtml(b)})); break; }
+        printLine(t('launchingGame', {game: GAME.label}));
         openGame();
         break;
       }
@@ -2077,8 +2109,8 @@ and SRE practices into reality.`,
           printLine('&nbsp;');
           ALIASES.forEach(line => printLine(line));
         }
-        else if(arg === "milk-quest.sh" || arg === "./milk-quest.sh") {
-          const lines = t('game.script');
+        else if(GAME.enabled && (arg === "milk-quest.sh" || arg === "./milk-quest.sh")) {
+          const lines = t('game.script', {game: GAME.label, gameUrl: GAME.url});
           lines.forEach(l => printLine(`<span class="dim">${l}</span>`));
         }
         else if(!arg) { printLine(t('catUsage')); }
@@ -2108,12 +2140,12 @@ and SRE practices into reality.`,
         break;
       }
       case "hostname": {
-        printLine(`nikita.sh`);
+        printLine(TERMINAL_HOST);
         break;
       }
       case "uname": {
         if(arg.trim().toLowerCase() === '-a'){
-          printLine(`Linux nikita.sh 6.6.0-sre #1 SMP PREEMPT Sun Aug 9 20:48:27 UTC 2026 x86_64 GNU/Linux`);
+          printLine(`Linux ${TERMINAL_HOST} 6.6.0-sre #1 SMP PREEMPT Sun Aug 9 20:48:27 UTC 2026 x86_64 GNU/Linux`);
         } else {
           printLine(`Linux`);
         }
@@ -2164,7 +2196,7 @@ and SRE practices into reality.`,
         printLine(tableHTML(
           ["USER","TTY","FROM","LOGIN@","IDLE","WHAT"],
           [
-            ["guest","pts/0","your browser",formatNowDateTime().split(' ')[1],"0.00s","-ssh recruiter@nikita.sh"],
+            ["guest","pts/0","your browser",formatNowDateTime().split(' ')[1],"0.00s",`-ssh ${PERSONAS.recruiter.host}`],
             ["nikita","pts/1","still fixing prod","2019-03-11","6y","vim"],
           ]
         ));
@@ -2243,8 +2275,8 @@ and SRE practices into reality.`,
         const normalized = arg.trim().toLowerCase().replace(/\s+/g,' ');
         if(isCatastrophicRm(normalized)){
           await sudoRmRfPanic();
-        } else if(normalized === './milk-quest.sh'){
-          printLine(t('launchingGame'));
+        } else if(GAME.enabled && normalized === './milk-quest.sh'){
+          printLine(t('launchingGame', {game: GAME.label}));
           openGame();
         } else {
           printLine(t('sudo.reported'));
@@ -2451,7 +2483,7 @@ and SRE practices into reality.`,
         printLine(t('loggingOut'));
         setTimeout(()=>{
           body.innerHTML = "";
-          printLine(t('connClosed'));
+          printLine(t('connClosed', {host: TERMINAL_HOST}));
           setTimeout(()=>{ body.innerHTML=""; bootIntro(); }, 1400);
         }, 500);
         break;
@@ -2465,7 +2497,7 @@ and SRE practices into reality.`,
 
   /* ================= input handling ================= */
   const inputRow = el('div','input-row');
-  inputRow.innerHTML = `<span class="ps" id="psLabel">guest@nikita.sh <span class="path">${PROMPT_PATH}</span> $</span>
+  inputRow.innerHTML = `<span class="ps" id="psLabel">guest@${TERMINAL_HOST} <span class="path">${PROMPT_PATH}</span> $</span>
     <input id="cmdline" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Terminal command input" />`;
 
   const cmdInput = inputRow.querySelector('#cmdline');

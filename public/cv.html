@@ -319,7 +319,9 @@
 
 <div class="wrap">
   <div class="topbar">
-    <a href="https://nikita.sh">&larr; nikita.sh</a>
+    <!-- GENERATED:BACKLINK:START — edit site.config.mjs, then run scripts/build.mjs -->
+    <a href="https://nikita.sh/">&larr; nikita.sh</a>
+    <!-- GENERATED:BACKLINK:END -->
     <div class="right">
       <button id="printBtn" onclick="window.print()">print</button>
       <button id="langChip" hidden>RU</button>
@@ -331,7 +333,9 @@
   <main class="term" role="main">
     <div class="term-head">
       <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+    <!-- GENERATED:TERMTITLE:START — edit site.config.mjs, then run scripts/build.mjs -->
       <span class="term-title">guest@nikita.sh — open cv.html</span>
+    <!-- GENERATED:TERMTITLE:END -->
     </div>
 
     <div class="term-body" id="termBody"></div>
@@ -495,9 +499,13 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
   </main>
 
   <footer id="pageFooter">
-    © 2026 <a href="https://nikita.sh" target="_blank" rel="noopener">Nikita Chernozipunnikov</a> ·
+    <!-- GENERATED:FOOTER:START — edit content/site-data.mjs, then run scripts/build.mjs -->
+    © 2026 <a href="https://nikita.sh/" target="_blank" rel="noopener">Nikita Chernozipunnikov</a> ·
     <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0</a>
-    · <a href="https://nikita.sh" id="footerBack">back to terminal</a>
+    <!-- GENERATED:FOOTER:END -->
+    <!-- GENERATED:FOOTER_BACK:START — edit site.config.mjs, then run scripts/build.mjs -->
+    · <a href="https://nikita.sh/" id="footerBack">back to terminal</a>
+    <!-- GENERATED:FOOTER_BACK:END -->
   </footer>
 </div>
 
@@ -534,6 +542,12 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
   // A single-language site has nothing to switch between: the lang
   // command, its help row, and the switcher chip all disappear.
   const MULTILINGUAL = LOCALES.length > 1;
+
+  /* GENERATED:TERMINAL:START — edit site.config.mjs, then run scripts/build.mjs */
+  const TERMINAL_HOST = "nikita.sh";
+  const SITE_URL = "https://nikita.sh/";
+  const GAME = { enabled: true, url: "https://cat.nikita.sh", label: "cat.nikita.sh", title: "Котик и Сгущенка" };
+  /* GENERATED:TERMINAL:END */
 
   const matrixRain = window.TermTheme.createMatrixRain(document.getElementById('matrix'));
   const restored = window.TermTheme.restoreSettings(LOCALE_CODES);
@@ -871,7 +885,7 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
   let lang = restored.lang;
 
   function sectionHead(cmd, file){
-    return `<h2 class="line section-head"><span class="ps">guest@nikita.sh:~$</span><span class="cmd">${cmd}</span> <span class="file">${file}</span></h2>`;
+    return `<h2 class="line section-head"><span class="ps">guest@${TERMINAL_HOST}:~$</span><span class="cmd">${cmd}</span> <span class="file">${file}</span></h2>`;
   }
 
   function render(){
