@@ -20,7 +20,7 @@ export function buildIndexJsonLd(lang) {
       {
         "@type": "Person",
         "@id": "https://nikita.sh/#owner",
-        "name": lang === "ru" ? PERSON.nameRu : PERSON.nameEn,
+        "name": PERSON.name[lang],
         "jobTitle": PERSON.jobTitle[lang],
         "url": "https://nikita.sh/",
         "image": PERSON.photoUrl,
@@ -45,7 +45,7 @@ export function buildCvJsonLd(lang) {
     "mainEntity": {
       "@type": "Person",
       "@id": "https://nikita.sh/#owner",
-      "name": lang === "ru" ? PERSON.nameRu : PERSON.nameEn,
+      "name": PERSON.name[lang],
       "jobTitle": PERSON.jobTitle[lang],
       "url": "https://nikita.sh/",
       "image": PERSON.photoUrl,
