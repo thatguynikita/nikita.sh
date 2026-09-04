@@ -76,7 +76,7 @@ ${bullets}
 // the order it needs, without regex-stripping the other's markup.
 function buildCvFragments(lang) {
   const U = UI[lang];
-  const name = lang === "ru" ? PERSON.nameRu : PERSON.nameEn;
+  const name = PERSON.name[lang];
 
   const linksRow = SOCIALS.filter((s) => s.contexts.includes("cv") && s.sameAs)
     .map((s) => `<a href="${s.href}" rel="me noopener noreferrer">${escapeHtml(s.label)}</a>`)

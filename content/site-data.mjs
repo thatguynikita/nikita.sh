@@ -15,8 +15,15 @@
 
 // -------- profile / meta --------
 export const PERSON = {
-  nameEn: "Nikita Chernozipunnikov",
-  nameRu: "Никита Чернозипунников",
+  // A locale map like every other translated field — see the shape
+  // contract in scripts/lib/validate-content.mjs. (Was a pair of flat
+  // `nameEn`/`nameRu` keys, which forced `lang === "ru" ? … : …`
+  // ternaries at all four call sites and would not have generalized past
+  // two languages.)
+  name: {
+    en: "Nikita Chernozipunnikov",
+    ru: "Никита Чернозипунников",
+  },
   jobTitle: {
     en: "DevOps / SRE — Systems Engineer",
     ru: "DevOps / SRE — Системный инженер",

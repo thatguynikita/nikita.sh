@@ -50,7 +50,7 @@ function licenseText(lang) {
 // buildCvFragments pattern in mirror-cv.mjs.
 function buildIndexFragments(lang) {
   const U = UI[lang];
-  const name = lang === "ru" ? PERSON.nameRu : PERSON.nameEn;
+  const name = PERSON.name[lang];
 
   const skillsRows = SKILLS.filter((s) => s.contexts.includes("index")).map((s) => [s.key[lang], escapeHtml(s.val)]);
   const contactRows = SOCIALS.filter((s) => s.contexts.includes("index")).map((s) => [

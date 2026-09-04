@@ -13,6 +13,7 @@ import { dirname, join } from "node:path";
 import { ABOUT, SOCIALS, SKILLS, JOBS, CERTS, LANGUAGES, EDUCATION, TRAITS, NOW_PLAYING } from "../content/site-data.mjs";
 import { aboutCvParagraph, jobLocationText } from "./lib/content.mjs";
 import { replaceMarker } from "./lib/markers.mjs";
+import { validateSiteData } from "./lib/validate-content.mjs";
 import { renderIndexMirror, renderIndexNoscript } from "./templates/mirror-index.mjs";
 import { renderCvMirror, renderCvNoscript } from "./templates/mirror-cv.mjs";
 import { buildIndexJsonLd, buildCvJsonLd, jsonLdScript } from "./templates/jsonld.mjs";
@@ -222,6 +223,11 @@ function bumpSitemap() {
 }
 
 // -------- run --------
+
+// Fail before writing anything: a shape error in site-data.mjs (a plain
+// string where a locale map belongs, or vice versa) generates wrong-but-
+// consistent output that the drift check would happily accept.
+validateSiteData();
 
 buildIndexHtml();
 buildCvHtml();
