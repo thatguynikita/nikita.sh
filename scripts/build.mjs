@@ -40,12 +40,12 @@ const exists = (p) => existsSync(path(p));
 // -------- small formatters matching the hand-written array/object style
 // already used in index.html / cv.html (compact, unquoted object keys) --------
 
-function tupleRow(arr) {
-  return "    " + JSON.stringify(arr) + ",";
+function tupleRow(arr, indent = 2) {
+  return "  ".repeat(indent) + JSON.stringify(arr) + ",";
 }
 
-function tupleBlock(rows) {
-  return rows.map(tupleRow).join("\n");
+function tupleBlock(rows, indent = 2) {
+  return rows.map((r) => tupleRow(r, indent)).join("\n");
 }
 
 // -------- index.html --------
@@ -55,13 +55,22 @@ function buildIndexHtml() {
 
   html = replaceMarker(html, "HEAD", renderHead("index", { pagePath: "", mirrorFile: "" }), { style: "html" });
 
-  const aboutBody = `  const ABOUT_EN = \`${ABOUT.en}\`;\n\n  const ABOUT_RU = \`${ABOUT.ru}\`;`;
+  // Locale maps rather than ABOUT_EN/ABOUT_RU consts, so index.html
+  // indexes by locale code and a third language needs no new identifier
+  // and no new `lang === 'ru' ? … : …` at the call site.
+  const aboutBody =
+    "  const ABOUT_TEXT = {\n" +
+    localeCodes.map((c) => `    ${c}: \`${ABOUT[c]}\`,`).join("\n\n") +
+    "\n  };";
   html = replaceMarker(html, "ABOUT", aboutBody);
 
   const indexSkills = SKILLS.filter((s) => s.contexts.includes("index"));
   const skillsBody =
-    `  const SKILLS_EN = [\n${tupleBlock(indexSkills.map((s) => [s.key.en, s.val]))}\n  ];\n\n` +
-    `  const SKILLS_RU = [\n${tupleBlock(indexSkills.map((s) => [s.key.ru, s.val]))}\n  ];`;
+    "  const SKILLS_ROWS = {\n" +
+    localeCodes
+      .map((c) => `    ${c}: [\n${tupleBlock(indexSkills.map((s) => [s.key[c], s.val]), 3)}\n    ],`)
+      .join("\n\n") +
+    "\n  };";
   html = replaceMarker(html, "SKILLS", skillsBody);
 
   const indexSocials = SOCIALS.filter((s) => s.contexts.includes("index"));
