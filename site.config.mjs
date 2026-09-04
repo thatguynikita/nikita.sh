@@ -35,7 +35,9 @@ export const SITE = {
   //
   // Objects rather than bare codes because neither `ogLocale`
   // (en -> en_US, but pt -> pt_BR or pt_PT?) nor the switcher `label`
-  // can be derived from a two-letter code.
+  // can be derived from a two-letter code. Language *names* are not a
+  // field here — Intl.DisplayNames derives those from the code, in
+  // whichever language they need to be rendered (see site-urls.mjs).
   //
   // NOT to be confused with site-data.mjs's LANGUAGES, which is the
   // human languages the *person* speaks, shown on the CV.

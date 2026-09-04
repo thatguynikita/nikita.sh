@@ -63,8 +63,22 @@ const SCHEMA = {
   // notFound has no share block, so no ogTitle/ogImage/twitterCard.
   PAGES: {
     index: { title: "str", description: "str", ogTitle: "str", ogImage: "str", twitterCard: "str" },
-    cv: { title: "str", description: "str", ogTitle: "str", ogImage: "str", twitterCard: "str" },
+    cv: {
+      title: "str",
+      description: "str",
+      ogTitle: "str",
+      ogImage: "str",
+      twitterCard: "str",
+      sitemapImage: { file: "str", title: "str" },
+    },
     notFound: { title: "str", description: "str" },
+  },
+
+  LLMS_TXT: {
+    summary: "str[]",
+    facts: { _each: { label: "str", value: "str" } },
+    note: "str",
+    elsewhereHeading: "str",
   },
 
   NOW_PLAYING: {
