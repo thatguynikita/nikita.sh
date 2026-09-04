@@ -112,6 +112,18 @@ const EXPECTED_CHANGES = [
   },
   {
     why:
+      "PR 7: strings that named the other language, or the language pair, now take a placeholder so they work for any locale list. langUsage was one bilingual string shared by both locales (\"usage: lang <ru|en> / использование: lang <ru|en>\"); it is now one single-language string per locale, with {codes} filled from LOCALE_CODES — so a fork with en+de doesn't show Russian.",
+    pairs: [
+      ["usage: lang &lt;ru|en&gt;  /  использование: lang &lt;ru|en&gt;",
+       "usage: lang &lt;{codes}&gt;"],
+      ["Switch to Russian",
+       "Switch to {language}"],
+      ["Переключить на английский",
+       "Переключить на {language}"],
+    ],
+  },
+  {
+    why:
       "A ternary whose two branches were the identical string — it never translated anything — replaced by that string.",
     pairs: [
       ["<div class=\"dim\">${lang==='ru'?'Events':'Events'}:</div>",
@@ -127,9 +139,10 @@ const EXPECTED_REMOVALS = [
   },
   {
     why:
-      "Not copy: \"{file}\" was an example inside t()'s own doc comment, which PR 6b reworded. The rest are not strings at all — the harvester's regex tokenises a multi-line template literal that contained a nested ternary into fragments. The literal it came from still exists, with a t() call where the ternary was.",
+      "Not copy: \"{file}\" was an example inside t()'s own doc comment, which PR 6b reworded, and \"lang ${nextLang}\" is a template literal whose variable PR 7 renamed to `next`. The rest are not strings at all — the harvester's regex tokenises a multi-line template literal that contained a nested ternary into fragments. The literal it came from still exists, with a t() call where the ternary was.",
     strings: [
       "{file}",
+      "lang ${nextLang}",
       "\n      : ",
       "<div>${lang === 'ru'\n      ? ",
       "}</div>",

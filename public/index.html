@@ -408,11 +408,28 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
       MATRIX_STORAGE_KEY: 'term:matrix',
       readStored: function(){ return null; },
       writeStored: function(){},
+      fillTemplate: function(s, p){
+        return typeof s === 'string'
+          ? s.replace(/\{(\w+)\}/g, function(m, k){ return k in p ? p[k] : m; })
+          : s;
+      },
       applyTheme: function(){ return null; },
     };
   }
 
   /* ================= matrix rain ================= */
+  /* GENERATED:LOCALES:START — edit site.config.mjs, then run scripts/build.mjs */
+  const LOCALES = [
+    { code: "en", label: "EN", name: "English" },
+    { code: "ru", label: "RU", name: "Русский" },
+  ];
+  /* GENERATED:LOCALES:END */
+
+  const LOCALE_CODES = LOCALES.map(l => l.code);
+  // A single-language site has nothing to switch between: the lang
+  // command, its help row, and the switcher chip all disappear.
+  const MULTILINGUAL = LOCALES.length > 1;
+
   const matrixRain = window.TermTheme.createMatrixRain(document.getElementById('matrix'));
 
   /* ================= boot sequence ================= */
@@ -611,7 +628,7 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
   const MATRIX_STORAGE_KEY = window.TermTheme.MATRIX_STORAGE_KEY;
   const SECRET_THEME_NAME = "sabbatical"; // easter egg unlocked via `claude "add light theme"` (ask twice) or a lucky `theme sabbatical` guess
   {
-    const restored = window.TermTheme.restoreSettings();
+    const restored = window.TermTheme.restoreSettings(LOCALE_CODES);
     lang = restored.lang;
     if(restored.matrixColor) matrixRain.setColor(restored.matrixColor);
     if(restored.matrixFade) matrixRain.setFadeColor(restored.matrixFade);
@@ -761,7 +778,7 @@ and SRE practices into reality.`,
       "matrixUsage": "usage: matrix &lt;on|off&gt;",
       "themeSet": "theme set to <span class=\"glow\">{name}</span>",
       "themeUsage": "usage: theme &lt;green|amber|pascal|commodore|solarized|ubuntu&gt;",
-      "langUsage": "usage: lang &lt;ru|en&gt;  /  использование: lang &lt;ru|en&gt;",
+      "langUsage": "usage: lang &lt;{codes}&gt;",
       "langSet": "language switched to <span class=\"glow\">English</span>",
       "sudo": {
         "reported": "<span class=\"amber\">This incident will be reported.</span>",
@@ -1086,7 +1103,7 @@ and SRE practices into reality.`,
       "matrixUsage": "использование: matrix &lt;on|off&gt;",
       "themeSet": "тема изменена на <span class=\"glow\">{name}</span>",
       "themeUsage": "использование: theme &lt;green|amber|pascal|commodore|solarized|ubuntu&gt;",
-      "langUsage": "usage: lang &lt;ru|en&gt;  /  использование: lang &lt;ru|en&gt;",
+      "langUsage": "использование: lang &lt;{codes}&gt;",
       "langSet": "язык переключён на <span class=\"glow\">русский</span>",
       "sudo": {
         "reported": "<span class=\"amber\">Об этом инциденте будет доложено.</span>",
@@ -1426,7 +1443,11 @@ and SRE practices into reality.`,
     ["help","help"],
   ];
 
-  function HELP(){ return HELP_ROWS.map(([cmd,chip]) => [cmd, I18N[lang].help[cmd], chip]); }
+  const availableRow = ([cmd]) => cmd !== 'lang' || MULTILINGUAL;
+
+  function HELP(){
+    return HELP_ROWS.filter(availableRow).map(([cmd,chip]) => [cmd, I18N[lang].help[cmd], chip]);
+  }
 
   /* ---------- easter-egg content ---------- */
   function fortune(){
@@ -1540,14 +1561,8 @@ and SRE practices into reality.`,
     }));
   }
 
-  // Fills "{name}"-style placeholders from a params object. Shared by
-  // t() and by the handful of untranslated templates that live in this
-  // file rather than in a locale (see SSH_FAILURE_STEPS).
-  function fillTemplate(s, params){
-    return typeof s === 'string'
-      ? s.replace(/\{(\w+)\}/g, (m, k) => (k in params ? params[k] : m))
-      : s;
-  }
+  // Shared with cv.html/404.html via theme.js — see the note there.
+  const fillTemplate = window.TermTheme.fillTemplate;
 
   // t('a.b.c') reads a dotted path out of the current locale;
   // t('key', {file:'x'}) fills its placeholders. Named rather than
@@ -1560,7 +1575,11 @@ and SRE practices into reality.`,
     return Array.isArray(v) ? v.map(s => fillTemplate(s, params)) : fillTemplate(v, params);
   }
 
-  const COMMANDS = ["about","skills","contact","cv","neofetch","whoami","ls","cat","history","matrix","theme","lang","sudo","fortune","top","kubectl","terraform","ssh","claude","clear","help"];
+  // `lang` is filtered out on a single-language site — it drives chips
+  // and tab completion, and offering a command that can only refuse is
+  // worse than not offering it.
+  const COMMANDS = ["about","skills","contact","cv","neofetch","whoami","ls","cat","history","matrix","theme","lang","sudo","fortune","top","kubectl","terraform","ssh","claude","clear","help"]
+    .filter(c => c !== 'lang' || MULTILINGUAL);
 
   const POD_NAMES = ["cat-deployment-7f9d8c-x2m4q","condensed-milk-store-0","sre-sanity-canary","deploy-friday-afternoon"];
 
@@ -1593,7 +1612,7 @@ and SRE practices into reality.`,
         return sabbaticalUnlocked ? [...visible, SECRET_THEME_NAME] : visible;
       }
       case "matrix": return ["on","off"];
-      case "lang": return ["ru","en"];
+      case "lang": return LOCALE_CODES;
       case "ssh": return Object.values(PERSONAS).map(p => p.host);
       case "terraform": return ["apply","destroy"];
       case "claude": return ["log --oneline","--confess","\"add light theme\"","\"fix the bug\"","\"add tests\""];
@@ -1700,11 +1719,16 @@ and SRE practices into reality.`,
     return `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
   }
 
+  function nextLocale(){
+    const i = LOCALE_CODES.indexOf(lang);
+    return LOCALE_CODES[(i + 1) % LOCALE_CODES.length];
+  }
+
   function defaultChips(){
-    const nextLang = lang === 'ru' ? 'en' : 'ru';
+    const next = nextLocale();
     return [
       {label:'help', value:'help'},
-      {label:nextLang, value:`lang ${nextLang}`},
+      ...(MULTILINGUAL ? [{label:next, value:`lang ${next}`}] : []),
       {label:'about', value:'about'},
       {label:'skills', value:'skills'},
       {label:'contact', value:'contact'},
@@ -2204,14 +2228,14 @@ and SRE practices into reality.`,
       }
       case "lang": {
         const choice = arg.toLowerCase();
-        if(choice === "ru" || choice === "en"){
+        if(LOCALE_CODES.indexOf(choice) !== -1){
           lang = choice;
           document.documentElement.lang = lang;
           printLine(t('langSet'));
           window.TermTheme.writeStored(LANG_STORAGE_KEY, choice);
           updateA11yLabels();
         } else {
-          printLine(t('langUsage'));
+          printLine(t('langUsage', {codes: LOCALE_CODES.join('|')}));
         }
         break;
       }

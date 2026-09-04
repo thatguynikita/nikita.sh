@@ -35,7 +35,7 @@ export default {
     matrixUsage: "использование: matrix &lt;on|off&gt;",
     themeSet: 'тема изменена на <span class="glow">{name}</span>',
     themeUsage: "использование: theme &lt;green|amber|pascal|commodore|solarized|ubuntu&gt;",
-    langUsage: "usage: lang &lt;ru|en&gt;  /  использование: lang &lt;ru|en&gt;",
+    langUsage: "использование: lang &lt;{codes}&gt;",
     langSet: 'язык переключён на <span class="glow">русский</span>',
     sudo: {
       reported: '<span class="amber">Об этом инциденте будет доложено.</span>',
@@ -357,8 +357,7 @@ export default {
     signOff: '$ <span class="accent">echo</span> <span class="amber">"спасибо, что дочитали до конца. давайте построим что-то надёжное вместе."</span>',
     print: "печать",
     footerBack: "назад в терминал",
-    langChip: "EN",
-    langSwitchLabel: "Переключить на английский",
+    langSwitchLabel: "Переключить на {language}",
     langAnnounce: "Язык переключён на русский",
   },
   notFound: {
@@ -366,8 +365,7 @@ export default {
     message1: "Ой! Похоже, котик съел всю сгущёнку... и эту страницу тоже.",
     catAlt: "Рыжий котик лежит на спине, уставший, вокруг рассыпаны банки сгущёнки.",
     footerBack: "назад в терминал",
-    langChip: "EN",
-    langSwitchLabel: "Переключить на английский",
+    langSwitchLabel: "Переключить на {language}",
     langAnnounce: "Язык переключён на русский",
   },
 };

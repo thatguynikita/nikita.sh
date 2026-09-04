@@ -46,9 +46,24 @@
   // values/side-effects (applies the theme, sets document.lang) without
   // touching any page-local state — callers apply the returned bits
   // (lang, matrixColor, matrixEnabled) to their own variables/controllers.
-  function restoreSettings(){
+  // Fills "{name}"-style placeholders from a params object. Lives here
+  // because all three pages need it — index.html's t(), and cv/404's
+  // language-switcher aria-label, which has to name the language it
+  // switches to.
+  function fillTemplate(s, params){
+    return typeof s === 'string'
+      ? s.replace(/\{(\w+)\}/g, function(m, k){ return k in params ? params[k] : m; })
+      : s;
+  }
+
+  // `codes` is the page's GENERATED:LOCALES list, first entry default.
+  // Passed in rather than hardcoded here so theme.js stays a plain
+  // shared library with no build coupling and no idea which languages
+  // this particular site has.
+  function restoreSettings(codes){
+    const valid = (codes && codes.length) ? codes : ['en'];
     const storedLang = readStored(LANG_STORAGE_KEY);
-    const lang = (storedLang === 'ru' || storedLang === 'en') ? storedLang : 'en';
+    const lang = valid.indexOf(storedLang) !== -1 ? storedLang : valid[0];
     document.documentElement.lang = lang;
 
     let storedTheme = readStored(THEME_STORAGE_KEY);
@@ -127,6 +142,7 @@
     MATRIX_STORAGE_KEY,
     readStored,
     writeStored,
+    fillTemplate,
     applyTheme,
     restoreSettings,
     createMatrixRain,

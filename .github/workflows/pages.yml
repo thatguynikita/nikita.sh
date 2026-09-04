@@ -1,0 +1,73 @@
+# Publishes public/ to GitHub Pages.
+#
+# This is the alternative to `npm run deploy` (see scripts/deploy.mjs):
+# no bucket, no credentials, no CLI. Pages publishes a directory as a
+# build artifact rather than PUTting objects one at a time, which is why
+# it isn't a deploy.mjs target.
+#
+# To use it: Settings -> Pages -> Build and deployment -> Source:
+# "GitHub Actions". Then set SITE.baseUrl in site.config.mjs to the URL
+# Pages gives you and commit the rebuilt output.
+#
+# On a *project* page (username.github.io/repo) also set
+# SITE.basePath to "/repo" — and note 404.html is only partly usable
+# there, since GitHub serves a project page's 404 only for paths under
+# /repo/. A user/org page or a custom domain is the better-supported
+# route; see docs/UPDATE-GUIDE.md.
+name: Deploy to GitHub Pages
+
+on:
+  # main only, deliberately. The template-v2 integration branch would
+  # otherwise publish half-finished states over the live site.
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a running deploy finish rather than cancelling it half-published.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Not strictly required — public/ is committed — but it fails loudly
+      # here if the committed output is stale, rather than silently
+      # publishing it.
+      - name: Verify generated content is in sync
+        run: |
+          npm run build
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "::error::public/ is out of sync with its sources. Run 'npm run build' and commit the result."
+            git status --porcelain
+            exit 1
+          fi
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload public/
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

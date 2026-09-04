@@ -5,7 +5,7 @@
 //
 // No npm dependencies — Node built-ins only.
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, rmSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -20,11 +20,12 @@ import { renderCvMirror, renderCvNoscript } from "./templates/mirror-cv.mjs";
 import { buildIndexJsonLd, buildCvJsonLd, jsonLdScript } from "./templates/jsonld.mjs";
 import { renderHead } from "./templates/head.mjs";
 import { renderI18n } from "./templates/i18n.mjs";
+import { renderLocalesBlock } from "./templates/locales-block.mjs";
 import { renderRobotsTxt } from "./templates/robots-txt.mjs";
 import { renderLlmsTxt } from "./templates/llms-txt.mjs";
 import { renderWebmanifest } from "./templates/webmanifest.mjs";
 import { renderSitemapXml } from "./templates/sitemap-xml.mjs";
-import { siteUrl, mirrorUrl, mirrorPath, mirrorDir, localeCodes } from "./lib/site-urls.mjs";
+import { siteUrl, mirrorUrl, mirrorPath, mirrorDir, localeCodes, defaultLocale } from "./lib/site-urls.mjs";
 import { SITE } from "../site.config.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -33,12 +34,22 @@ const path = (p) => join(PUBLIC_ROOT, p);
 
 // What the GENERATED:I18N marker comment tells a reader to edit.
 const I18N_SOURCE = "content/locales/*.mjs";
+
+// GENERATED:LOCALES comes from the locale list, not the strings.
+const LOCALES_SOURCE = "site.config.mjs";
 const read = (p) => readFileSync(path(p), "utf8");
 const write = (p, content) => writeFileSync(path(p), content);
 const exists = (p) => existsSync(path(p));
 
 // -------- small formatters matching the hand-written array/object style
 // already used in index.html / cv.html (compact, unquoted object keys) --------
+
+// `{en:"x", ru:"y"}` for however many locales there are. cv.html's
+// hand-authored render() indexes these by locale code, so the shape has
+// to follow site.config.mjs rather than a hardcoded pair.
+function localeMap(render) {
+  return `{${localeCodes.map((c) => `${c}:${render(c)}`).join(", ")}}`;
+}
 
 function tupleRow(arr, indent = 2) {
   return "  ".repeat(indent) + JSON.stringify(arr) + ",";
@@ -78,19 +89,20 @@ function buildIndexHtml() {
   html = replaceMarker(html, "SOCIALS", socialsBody);
 
   html = replaceMarker(html, "I18N", renderI18n(LOCALES, "terminal"), { source: I18N_SOURCE });
+  html = replaceMarker(html, "LOCALES", renderLocalesBlock(), { source: LOCALES_SOURCE });
 
   const nowPlayingBody = `  const NP_ENDPOINT = ${JSON.stringify(NOW_PLAYING.endpoint)};\n  const NP_POLL_MS = ${JSON.stringify(NOW_PLAYING.pollMs)};`;
   html = replaceMarker(html, "NOWPLAYING", nowPlayingBody);
 
-  // The live page's head JSON-LD isn't re-rendered by the RU/EN toggle
-  // today; keep that behavior — always the English version (matches
-  // cv.html's precedent).
-  const jsonLdBody = jsonLdScript(buildIndexJsonLd("en"));
+  // The live page's head JSON-LD isn't re-rendered by the language
+  // toggle today; keep that behavior — always the default locale
+  // (matches cv.html's precedent).
+  const jsonLdBody = jsonLdScript(buildIndexJsonLd(defaultLocale.code));
   html = replaceMarker(html, "JSONLD", jsonLdBody, { style: "html" });
 
   // <noscript> fallback for non-JS clients that fetch this page directly
-  // — same "always English" reasoning as the JSON-LD block above.
-  const noscriptBody = renderIndexNoscript("en");
+  // — same "always the default locale" reasoning as the JSON-LD above.
+  const noscriptBody = renderIndexNoscript(defaultLocale.code);
   html = replaceMarker(html, "NOSCRIPT", noscriptBody, { style: "html" });
 
   write("index.html", html);
@@ -104,13 +116,13 @@ function certRow(c) {
 
 function languageRow(l) {
   return (
-    `    {name:{en:${JSON.stringify(l.name.en)}, ru:${JSON.stringify(l.name.ru)}}, filled:${l.filled}, ` +
-    `sub:{en:${JSON.stringify(l.sub.en)}, ru:${JSON.stringify(l.sub.ru)}}},`
+    `    {name:${localeMap((c) => JSON.stringify(l.name[c]))}, filled:${l.filled}, ` +
+    `sub:${localeMap((c) => JSON.stringify(l.sub[c]))}},`
   );
 }
 
 function skillDetailedRow(s) {
-  return `    {key:{en:${JSON.stringify(s.key.en)}, ru:${JSON.stringify(s.key.ru)}}, val:${JSON.stringify(s.val)}},`;
+  return `    {key:${localeMap((c) => JSON.stringify(s.key[c]))}, val:${JSON.stringify(s.val)}},`;
 }
 
 function traitRow(t) {
@@ -127,12 +139,13 @@ function legacyJobRow(job) {
   };
   const lines = [];
   lines.push(`    {`);
-  lines.push(`      dates:{en:${JSON.stringify(job.dates.en)}, ru:${JSON.stringify(job.dates.ru)}}, span:{en:${JSON.stringify(job.span.en)}, ru:${JSON.stringify(job.span.ru)}},`);
-  lines.push(`      co:${JSON.stringify(job.org.name)}, loc:{en:${JSON.stringify(jobLocationText(job, "en"))}, ru:${JSON.stringify(jobLocationText(job, "ru"))}},`);
-  lines.push(`      title:{en:${JSON.stringify(job.title.en)}, ru:${JSON.stringify(job.title.ru)}},`);
+  lines.push(`      dates:${localeMap((c) => JSON.stringify(job.dates[c]))}, span:${localeMap((c) => JSON.stringify(job.span[c]))},`);
+  lines.push(`      co:${JSON.stringify(job.org.name)}, loc:${localeMap((c) => JSON.stringify(jobLocationText(job, c)))},`);
+  lines.push(`      title:${localeMap((c) => JSON.stringify(job.title[c]))},`);
   lines.push(`      bullets:{`);
-  lines.push(`        en:[\n${bullets("en").map((b) => `          ${JSON.stringify(b)},`).join("\n")}\n        ],`);
-  lines.push(`        ru:[\n${bullets("ru").map((b) => `          ${JSON.stringify(b)},`).join("\n")}\n        ],`);
+  for (const c of localeCodes) {
+    lines.push(`        ${c}:[\n${bullets(c).map((b) => `          ${JSON.stringify(b)},`).join("\n")}\n        ],`);
+  }
   lines.push(`      },`);
   lines.push(`      tech: ${JSON.stringify(job.tech)},`);
   lines.push(`    },`);
@@ -171,7 +184,9 @@ function buildCvHtml() {
   html = replaceMarker(html, "ABOUT_CV", aboutCvBody);
 
   const traitsBody =
-    `  const TRAITS = {\n    en:[\n${TRAITS.en.map(traitRow).join("\n")}\n    ],\n    ru:[\n${TRAITS.ru.map(traitRow).join("\n")}\n    ],\n  };`;
+    "  const TRAITS = {\n" +
+    localeCodes.map((c) => `    ${c}:[\n${TRAITS[c].map(traitRow).join("\n")}\n    ],`).join("\n") +
+    "\n  };";
   html = replaceMarker(html, "TRAITS", traitsBody);
 
   const eduBody =
@@ -186,15 +201,16 @@ function buildCvHtml() {
   html = replaceMarker(html, "EDUCATION_BODY", eduBody);
 
   html = replaceMarker(html, "I18N", renderI18n(LOCALES, "cv"), { source: I18N_SOURCE });
+  html = replaceMarker(html, "LOCALES", renderLocalesBlock(), { source: LOCALES_SOURCE });
 
-  // The live page's head JSON-LD isn't re-rendered by the RU/EN toggle
-  // today; keep that behavior — always the English version.
-  const jsonLdBody = jsonLdScript(buildCvJsonLd("en"));
+  // The live page's head JSON-LD isn't re-rendered by the language
+  // toggle today; keep that behavior — always the default locale.
+  const jsonLdBody = jsonLdScript(buildCvJsonLd(defaultLocale.code));
   html = replaceMarker(html, "JSONLD", jsonLdBody, { style: "html" });
 
   // <noscript> fallback for non-JS clients that fetch this page directly
-  // — same "always English" reasoning as the JSON-LD block above.
-  const noscriptBody = renderCvNoscript("en");
+  // — same "always the default locale" reasoning as the JSON-LD above.
+  const noscriptBody = renderCvNoscript(defaultLocale.code);
   html = replaceMarker(html, "NOSCRIPT", noscriptBody, { style: "html" });
 
   write("cv.html", html);
@@ -213,6 +229,7 @@ function buildNotFoundHtml() {
   // so there's no single URL for it to claim or to share.
   html = replaceMarker(html, "HEAD", renderHead("notFound", { noindex: true, shareable: false }), { style: "html" });
   html = replaceMarker(html, "I18N", renderI18n(LOCALES, "notFound"), { source: I18N_SOURCE });
+  html = replaceMarker(html, "LOCALES", renderLocalesBlock(), { source: LOCALES_SOURCE });
   write("404.html", html);
 }
 
@@ -230,6 +247,8 @@ function buildMirrors() {
     return;
   }
 
+  pruneMirrorLocales();
+
   for (const code of localeCodes) {
     // A locale's mirror directory doesn't exist until something creates
     // it, and adding a locale to site.config.mjs is exactly the moment
@@ -238,6 +257,30 @@ function buildMirrors() {
     mkdirSync(path(mirrorDir(code)), { recursive: true });
     write(mirrorPath(code, "index.html"), renderIndexMirror(code));
     write(mirrorPath(code, "cv.html"), renderCvMirror(code));
+  }
+}
+
+// Removes mirror directories for locales that are no longer configured.
+// A fork clones this repo with public/llm/ru/ already in it; dropping ru
+// from site.config.mjs would otherwise leave those pages on disk, in the
+// deploy manifest, and live on the site — stale content in a language
+// the site no longer claims to speak.
+//
+// Deliberately narrow: only directories directly under the mirror path,
+// only ones that aren't a configured locale, and only ones that look
+// like generated mirrors (they contain an index.html). llm/style.css is
+// hand-authored and sits outside any locale directory, so it's never a
+// candidate.
+function pruneMirrorLocales() {
+  const root = path(SITE.mirrors.path);
+  if (!existsSync(root)) return;
+  const keep = new Set(localeCodes);
+  for (const entry of readdirSync(root, { withFileTypes: true })) {
+    if (!entry.isDirectory() || keep.has(entry.name)) continue;
+    const dir = join(root, entry.name);
+    if (!existsSync(join(dir, "index.html"))) continue;
+    rmSync(dir, { recursive: true });
+    console.log(`mirrors: removed public/${SITE.mirrors.path}/${entry.name}/ — "${entry.name}" is not in site.config.mjs's locales`);
   }
 }
 
