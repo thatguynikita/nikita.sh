@@ -10,13 +10,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 npm run build          # propagate content/site-data.mjs + site.config.mjs + content/locales/* -> public/index.html, public/cv.html, public/404.html, public/llm/*, public/{sitemap.xml,robots.txt,llms.txt,site.webmanifest}
+npm test               # both checks below
 npm run test:strings   # assert no user-visible string disappeared (see tests/golden-strings.json)
+npm run test:i18n      # assert every i18n key the pages ask for resolves in every locale
 npm run deploy:dry-run # preview the full deploy manifest (file -> bucket key -> content-type), no network calls, no bucket needed
 npm run deploy -- --bucket <bucket-name>   # deploy everything (or set NIKITASH_BUCKET env var and drop --bucket)
 npm run deploy -- --bucket <bucket-name> index.html cv.html   # deploy only specific files (still checked against the allowlist) — unprefixed, same as --dry-run output
 ```
 
-There is one test (`npm run test:strings`, described under "User-facing strings" below) and no linter or bundler — no dependencies are installed (`node_modules/` is gitignored but nothing populates it). "Correctness" is verified by `git diff` after a build (should be empty on a no-op run) and by exercising pages in a real browser (`file://` won't execute the JS — use the `static` preview config in `.claude/launch.json`, `python3 -m http.server --directory public` on port 8934, which serves `public/index.html`/`public/cv.html`/`public/404.html`).
+There are two tests (`npm test`, described under "User-facing strings" below) and no linter or bundler — no dependencies are installed (`node_modules/` is gitignored but nothing populates it). "Correctness" is verified by `git diff` after a build (should be empty on a no-op run) and by exercising pages in a real browser (`file://` won't execute the JS — use the `static` preview config in `.claude/launch.json`, `python3 -m http.server --directory public` on port 8934, which serves `public/index.html`/`public/cv.html`/`public/404.html`).
 
 CI (`.github/workflows/ci.yml`) runs `npm run build` then fails if `git status --porcelain` is non-empty — this is the drift check that catches a hand-edited `GENERATED:*` block or `llm/*` mirror page. It also runs `npm run test:strings` and `npm run deploy:dry-run`.
 
@@ -32,7 +34,12 @@ Every string the three pages show comes from `content/locales/<code>.mjs`, injec
 - **`npm run test:strings`** asserts every string recorded in `tests/golden-strings.json` still exists somewhere — in a page or a locale file. The drift check cannot do this: it only proves the build is idempotent, and is perfectly happy to regenerate a page with a line missing. The snapshot is deliberately over-broad (every string literal, not just copy); intentional changes go in `EXPECTED_CHANGES`/`EXPECTED_REMOVALS` in `scripts/check-strings.mjs`, or re-record with `node scripts/harvest-strings.mjs <ref>` and review that diff.
 - **Untranslatable structure never goes in a locale file.** `describePod`'s pod names, restart counts, and the Kubernetes state strings that are the same in every language (`CrashLoopBackOff`, `Evicted`) stay in `index.html`; the locale carries only `{reason, events}` (plus `status` for the two pods whose status is the English word "Running"), and the two are merged per pod. Same rule as `HELP_ROWS` and `SECTIONS`.
 - **`ABOUT_TEXT`, `SKILLS_ROWS`, `ABOUT_CV` and `EDUCATION_BODY` are generated as locale maps**, indexed by code. They used to be `_EN`/`_RU` const pairs, which meant a `lang === 'ru' ? … : …` at every call site and a new identifier per language.
-- **Not migrated yet:** five `lang === 'ru' ? … : …` ternaries remain in `index.html`, and they're the ones that aren't a mechanical lift: `timeQuip`'s hour buckets, `PERSONAS.qa()` (whose `cmd` feeds command dispatch), the two `sshFailureSequence` variants (whose records carry animation delays), and `nextLang`'s hardcoded two-language cycle. Each duplicates non-translatable structure per language, so they need restructuring rather than key extraction.
+- **Where structure and copy are interleaved, the structure stays in `index.html` and the locale carries `{id → string}`.** Three places do this, and each one exists because the structure is load-bearing in a way a translation must not reach:
+  - `TIME_BUCKETS` — the hour boundaries (`max: 5, 8, 12, …`) are facts about clocks. `timeQuip()` picks a bucket, then reads `whoami.timeQuip.<id>`.
+  - `PERSONAS.recruiter.commands` — **these are dispatch keys**, not copy: what the user types, what `renderChips()` offers, and what `runPersonaCommand()` matches on. A translated `cmd` would break the ssh persona with no error. The locale carries only `{q, a}` under the same names.
+  - `SSH_FAILURE_STEPS` — the step list and its `delay` values are animation timing. A step with `key` is translated; a step with `text` is verbatim OpenSSH output (`connection reset by peer`), identical in every language, so translating it would be wrong.
+- **`npm run test:i18n` is what relates those two halves.** `loadLocales()` only checks locale files against each other; nothing else checks them against the keys the pages actually use. This resolves every literal `t('…')` key plus the id lists above, in every locale. A renamed bucket id or a typo'd key otherwise passes the build, the drift check and the parity check, and renders as the literal text `undefined`. If one of its extraction patterns stops matching, that is itself a failure — it never silently checks nothing.
+- **Not migrated:** one ternary remains, `nextLang = lang === 'ru' ? 'en' : 'ru'` — a hardcoded two-language cycle, which is locale-count logic rather than copy.
 
 ## Content pipeline architecture
 
