@@ -58,6 +58,10 @@ Full workflow and the "adding a new generated field" recipe: `docs/UPDATE-GUIDE.
 
 ## Crawler mirror (`/llm/`)
 
+`SITE.mirrors.enabled` in `site.config.mjs` gates the whole feature, and off is a supported configuration rather than a degraded one: no mirror files are written, the live pages stop emitting `hreflang` alternates, and `sitemap.xml`/`llms.txt` stop listing mirror URLs. The `<noscript>` fallbacks on `index.html`/`cv.html` come out of the same `mirror-*.mjs` templates but are unaffected — they never reference a mirror URL.
+
+Everything locale-dependent in those templates lives in the per-locale `UI` table at the top of each file (including the notice and license prose, which used to be `lang === "ru" ? … : …` ternaries). The mirrors link each other with **relative** hrefs, unlike the live pages' absolute ones, so the "../" depth is computed by `mirrorRelPath()`/`mirrorRootRelPath()` in `scripts/lib/site-urls.mjs` rather than written literally. The trailing "English version: …" pointer names other languages **in English on every locale's page** — that's deliberate and matches the hand-written originals, since these pages exist for crawlers.
+
 `index.html`/`cv.html` never link to `/llm/` — a JS page and a plain-HTML page serving the same content differently at the same URL would read as cloaking to search engines. Discovery instead goes through `sitemap.xml` and `llms.txt` (which list `/llm/` and `/llm/ru/` directly), `hreflang` cross-references between the EN/RU mirror pairs (plus `x-default` pointing at EN), and a visible EN/RU switcher on each mirror page.
 
 ## Licensing

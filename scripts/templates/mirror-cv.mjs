@@ -7,7 +7,7 @@ import { PERSON, SOCIALS, SKILLS, JOBS, CERTS, LANGUAGES, EDUCATION, LICENSE_CON
 import { escapeHtml } from "../lib/html.mjs";
 import { aboutCvParagraph, jobWhenLine } from "../lib/content.mjs";
 import { buildCvJsonLd, jsonLdScript } from "./jsonld.mjs";
-import { siteUrl, mirrorUrl, displayUrl, locales, isDefaultLocale } from "../lib/site-urls.mjs";
+import { siteUrl, mirrorUrl, displayUrl, locales, isDefaultLocale, mirrorRelPath, mirrorRootRelPath, otherLocales, languageName } from "../lib/site-urls.mjs";
 
 const UI = {
   en: {
@@ -22,6 +22,15 @@ const UI = {
     languages: "Languages",
     skills: "Skills",
     tech: "tech:",
+    back: "← back",
+    // Rendered once per other locale and joined; the wrap point differs
+    // per language, which is why this is a per-locale template rather
+    // than one shared helper.
+    otherVersion: (name, href, label) => `${name} version: <a href="${href}">${label}</a>`,
+    notice: (live, others, back) =>
+      `This is a plain-HTML mirror of ${live},\n    published for crawlers and AI agents that don't execute JavaScript. Content matches the\n    live site. Humans should visit ${live}\n    for the live version. ${others} ·\n    ${back}`,
+    license: ({ year, holder, name, url }) =>
+      `© ${year} ${holder}. Content licensed <a href="${url}">${name}</a> — view and share with attribution, no commercial use, no derivatives.`,
   },
   ru: {
     title: "Никита Чернозипунников — резюме",
@@ -35,25 +44,44 @@ const UI = {
     languages: "Языки",
     skills: "Навыки",
     tech: "стек:",
+    back: "← назад",
+    otherVersion: (name, href, label) => `${name} version:\n    <a href="${href}">${label}</a>`,
+    notice: (live, others, back) =>
+      `Это статическая HTML-версия ${live},\n    опубликованная для краулеров и AI-агентов, которые не выполняют JavaScript. Контент\n    соответствует живому сайту. Для интерактивной версии посетите\n    ${live}. ${others} · ${back}`,
+    license: ({ year, holder, name, url }) =>
+      `© ${year} ${holder}. Контент распространяется по лицензии <a href="${url}">${name}</a> — можно просматривать и делиться с указанием авторства, без коммерческого использования и без производных работ.`,
   },
 };
 
 function langsList(lang) {
-  // Self-first, relative hrefs (unlike the index mirror, which is always
-  // EN-then-RU with absolute hrefs) — matches the current markup.
-  return lang === "ru"
-    ? `<li><a href="cv.html" hreflang="ru">RU</a></li>\n    <li><a href="../cv.html" hreflang="en">EN</a></li>`
-    : `<li><a href="cv.html" hreflang="en">EN</a></li>\n    <li><a href="ru/cv.html" hreflang="ru">RU</a></li>`;
+  // Self first, then every other locale in config order — relative
+  // hrefs, unlike the index mirror's absolute ones. Matches the markup
+  // these pages have always had.
+  const order = [lang, ...otherLocales(lang).map((l) => l.code)];
+  return order
+    .map((code) => {
+      const l = locales.find((x) => x.code === code);
+      return `<li><a href="${mirrorRelPath(lang, code, "cv.html")}" hreflang="${code}">${l.label}</a></li>`;
+    })
+    .join("\n    ");
 }
 
 function noticeText(lang) {
+  const U = UI[lang];
   const live = siteUrl("cv.html");
-  const liveLabel = displayUrl(live);
-  const other = lang === "ru" ? "en" : "ru";
-  const otherLabel = displayUrl(mirrorUrl(other, "cv.html"));
-  return lang === "ru"
-    ? `Это статическая HTML-версия <a href="${live}">${liveLabel}</a>,\n    опубликованная для краулеров и AI-агентов, которые не выполняют JavaScript. Контент\n    соответствует живому сайту. Для интерактивной версии посетите\n    <a href="${live}">${liveLabel}</a>. English version:\n    <a href="../cv.html">${otherLabel}</a> · <a href="index.html">← назад</a>`
-    : `This is a plain-HTML mirror of <a href="${live}">${liveLabel}</a>,\n    published for crawlers and AI agents that don't execute JavaScript. Content matches the\n    live site. Humans should visit <a href="${live}">${liveLabel}</a>\n    for the live version. Russian version: <a href="ru/cv.html">${otherLabel}</a> ·\n    <a href="index.html">← back</a>`;
+  const liveLink = `<a href="${live}">${displayUrl(live)}</a>`;
+  // English language names on purpose, on every locale's page — see the
+  // matching note in mirror-index.mjs.
+  const others = otherLocales(lang)
+    .map((l) =>
+      U.otherVersion(
+        languageName(l.code, "en"),
+        mirrorRelPath(lang, l.code, "cv.html"),
+        displayUrl(mirrorUrl(l.code, "cv.html"))
+      )
+    )
+    .join(" ");
+  return U.notice(liveLink, others, `<a href="index.html">${U.back}</a>`);
 }
 
 // See the matching helper in mirror-index.mjs.
@@ -67,12 +95,7 @@ function alternateLinks(file) {
   ].join("\n");
 }
 
-function licenseText(lang) {
-  const { holder, year, name, url } = LICENSE_CONTENT;
-  return lang === "ru"
-    ? `© ${year} ${holder}. Контент распространяется по лицензии <a href="${url}">${name}</a> — можно просматривать и делиться с указанием авторства, без коммерческого использования и без производных работ.`
-    : `© ${year} ${holder}. Content licensed <a href="${url}">${name}</a> — view and share with attribution, no commercial use, no derivatives.`;
-}
+const licenseText = (lang) => UI[lang].license(LICENSE_CONTENT);
 
 function renderJob(job, lang, U) {
   const bullets = job.bullets[lang].map((b) => `      <li>${escapeHtml(b)}</li>`).join("\n");
@@ -162,7 +185,7 @@ ${skillsRowsHtml}
 }
 
 export function renderCvMirror(lang) {
-  const stylesheetHref = lang === "ru" ? "../style.css" : "style.css";
+  const stylesheetHref = mirrorRootRelPath(lang, "style.css");
   // See the matching comment in mirror-index.mjs: EN defers to the live
   // cv.html, RU self-canonicalizes since there's no distinct live RU URL.
   const canonicalHref = isDefaultLocale(lang) ? siteUrl("cv.html") : mirrorUrl(lang, "cv.html");

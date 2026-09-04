@@ -10,6 +10,8 @@
    meanings of "nikita.sh" in it.
    ================================================================ */
 
+import { posix } from "node:path";
+
 import { SITE } from "../../site.config.mjs";
 
 const ORIGIN = SITE.baseUrl.replace(/\/+$/, "");
@@ -80,6 +82,34 @@ export function mirrorDir(code) {
 
 /** Absolute URL of a file inside a locale's mirror. */
 export const mirrorUrl = (code, file = "") => siteUrl(mirrorDir(code) + file);
+
+/**
+ * Relative href from one locale's mirror page to a file in another
+ * locale's mirror — "ru/cv.html" going EN->RU, "../cv.html" coming
+ * back. The mirror pages link each other relatively (unlike the live
+ * pages, which use absolute URLs), and the number of "../" depends on
+ * how deep each locale sits under the mirror root, so this can't be a
+ * literal.
+ */
+export function mirrorRelPath(fromCode, toCode, file = "") {
+  const from = mirrorDir(fromCode).replace(/\/+$/, "");
+  const to = mirrorDir(toCode).replace(/\/+$/, "");
+  const rel = posix.relative(from, to);
+  return rel ? `${rel}/${file}` : file;
+}
+
+/**
+ * Relative href from a locale's mirror page to a file sitting at the
+ * mirror root — style.css, shared by every locale.
+ */
+export function mirrorRootRelPath(fromCode, file) {
+  const from = mirrorDir(fromCode).replace(/\/+$/, "");
+  const rel = posix.relative(from, MIRROR_SEG);
+  return rel ? `${rel}/${file}` : file;
+}
+
+/** Every locale except this one, in config order. */
+export const otherLocales = (code) => SITE.locales.filter((l) => l.code !== code);
 
 /** Repo-relative path of a mirror file, for build.mjs's write()/git. */
 export const mirrorPath = (code, file) => mirrorDir(code) + file;
