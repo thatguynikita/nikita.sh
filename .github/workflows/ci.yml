@@ -49,5 +49,12 @@ jobs:
       - name: Check no user-visible string went missing
         run: npm run test:strings
 
+      # loadLocales() checks the locale files against each other; this
+      # checks them against the keys the pages actually ask for. A typo'd
+      # t() key, or an id list in index.html that drifted from the locale
+      # files, passes every other check and renders as "undefined".
+      - name: Check every i18n key the pages use resolves
+        run: npm run test:i18n
+
       - name: Deploy dry-run sanity check
         run: npm run deploy:dry-run

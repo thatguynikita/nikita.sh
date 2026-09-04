@@ -96,6 +96,22 @@ const EXPECTED_CHANGES = [
   },
   {
     why:
+      "PR 6b: the ssh failure sequence's step text moved out of the function body — the translated steps into the locale files, the two verbatim OpenSSH lines into SSH_FAILURE_STEPS — and its ${h}/${count} interpolation became {host}/{count} placeholders filled by fillTemplate().",
+    pairs: [
+      ["<span class=\"amber\">[note]</span> this is attempt #${count} at a host that does not exist",
+       "<span class=\"amber\">[note]</span> this is attempt #{count} at a host that does not exist"],
+      ["<span class=\"amber\">[note]</span> это попытка №${count} подключиться к хосту, которого не существует",
+       "<span class=\"amber\">[note]</span> это попытка №{count} подключиться к хосту, которого не существует"],
+      ["ssh: connect to host ${h} port 22: Connection timed out",
+       "ssh: connect to host {host} port 22: Connection timed out"],
+      ["ssh: connecting to ${h} ...",
+       "ssh: connecting to {host} ..."],
+      ["ssh: подключение к ${h} ...",
+       "ssh: подключение к {host} ..."],
+    ],
+  },
+  {
+    why:
       "A ternary whose two branches were the identical string — it never translated anything — replaced by that string.",
     pairs: [
       ["<div class=\"dim\">${lang==='ru'?'Events':'Events'}:</div>",
@@ -111,8 +127,9 @@ const EXPECTED_REMOVALS = [
   },
   {
     why:
-      "Not a string at all: the harvester's regex tokenises a multi-line template literal that contained a nested ternary into fragments. The literal it came from still exists, with a t() call where the ternary was.",
+      "Not copy: \"{file}\" was an example inside t()'s own doc comment, which PR 6b reworded. The rest are not strings at all — the harvester's regex tokenises a multi-line template literal that contained a nested ternary into fragments. The literal it came from still exists, with a t() call where the ternary was.",
     strings: [
+      "{file}",
       "\n      : ",
       "<div>${lang === 'ru'\n      ? ",
       "}</div>",

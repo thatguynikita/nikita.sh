@@ -451,72 +451,22 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
     }
   }
 
+  // Which hours fall in which bucket is a fact about clocks, not about
+  // language: a translation replaces the jokes, never the boundaries.
+  // The ids key into whoami.timeQuip in the locale files.
+  const TIME_BUCKETS = [
+    { id:'lateNight',    max:5  },
+    { id:'earlyMorning', max:8  },
+    { id:'morning',      max:12 },
+    { id:'midday',       max:14 },
+    { id:'afternoon',    max:18 },
+    { id:'evening',      max:22 },
+    { id:'night',        max:24 },
+  ];
+
   function timeQuip(hour){
-    const bucketsEN = [
-      { max:5, jokes: [
-        "still awake? respect, but also concerning",
-        "it's 3am somewhere, and unfortunately it might be here",
-        "the machines don't sleep and apparently neither do you",
-      ]},
-      { max:8, jokes: [
-        "up early, or never went to bed — hard to say which",
-        "the extremely online early bird",
-      ]},
-      { max:12, jokes: [
-        "reasonable hours, very responsible of you",
-        "productive morning energy, I respect it",
-      ]},
-      { max:14, jokes: [
-        "lunch break browsing, a classic",
-        "prime procrastination window",
-      ]},
-      { max:18, jokes: [
-        "the 3pm slump, browsing as a coping mechanism",
-        "afternoon energy, holding strong",
-      ]},
-      { max:22, jokes: [
-        "evening browsing, the good stuff",
-        "prime scrolling hours, no shame in it",
-      ]},
-      { max:24, jokes: [
-        "should probably be asleep by now",
-        "one more tab before bed, sure",
-      ]},
-    ];
-    const bucketsRU = [
-      { max:5, jokes: [
-        "всё ещё не спишь? уважаю, но немного тревожно",
-        "где-то сейчас 3 ночи и, кажется, как раз здесь",
-        "машины не спят и ты похоже тоже",
-      ]},
-      { max:8, jokes: [
-        "рано встал или вообще не ложился, поди разбери",
-        "ранняя пташка на максималках",
-      ]},
-      { max:12, jokes: [
-        "вполне разумное время, очень ответственно с твоей стороны",
-        "продуктивная утренняя энергия, уважаю",
-      ]},
-      { max:14, jokes: [
-        "обеденный перерыв за терминалом, классика",
-        "идеальное окно для прокрастинации",
-      ]},
-      { max:18, jokes: [
-        "тот самый послеобеденный спад, браузинг как способ пережить его",
-        "послеобеденная энергия ещё держится",
-      ]},
-      { max:22, jokes: [
-        "вечерний браузинг, самое время",
-        "прайм-тайм для скроллинга, ничего постыдного",
-      ]},
-      { max:24, jokes: [
-        "по идее, уже пора спать",
-        "ну ещё одна вкладка перед сном, конечно",
-      ]},
-    ];
-    const buckets = lang === 'ru' ? bucketsRU : bucketsEN;
-    const bucket = buckets.find(b => hour < b.max) || buckets[buckets.length - 1];
-    return pick(bucket.jokes);
+    const bucket = TIME_BUCKETS.find(b => hour < b.max) || TIME_BUCKETS[TIME_BUCKETS.length - 1];
+    return pick(t('whoami.timeQuip.' + bucket.id));
   }
 
   function whoamiHTML(){
@@ -881,6 +831,37 @@ and SRE practices into reality.`,
           "browser": "Browser",
           "os": "OS",
           "tz": "Timezone"
+        },
+        "timeQuip": {
+          "lateNight": [
+            "still awake? respect, but also concerning",
+            "it's 3am somewhere, and unfortunately it might be here",
+            "the machines don't sleep and apparently neither do you"
+          ],
+          "earlyMorning": [
+            "up early, or never went to bed — hard to say which",
+            "the extremely online early bird"
+          ],
+          "morning": [
+            "reasonable hours, very responsible of you",
+            "productive morning energy, I respect it"
+          ],
+          "midday": [
+            "lunch break browsing, a classic",
+            "prime procrastination window"
+          ],
+          "afternoon": [
+            "the 3pm slump, browsing as a coping mechanism",
+            "afternoon energy, holding strong"
+          ],
+          "evening": [
+            "evening browsing, the good stuff",
+            "prime scrolling hours, no shame in it"
+          ],
+          "night": [
+            "should probably be asleep by now",
+            "one more tab before bed, sure"
+          ]
         }
       },
       "nowPlaying": {
@@ -988,7 +969,46 @@ and SRE practices into reality.`,
         "askAnother": "<span class=\"dim\">ask another question, or type \"exit\"</span>",
         "unrecognized": "unrecognized command — available: {commands} or \"exit\"",
         "usage": "usage: ssh &lt;user@host&gt;",
-        "knownHosts": "<span class=\"dim\"># known hosts on this machine:</span> {hosts}"
+        "knownHosts": "<span class=\"dim\"># known hosts on this machine:</span> {hosts}",
+        "personas": {
+          "recruiter": {
+            "why": {
+              "q": "Why should we hire you?",
+              "a": "Eleven years of keeping production upright so everyone else could sleep. Calm in incidents, comfortable with automation, and I take ownership."
+            },
+            "favorite": {
+              "q": "What's your favorite part of DevOps?",
+              "a": "The moment a shaky manual process turns into a boring, reliable pipeline — and everyone can forget it exists."
+            },
+            "incident": {
+              "q": "Tell me about an incident you handled.",
+              "a": "Skipping the gory details — a cluster went down on a Friday night, and by Monday nobody remembered it except the postmortem doc."
+            },
+            "goals": {
+              "q": "What are you looking for next?",
+              "a": "A team where SRE practices aren't optional, with room to grow toward AI-driven development."
+            },
+            "salary": {
+              "q": "Salary expectations?",
+              "a": "Negotiable — let's actually talk about that via contact instead of a terminal easter egg :)"
+            }
+          }
+        },
+        "failure": {
+          "first": {
+            "connecting": "ssh: connecting to {host} ...",
+            "retry1": "ssh: retrying (1/3)...",
+            "retry2": "ssh: retrying (2/3)...",
+            "noSuchHost": "<span class=\"dim\">this host does not appear to exist. neither does this session.</span>"
+          },
+          "persistent": {
+            "connecting": "ssh: connecting to {host} ...",
+            "attemptNote": "<span class=\"amber\">[note]</span> this is attempt #{count} at a host that does not exist",
+            "persistence": "<span class=\"amber\">[note]</span> impressive persistence, honestly",
+            "neverExisted": "ssh: this host has never existed. I checked. Twice.",
+            "hint": "<span class=\"dim\">psst — maybe try: <span class=\"glow\">ssh recruiter@nikita.sh</span></span>"
+          }
+        }
       },
       "game": {
         "script": [
@@ -1136,6 +1156,37 @@ and SRE practices into reality.`,
           "browser": "Браузер",
           "os": "ОС",
           "tz": "Часовой пояс"
+        },
+        "timeQuip": {
+          "lateNight": [
+            "всё ещё не спишь? уважаю, но немного тревожно",
+            "где-то сейчас 3 ночи и, кажется, как раз здесь",
+            "машины не спят и ты похоже тоже"
+          ],
+          "earlyMorning": [
+            "рано встал или вообще не ложился, поди разбери",
+            "ранняя пташка на максималках"
+          ],
+          "morning": [
+            "вполне разумное время, очень ответственно с твоей стороны",
+            "продуктивная утренняя энергия, уважаю"
+          ],
+          "midday": [
+            "обеденный перерыв за терминалом, классика",
+            "идеальное окно для прокрастинации"
+          ],
+          "afternoon": [
+            "тот самый послеобеденный спад, браузинг как способ пережить его",
+            "послеобеденная энергия ещё держится"
+          ],
+          "evening": [
+            "вечерний браузинг, самое время",
+            "прайм-тайм для скроллинга, ничего постыдного"
+          ],
+          "night": [
+            "по идее, уже пора спать",
+            "ну ещё одна вкладка перед сном, конечно"
+          ]
         }
       },
       "nowPlaying": {
@@ -1243,7 +1294,46 @@ and SRE practices into reality.`,
         "askAnother": "<span class=\"dim\">задайте другой вопрос, или введите \"exit\"</span>",
         "unrecognized": "неизвестная команда — доступны: {commands} или \"exit\"",
         "usage": "использование: ssh &lt;user@host&gt;",
-        "knownHosts": "<span class=\"dim\"># известные хосты на этой машине:</span> {hosts}"
+        "knownHosts": "<span class=\"dim\"># известные хосты на этой машине:</span> {hosts}",
+        "personas": {
+          "recruiter": {
+            "why": {
+              "q": "Почему нам стоит вас нанять?",
+              "a": "Одиннадцать лет держу прод в рабочем состоянии, чтобы другие могли спать. Спокоен в инцидентах, дружу с автоматизацией и беру на себя ответственность."
+            },
+            "favorite": {
+              "q": "Что вам больше всего нравится в DevOps?",
+              "a": "Момент, когда шаткая ручная процедура превращается в скучный, надёжный пайплайн — и про неё можно забыть."
+            },
+            "incident": {
+              "q": "Расскажите про инцидент, который вы разруливали.",
+              "a": "Опустим подробности — кластер лёг в пятницу вечером, а к понедельнику про это уже никто не помнил, кроме постмортема."
+            },
+            "goals": {
+              "q": "Что вы ищете в следующей роли?",
+              "a": "Команду, где SRE-практики не факультатив, и где можно расти в сторону AI-driven разработки."
+            },
+            "salary": {
+              "q": "Ожидания по зарплате?",
+              "a": "Обсуждаемо — предлагаю продолжить это через contact, а не в терминальном пасхальном яйце :)"
+            }
+          }
+        },
+        "failure": {
+          "first": {
+            "connecting": "ssh: подключение к {host} ...",
+            "retry1": "ssh: повторная попытка (1/3)...",
+            "retry2": "ssh: повторная попытка (2/3)...",
+            "noSuchHost": "<span class=\"dim\">этого хоста, кажется, не существует. как и этой сессии.</span>"
+          },
+          "persistent": {
+            "connecting": "ssh: подключение к {host} ...",
+            "attemptNote": "<span class=\"amber\">[note]</span> это попытка №{count} подключиться к хосту, которого не существует",
+            "persistence": "<span class=\"amber\">[note]</span> впечатляющее упорство, если честно",
+            "neverExisted": "ssh: этого хоста никогда не было. я проверил. дважды.",
+            "hint": "<span class=\"dim\">кстати — может, попробуете: <span class=\"glow\">ssh recruiter@nikita.sh</span></span>"
+          }
+        }
       },
       "game": {
         "script": [
@@ -1397,20 +1487,13 @@ and SRE practices into reality.`,
   const PERSONAS = {
     recruiter: {
       host: 'recruiter@nikita.sh',
+      // These are dispatch keys, not copy: they're what the user types,
+      // what renderChips offers, and what runPersonaCommand matches on.
+      // They stay here so a translation cannot rename them — the locale
+      // files carry only the question and answer, under the same names.
+      commands: ['why', 'favorite', 'incident', 'goals', 'salary'],
       qa(){
-        return lang === 'ru' ? [
-          {cmd:'why', q:"Почему нам стоит вас нанять?", a:"Одиннадцать лет держу прод в рабочем состоянии, чтобы другие могли спать. Спокоен в инцидентах, дружу с автоматизацией и беру на себя ответственность."},
-          {cmd:'favorite', q:"Что вам больше всего нравится в DevOps?", a:"Момент, когда шаткая ручная процедура превращается в скучный, надёжный пайплайн — и про неё можно забыть."},
-          {cmd:'incident', q:"Расскажите про инцидент, который вы разруливали.", a:"Опустим подробности — кластер лёг в пятницу вечером, а к понедельнику про это уже никто не помнил, кроме постмортема."},
-          {cmd:'goals', q:"Что вы ищете в следующей роли?", a:"Команду, где SRE-практики не факультатив, и где можно расти в сторону AI-driven разработки."},
-          {cmd:'salary', q:"Ожидания по зарплате?", a:"Обсуждаемо — предлагаю продолжить это через contact, а не в терминальном пасхальном яйце :)"},
-        ] : [
-          {cmd:'why', q:"Why should we hire you?", a:"Eleven years of keeping production upright so everyone else could sleep. Calm in incidents, comfortable with automation, and I take ownership."},
-          {cmd:'favorite', q:"What's your favorite part of DevOps?", a:"The moment a shaky manual process turns into a boring, reliable pipeline — and everyone can forget it exists."},
-          {cmd:'incident', q:"Tell me about an incident you handled.", a:"Skipping the gory details — a cluster went down on a Friday night, and by Monday nobody remembered it except the postmortem doc."},
-          {cmd:'goals', q:"What are you looking for next?", a:"A team where SRE practices aren't optional, with room to grow toward AI-driven development."},
-          {cmd:'salary', q:"Salary expectations?", a:"Negotiable — let's actually talk about that via contact instead of a terminal easter egg :)"},
-        ];
+        return this.commands.map(cmd => ({ cmd, ...t(`ssh.personas.recruiter.${cmd}`) }));
       },
     },
   };
@@ -1423,54 +1506,58 @@ and SRE practices into reality.`,
     return null;
   }
 
+  // The step list and its delays are timing, not copy — a translation
+  // replaces what each step says, never how many there are or how long
+  // the terminal pauses between them. A step with `key` is translated;
+  // a step with `text` is verbatim OpenSSH output, identical in every
+  // language, so translating it would be wrong.
+  const SSH_FAILURE_STEPS = {
+    first: [
+      { key:'connecting' },
+      { text:'ssh: connect to host {host} port 22: Connection timed out', delay:380 },
+      { key:'retry1', delay:320 },
+      { key:'retry2', delay:320 },
+      { text:'ssh: connection reset by peer', delay:320 },
+      { key:'noSuchHost', delay:380 },
+    ],
+    persistent: [
+      { key:'connecting' },
+      { text:'ssh: connect to host {host} port 22: Connection timed out', delay:380 },
+      { key:'attemptNote', delay:400 },
+      { key:'persistence', delay:400 },
+      { key:'neverExisted', delay:450 },
+      { key:'hint', delay:500 },
+    ],
+  };
+
   function sshFailureSequence(target, count){
-    const h = escapeHtml(target);
-    if(count <= 2){
-      return lang === 'ru' ? [
-        { text:`ssh: подключение к ${h} ...` },
-        { text:`ssh: connect to host ${h} port 22: Connection timed out`, delay:380 },
-        { text:`ssh: повторная попытка (1/3)...`, delay:320 },
-        { text:`ssh: повторная попытка (2/3)...`, delay:320 },
-        { text:`ssh: connection reset by peer`, delay:320 },
-        { text:`<span class="dim">этого хоста, кажется, не существует. как и этой сессии.</span>`, delay:380 },
-      ] : [
-        { text:`ssh: connecting to ${h} ...` },
-        { text:`ssh: connect to host ${h} port 22: Connection timed out`, delay:380 },
-        { text:`ssh: retrying (1/3)...`, delay:320 },
-        { text:`ssh: retrying (2/3)...`, delay:320 },
-        { text:`ssh: connection reset by peer`, delay:320 },
-        { text:`<span class="dim">this host does not appear to exist. neither does this session.</span>`, delay:380 },
-      ];
-    }
-    return lang === 'ru' ? [
-      { text:`ssh: подключение к ${h} ...` },
-      { text:`ssh: connect to host ${h} port 22: Connection timed out`, delay:380 },
-      { text:`<span class="amber">[note]</span> это попытка №${count} подключиться к хосту, которого не существует`, delay:400 },
-      { text:`<span class="amber">[note]</span> впечатляющее упорство, если честно`, delay:400 },
-      { text:`ssh: этого хоста никогда не было. я проверил. дважды.`, delay:450 },
-      { text:`<span class="dim">кстати — может, попробуете: <span class="glow">ssh recruiter@nikita.sh</span></span>`, delay:500 },
-    ] : [
-      { text:`ssh: connecting to ${h} ...` },
-      { text:`ssh: connect to host ${h} port 22: Connection timed out`, delay:380 },
-      { text:`<span class="amber">[note]</span> this is attempt #${count} at a host that does not exist`, delay:400 },
-      { text:`<span class="amber">[note]</span> impressive persistence, honestly`, delay:400 },
-      { text:`ssh: this host has never existed. I checked. Twice.`, delay:450 },
-      { text:`<span class="dim">psst — maybe try: <span class="glow">ssh recruiter@nikita.sh</span></span>`, delay:500 },
-    ];
+    const params = { host: escapeHtml(target), count };
+    const variant = count <= 2 ? 'first' : 'persistent';
+    return SSH_FAILURE_STEPS[variant].map(step => ({
+      ...step,
+      key: undefined,
+      text: step.key ? t(`ssh.failure.${variant}.${step.key}`, params) : fillTemplate(step.text, params),
+    }));
+  }
+
+  // Fills "{name}"-style placeholders from a params object. Shared by
+  // t() and by the handful of untranslated templates that live in this
+  // file rather than in a locale (see SSH_FAILURE_STEPS).
+  function fillTemplate(s, params){
+    return typeof s === 'string'
+      ? s.replace(/\{(\w+)\}/g, (m, k) => (k in params ? params[k] : m))
+      : s;
   }
 
   // t('a.b.c') reads a dotted path out of the current locale;
-  // t('key', {file:'x'}) fills the "{file}"-style placeholders. Named
-  // rather than positional so a translation can reorder or repeat them.
-  // Arrays are filled element-wise, so a multi-line block of output can
-  // be one key instead of one key per line.
+  // t('key', {file:'x'}) fills its placeholders. Named rather than
+  // positional so a translation can reorder or repeat them. Arrays are
+  // filled element-wise, so a multi-line block of output can be one key
+  // instead of one key per line.
   function t(key, params){
     const v = key.split('.').reduce((o, k) => (o == null ? o : o[k]), I18N[lang]);
     if(!params) return v;
-    const fill = (s) => typeof s === 'string'
-      ? s.replace(/\{(\w+)\}/g, (m, k) => (k in params ? params[k] : m))
-      : s;
-    return Array.isArray(v) ? v.map(fill) : fill(v);
+    return Array.isArray(v) ? v.map(s => fillTemplate(s, params)) : fillTemplate(v, params);
   }
 
   const COMMANDS = ["about","skills","contact","cv","neofetch","whoami","ls","cat","history","matrix","theme","lang","sudo","fortune","top","kubectl","terraform","ssh","claude","clear","help"];

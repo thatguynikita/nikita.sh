@@ -11,7 +11,9 @@
     "build": "node scripts/build.mjs",
     "deploy": "node scripts/deploy.mjs",
     "deploy:dry-run": "node scripts/deploy.mjs --dry-run",
-    "test:strings": "node scripts/check-strings.mjs"
+    "test:strings": "node scripts/check-strings.mjs",
+    "test:i18n": "node scripts/check-i18n-refs.mjs",
+    "test": "npm run test:strings && npm run test:i18n"
   },
   "author": "Nikita Chernozipunnikov",
   "license": "MIT",

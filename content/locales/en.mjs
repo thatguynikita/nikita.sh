@@ -106,6 +106,37 @@ export default {
         os: "OS",
         tz: "Timezone",
       },
+      timeQuip: {
+        lateNight: [
+          "still awake? respect, but also concerning",
+          "it's 3am somewhere, and unfortunately it might be here",
+          "the machines don't sleep and apparently neither do you",
+        ],
+        earlyMorning: [
+          "up early, or never went to bed — hard to say which",
+          "the extremely online early bird",
+        ],
+        morning: [
+          "reasonable hours, very responsible of you",
+          "productive morning energy, I respect it",
+        ],
+        midday: [
+          "lunch break browsing, a classic",
+          "prime procrastination window",
+        ],
+        afternoon: [
+          "the 3pm slump, browsing as a coping mechanism",
+          "afternoon energy, holding strong",
+        ],
+        evening: [
+          "evening browsing, the good stuff",
+          "prime scrolling hours, no shame in it",
+        ],
+        night: [
+          "should probably be asleep by now",
+          "one more tab before bed, sure",
+        ],
+      },
     },
     nowPlaying: {
       offline: "spotify offline",
@@ -213,6 +244,45 @@ export default {
       unrecognized: 'unrecognized command — available: {commands} or "exit"',
       usage: "usage: ssh &lt;user@host&gt;",
       knownHosts: '<span class="dim"># known hosts on this machine:</span> {hosts}',
+      personas: {
+        recruiter: {
+          why: {
+            q: "Why should we hire you?",
+            a: "Eleven years of keeping production upright so everyone else could sleep. Calm in incidents, comfortable with automation, and I take ownership.",
+          },
+          favorite: {
+            q: "What's your favorite part of DevOps?",
+            a: "The moment a shaky manual process turns into a boring, reliable pipeline — and everyone can forget it exists.",
+          },
+          incident: {
+            q: "Tell me about an incident you handled.",
+            a: "Skipping the gory details — a cluster went down on a Friday night, and by Monday nobody remembered it except the postmortem doc.",
+          },
+          goals: {
+            q: "What are you looking for next?",
+            a: "A team where SRE practices aren't optional, with room to grow toward AI-driven development.",
+          },
+          salary: {
+            q: "Salary expectations?",
+            a: "Negotiable — let's actually talk about that via contact instead of a terminal easter egg :)",
+          },
+        },
+      },
+      failure: {
+        first: {
+          connecting: "ssh: connecting to {host} ...",
+          retry1: "ssh: retrying (1/3)...",
+          retry2: "ssh: retrying (2/3)...",
+          noSuchHost: '<span class="dim">this host does not appear to exist. neither does this session.</span>',
+        },
+        persistent: {
+          connecting: "ssh: connecting to {host} ...",
+          attemptNote: '<span class="amber">[note]</span> this is attempt #{count} at a host that does not exist',
+          persistence: '<span class="amber">[note]</span> impressive persistence, honestly',
+          neverExisted: "ssh: this host has never existed. I checked. Twice.",
+          hint: '<span class="dim">psst — maybe try: <span class="glow">ssh recruiter@nikita.sh</span></span>',
+        },
+      },
     },
     game: {
       script: [
