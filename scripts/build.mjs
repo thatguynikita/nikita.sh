@@ -14,10 +14,12 @@ import { ABOUT, SOCIALS, SKILLS, JOBS, CERTS, LANGUAGES, EDUCATION, TRAITS, NOW_
 import { aboutCvParagraph, jobLocationText } from "./lib/content.mjs";
 import { replaceMarker } from "./lib/markers.mjs";
 import { validateSiteData } from "./lib/validate-content.mjs";
+import { loadLocales } from "./lib/locales.mjs";
 import { renderIndexMirror, renderIndexNoscript } from "./templates/mirror-index.mjs";
 import { renderCvMirror, renderCvNoscript } from "./templates/mirror-cv.mjs";
 import { buildIndexJsonLd, buildCvJsonLd, jsonLdScript } from "./templates/jsonld.mjs";
 import { renderHead } from "./templates/head.mjs";
+import { renderI18n } from "./templates/i18n.mjs";
 import { renderRobotsTxt } from "./templates/robots-txt.mjs";
 import { renderLlmsTxt } from "./templates/llms-txt.mjs";
 import { renderWebmanifest } from "./templates/webmanifest.mjs";
@@ -28,6 +30,9 @@ import { SITE } from "../site.config.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PUBLIC_ROOT = join(ROOT, "public");
 const path = (p) => join(PUBLIC_ROOT, p);
+
+// What the GENERATED:I18N marker comment tells a reader to edit.
+const I18N_SOURCE = "content/locales/*.mjs";
 const read = (p) => readFileSync(path(p), "utf8");
 const write = (p, content) => writeFileSync(path(p), content);
 const exists = (p) => existsSync(path(p));
@@ -62,6 +67,8 @@ function buildIndexHtml() {
   const indexSocials = SOCIALS.filter((s) => s.contexts.includes("index"));
   const socialsBody = `  const SOCIALS = [\n${tupleBlock(indexSocials.map((s) => [s.label, s.href, s.display]))}\n  ];`;
   html = replaceMarker(html, "SOCIALS", socialsBody);
+
+  html = replaceMarker(html, "I18N", renderI18n(LOCALES, "terminal"), { source: I18N_SOURCE });
 
   const nowPlayingBody = `  const NP_ENDPOINT = ${JSON.stringify(NOW_PLAYING.endpoint)};\n  const NP_POLL_MS = ${JSON.stringify(NOW_PLAYING.pollMs)};`;
   html = replaceMarker(html, "NOWPLAYING", nowPlayingBody);
@@ -145,7 +152,13 @@ function buildCvHtml() {
   const skillsBody = `  const SKILLS = [\n${cvSkills.map(skillDetailedRow).join("\n")}\n  ];`;
   html = replaceMarker(html, "SKILLS", skillsBody);
 
-  const aboutCvBody = `  const ABOUT_CV_EN = \`${aboutCvParagraph("en")}\`;\n  const ABOUT_CV_RU = \`${aboutCvParagraph("ru")}\`;`;
+  // Locale maps rather than ABOUT_CV_EN/ABOUT_CV_RU consts: cv.html now
+  // indexes these by locale code, so a third language needs no new
+  // identifier and no new call site.
+  const aboutCvBody =
+    "  const ABOUT_CV = {\n" +
+    localeCodes.map((c) => `    ${c}: \`${aboutCvParagraph(c)}\`,`).join("\n") +
+    "\n  };";
   html = replaceMarker(html, "ABOUT_CV", aboutCvBody);
 
   const traitsBody =
@@ -153,9 +166,17 @@ function buildCvHtml() {
   html = replaceMarker(html, "TRAITS", traitsBody);
 
   const eduBody =
-    `  const EDUCATION_BODY_EN = \`<b>${EDUCATION.university.en}</b> &mdash; ${EDUCATION.place.en}, ${EDUCATION.year}<br>\n        <span class="dim">${EDUCATION.field.en}</span>\`;\n` +
-    `  const EDUCATION_BODY_RU = \`<b>${EDUCATION.university.ru}</b> &mdash; ${EDUCATION.place.ru}, ${EDUCATION.year}<br>\n        <span class="dim">${EDUCATION.field.ru}</span>\`;`;
+    "  const EDUCATION_BODY = {\n" +
+    localeCodes
+      .map(
+        (c) =>
+          `    ${c}: \`<b>${EDUCATION.university[c]}</b> &mdash; ${EDUCATION.place[c]}, ${EDUCATION.year}<br>\n        <span class="dim">${EDUCATION.field[c]}</span>\`,`
+      )
+      .join("\n") +
+    "\n  };";
   html = replaceMarker(html, "EDUCATION_BODY", eduBody);
+
+  html = replaceMarker(html, "I18N", renderI18n(LOCALES, "cv"), { source: I18N_SOURCE });
 
   // The live page's head JSON-LD isn't re-rendered by the RU/EN toggle
   // today; keep that behavior — always the English version.
@@ -182,6 +203,7 @@ function buildNotFoundHtml() {
   // No canonical/OG/Twitter: it's noindex and served at arbitrary URLs,
   // so there's no single URL for it to claim or to share.
   html = replaceMarker(html, "HEAD", renderHead("notFound", { noindex: true, shareable: false }), { style: "html" });
+  html = replaceMarker(html, "I18N", renderI18n(LOCALES, "notFound"), { source: I18N_SOURCE });
   write("404.html", html);
 }
 
@@ -314,6 +336,10 @@ function buildSitemap() {
 // string where a locale map belongs, or vice versa) generates wrong-but-
 // consistent output that the drift check would happily accept.
 validateSiteData();
+
+// Loads content/locales/*.mjs and fails if any locale disagrees with the
+// default one's key set — before a page is written with "undefined" in it.
+const LOCALES = await loadLocales();
 
 buildIndexHtml();
 buildCvHtml();

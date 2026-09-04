@@ -142,22 +142,30 @@
   matrixRain.setEnabled(restored.matrixEnabled);
   let lang = restored.lang;
 
-  const UI = {
-    en: {
-      notFound: "No such file or directory",
-      message1: "Oops! Looks like the cat ate all the condensed milk... and this page too.",
-      catAlt: "An orange cat lies on its back, tired, surrounded by spilled condensed-milk cans.",
-      footerBack: "back to terminal", langChip: "RU",
-      langSwitchLabel: "Switch to Russian", langAnnounce: "Language switched to English",
+  /* GENERATED:I18N:START — edit content/locales/*.mjs, then run scripts/build.mjs */
+  const I18N = {
+    "en": {
+      "notFound": "No such file or directory",
+      "message1": "Oops! Looks like the cat ate all the condensed milk... and this page too.",
+      "catAlt": "An orange cat lies on its back, tired, surrounded by spilled condensed-milk cans.",
+      "footerBack": "back to terminal",
+      "langChip": "RU",
+      "langSwitchLabel": "Switch to Russian",
+      "langAnnounce": "Language switched to English"
     },
-    ru: {
-      notFound: "Нет такого файла или каталога",
-      message1: "Ой! Похоже, котик съел всю сгущёнку... и эту страницу тоже.",
-      catAlt: "Рыжий котик лежит на спине, уставший, вокруг рассыпаны банки сгущёнки.",
-      footerBack: "назад в терминал", langChip: "EN",
-      langSwitchLabel: "Переключить на английский", langAnnounce: "Язык переключён на русский",
-    },
+    "ru": {
+      "notFound": "Нет такого файла или каталога",
+      "message1": "Ой! Похоже, котик съел всю сгущёнку... и эту страницу тоже.",
+      "catAlt": "Рыжий котик лежит на спине, уставший, вокруг рассыпаны банки сгущёнки.",
+      "footerBack": "назад в терминал",
+      "langChip": "EN",
+      "langSwitchLabel": "Переключить на английский",
+      "langAnnounce": "Язык переключён на русский"
+    }
   };
+  /* GENERATED:I18N:END */
+
+  const UI = I18N;
 
   function getRequestedPath(){
     let p;

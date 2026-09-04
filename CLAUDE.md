@@ -9,15 +9,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm run build          # propagate content/site-data.mjs + site.config.mjs -> public/index.html, public/cv.html, public/404.html, public/llm/*, public/{sitemap.xml,robots.txt,llms.txt,site.webmanifest}
+npm run build          # propagate content/site-data.mjs + site.config.mjs + content/locales/* -> public/index.html, public/cv.html, public/404.html, public/llm/*, public/{sitemap.xml,robots.txt,llms.txt,site.webmanifest}
+npm run test:strings   # assert no user-visible string disappeared (see tests/golden-strings.json)
 npm run deploy:dry-run # preview the full deploy manifest (file -> bucket key -> content-type), no network calls, no bucket needed
 npm run deploy -- --bucket <bucket-name>   # deploy everything (or set NIKITASH_BUCKET env var and drop --bucket)
 npm run deploy -- --bucket <bucket-name> index.html cv.html   # deploy only specific files (still checked against the allowlist) — unprefixed, same as --dry-run output
 ```
 
-There is no test suite, linter, or bundler — no dependencies are installed (`node_modules/` is gitignored but nothing populates it). "Correctness" is verified by `git diff` after a build (should be empty on a no-op run) and by exercising pages in a real browser (`file://` won't execute the JS — use the `static` preview config in `.claude/launch.json`, `python3 -m http.server --directory public` on port 8934, which serves `public/index.html`/`public/cv.html`/`public/404.html`).
+There is one test (`npm run test:strings`, described under "User-facing strings" below) and no linter or bundler — no dependencies are installed (`node_modules/` is gitignored but nothing populates it). "Correctness" is verified by `git diff` after a build (should be empty on a no-op run) and by exercising pages in a real browser (`file://` won't execute the JS — use the `static` preview config in `.claude/launch.json`, `python3 -m http.server --directory public` on port 8934, which serves `public/index.html`/`public/cv.html`/`public/404.html`).
 
-CI (`.github/workflows/ci.yml`) runs `npm run build` then fails if `git status --porcelain` is non-empty — this is the drift check that catches a hand-edited `GENERATED:*` block or `llm/*` mirror page. It also runs `npm run deploy:dry-run` as a smoke test.
+CI (`.github/workflows/ci.yml`) runs `npm run build` then fails if `git status --porcelain` is non-empty — this is the drift check that catches a hand-edited `GENERATED:*` block or `llm/*` mirror page. It also runs `npm run test:strings` and `npm run deploy:dry-run`.
+
+## User-facing strings (`content/locales/*.mjs`)
+
+Every string the three pages show comes from `content/locales/<code>.mjs`, injected into each page as a `GENERATED:I18N` block. Things worth knowing:
+
+- **Each page gets only its own namespace** — `terminal`, `cv`, `notFound`. That grouping is authored, not inferred, so `404.html` doesn't ship 56 fortunes to say "page not found".
+- **The default locale's key set is canonical, and the build fails on any disagreement** (`scripts/lib/locales.mjs`). Before this, a key missing from `ru.mjs` printed the literal text `undefined` into the terminal for Russian visitors — no error, nothing in the diff.
+- **Anything identical across languages stays out of the locale files**, because duplicating it per locale is how it drifts: `help`'s command names and the text each one inserts into the input (`HELP_ROWS` in `index.html`), and `cv.html`'s section commands (`cat`, `about.txt` — `SECTIONS`). Locale files carry only `{ command → description }`.
+- **`t(key, params)` takes named params**, filling `"{file}"`-style placeholders, so a translation can reorder or repeat them. It used to be varargs over functions stored in the locale table, which a JSON blob can't hold.
+- **The block is serialized with `JSON.stringify`, not interpolated into a template literal**, with `</script` escaped. A hundred strings of hand-written copy will eventually contain a backtick or a `${`, and that breaks the page silently.
+- **`npm run test:strings`** asserts every string recorded in `tests/golden-strings.json` still exists somewhere — in a page or a locale file. The drift check cannot do this: it only proves the build is idempotent, and is perfectly happy to regenerate a page with a line missing. The snapshot is deliberately over-broad (every string literal, not just copy); intentional changes go in `EXPECTED_CHANGES`/`EXPECTED_REMOVALS` in `scripts/check-strings.mjs`, or re-record with `node scripts/harvest-strings.mjs <ref>` and review that diff.
+- **Not migrated yet:** `index.html`'s easter-egg copy still lives in `lang === 'ru' ? … : …` ternaries — the ssh persona Q&A, the fake `claude` CLI dialogue, boot lines, `top`/`kubectl`/`terraform` output, `whoami`. Those move in a later pass; several of them interleave translated text with behaviour (`PERSONAS[].cmd` feeds command dispatch, the dialogue carries animation delays), which is why they aren't a mechanical lift.
 
 ## Content pipeline architecture
 

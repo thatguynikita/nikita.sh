@@ -10,7 +10,8 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "deploy": "node scripts/deploy.mjs",
-    "deploy:dry-run": "node scripts/deploy.mjs --dry-run"
+    "deploy:dry-run": "node scripts/deploy.mjs --dry-run",
+    "test:strings": "node scripts/check-strings.mjs"
   },
   "author": "Nikita Chernozipunnikov",
   "license": "MIT",

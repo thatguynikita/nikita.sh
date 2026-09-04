@@ -781,57 +781,72 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
   /* GENERATED:SOCIALS:END */
 
   /* GENERATED:ABOUT_CV:START — edit content/site-data.mjs, then run scripts/build.mjs */
-  const ABOUT_CV_EN = `DevOps/SRE with eleven years of experience in Application Support and Operations, gradually developing towards AI-driven Software Development. Solid knowledge of how modern computer systems work (and how they don't), extensive Linux and network administration experience, a sound understanding of Computer Science concepts, and plenty of enthusiasm for bringing DevOps and SRE practices into reality. Looking for an opportunity to gang up with bright, seasoned folks passionate about their work — and add all my skills, wisdom, and zeal to the heap.`;
-  const ABOUT_CV_RU = `DevOps/SRE-инженер с одиннадцатилетним опытом в Application Support и Operations, постепенно развивающийся в сторону разработки ПО с применением ИИ. Хорошее понимание того, как устроены современные компьютерные системы (и как именно они ломаются), богатый опыт администрирования Linux и сетей, крепкое понимание основ Computer Science и море энтузиазма по внедрению практик DevOps и SRE в реальную жизнь. Ищу возможность объединиться с толковыми, опытными людьми, увлечёнными своим делом — и добавить все свои навыки, мудрость и рвение в общую копилку.`;
+  const ABOUT_CV = {
+    en: `DevOps/SRE with eleven years of experience in Application Support and Operations, gradually developing towards AI-driven Software Development. Solid knowledge of how modern computer systems work (and how they don't), extensive Linux and network administration experience, a sound understanding of Computer Science concepts, and plenty of enthusiasm for bringing DevOps and SRE practices into reality. Looking for an opportunity to gang up with bright, seasoned folks passionate about their work — and add all my skills, wisdom, and zeal to the heap.`,
+    ru: `DevOps/SRE-инженер с одиннадцатилетним опытом в Application Support и Operations, постепенно развивающийся в сторону разработки ПО с применением ИИ. Хорошее понимание того, как устроены современные компьютерные системы (и как именно они ломаются), богатый опыт администрирования Linux и сетей, крепкое понимание основ Computer Science и море энтузиазма по внедрению практик DevOps и SRE в реальную жизнь. Ищу возможность объединиться с толковыми, опытными людьми, увлечёнными своим делом — и добавить все свои навыки, мудрость и рвение в общую копилку.`,
+  };
   /* GENERATED:ABOUT_CV:END */
 
   /* GENERATED:EDUCATION_BODY:START — edit content/site-data.mjs, then run scripts/build.mjs */
-  const EDUCATION_BODY_EN = `<b>Izhevsk Kalashnikov State Technical University</b> &mdash; Izhevsk, 2012<br>
-        <span class="dim">Radio Engineering, Wireless Communication Facilities</span>`;
-  const EDUCATION_BODY_RU = `<b>Ижевский государственный технический университет имени М.Т. Калашникова</b> &mdash; Ижевск, 2012<br>
-        <span class="dim">Радиотехника, средства беспроводной связи</span>`;
+  const EDUCATION_BODY = {
+    en: `<b>Izhevsk Kalashnikov State Technical University</b> &mdash; Izhevsk, 2012<br>
+        <span class="dim">Radio Engineering, Wireless Communication Facilities</span>`,
+    ru: `<b>Ижевский государственный технический университет имени М.Т. Калашникова</b> &mdash; Ижевск, 2012<br>
+        <span class="dim">Радиотехника, средства беспроводной связи</span>`,
+  };
   /* GENERATED:EDUCATION_BODY:END */
 
-  const UI = {
-    en: {
-      name: "Nikita Chernozipunnikov",
-      photoAlt: "Nikita Chernozipunnikov, DevOps / SRE engineer — portrait photo",
-      tagline: `<span class="accent">DevOps / SRE</span> <span class="dim">&mdash; Systems Engineer &middot; 11y experience</span>`,
-      metaLine: `Saint Petersburg, Russia &middot; Citizenship: Russia &middot; hybrid, full day &middot; not available for relocation or business trips`,
-      about: ABOUT_CV_EN,
-      cmdCatAbout: "cat", fileAbout: "about.txt",
-      cmdExperience: "tail -n 200", fileExperience: "experience.log",
-      cmdEducation: "cat", fileEducation: "education.txt",
-      educationBody: EDUCATION_BODY_EN,
-      cmdCerts: "cat", fileCerts: "certifications.txt",
-      cmdLangs: "cat", fileLangs: "languages.txt",
-      cmdSkills: "less", fileSkills: "skills.sh",
-      cmdNotes: "grep -A99 not_so_hard_skills", fileNotes: "notes.txt",
-      techPrefix: "// tech:",
-      signOff: `$ <span class="accent">echo</span> <span class="amber">"thanks for reading this far. let's build something reliable together."</span>`,
-      print: "print", footerBack: "back to terminal", langChip: "RU",
-      langSwitchLabel: "Switch to Russian", langAnnounce: "Language switched to English",
+  /* GENERATED:I18N:START — edit content/locales/*.mjs, then run scripts/build.mjs */
+  const I18N = {
+    "en": {
+      "name": "Nikita Chernozipunnikov",
+      "photoAlt": "Nikita Chernozipunnikov, DevOps / SRE engineer — portrait photo",
+      "tagline": "<span class=\"accent\">DevOps / SRE</span> <span class=\"dim\">&mdash; Systems Engineer &middot; 11y experience</span>",
+      "metaLine": "Saint Petersburg, Russia &middot; Citizenship: Russia &middot; hybrid, full day &middot; not available for relocation or business trips",
+      "techPrefix": "// tech:",
+      "signOff": "$ <span class=\"accent\">echo</span> <span class=\"amber\">\"thanks for reading this far. let's build something reliable together.\"</span>",
+      "print": "print",
+      "footerBack": "back to terminal",
+      "langChip": "RU",
+      "langSwitchLabel": "Switch to Russian",
+      "langAnnounce": "Language switched to English"
     },
-    ru: {
-      name: "Никита Чернозипунников",
-      photoAlt: "Никита Чернозипунников, инженер DevOps / SRE — портретное фото",
-      tagline: `<span class="accent">DevOps / SRE</span> <span class="dim">&mdash; Системный инженер &middot; 11 лет опыта</span>`,
-      metaLine: `Санкт-Петербург, Россия &middot; Гражданство: Россия &middot; гибридный график, полный день &middot; не готов к переезду или командировкам`,
-      about: ABOUT_CV_RU,
-      cmdCatAbout: "cat", fileAbout: "about.txt",
-      cmdExperience: "tail -n 200", fileExperience: "experience.log",
-      cmdEducation: "cat", fileEducation: "education.txt",
-      educationBody: EDUCATION_BODY_RU,
-      cmdCerts: "cat", fileCerts: "certifications.txt",
-      cmdLangs: "cat", fileLangs: "languages.txt",
-      cmdSkills: "less", fileSkills: "skills.sh",
-      cmdNotes: "grep -A99 not_so_hard_skills", fileNotes: "notes.txt",
-      techPrefix: "// стек:",
-      signOff: `$ <span class="accent">echo</span> <span class="amber">"спасибо, что дочитали до конца. давайте построим что-то надёжное вместе."</span>`,
-      print: "печать", footerBack: "назад в терминал", langChip: "EN",
-      langSwitchLabel: "Переключить на английский", langAnnounce: "Язык переключён на русский",
-    },
+    "ru": {
+      "name": "Никита Чернозипунников",
+      "photoAlt": "Никита Чернозипунников, инженер DevOps / SRE — портретное фото",
+      "tagline": "<span class=\"accent\">DevOps / SRE</span> <span class=\"dim\">&mdash; Системный инженер &middot; 11 лет опыта</span>",
+      "metaLine": "Санкт-Петербург, Россия &middot; Гражданство: Россия &middot; гибридный график, полный день &middot; не готов к переезду или командировкам",
+      "techPrefix": "// стек:",
+      "signOff": "$ <span class=\"accent\">echo</span> <span class=\"amber\">\"спасибо, что дочитали до конца. давайте построим что-то надёжное вместе.\"</span>",
+      "print": "печать",
+      "footerBack": "назад в терминал",
+      "langChip": "EN",
+      "langSwitchLabel": "Переключить на английский",
+      "langAnnounce": "Язык переключён на русский"
+    }
   };
+  /* GENERATED:I18N:END */
+
+  // Section headers are the same shell command in every language —
+  // `cat about.txt` is not translated copy — so they're spread into
+  // every locale rather than duplicated per locale in the locale files.
+  const SECTIONS = {
+    cmdCatAbout: "cat", fileAbout: "about.txt",
+    cmdExperience: "tail -n 200", fileExperience: "experience.log",
+    cmdEducation: "cat", fileEducation: "education.txt",
+    cmdCerts: "cat", fileCerts: "certifications.txt",
+    cmdLangs: "cat", fileLangs: "languages.txt",
+    cmdSkills: "less", fileSkills: "skills.sh",
+    cmdNotes: "grep -A99 not_so_hard_skills", fileNotes: "notes.txt",
+  };
+
+  // ABOUT_CV and EDUCATION_BODY are generated from content/site-data.mjs
+  // (they carry markup and shared wording), so they're merged in here
+  // rather than living in the locale files.
+  const UI = Object.fromEntries(Object.keys(I18N).map((code) => [code, {
+    ...I18N[code], ...SECTIONS,
+    about: ABOUT_CV[code], educationBody: EDUCATION_BODY[code],
+  }]));
 
   /* ================= render ================= */
   const termBody = document.getElementById('termBody');

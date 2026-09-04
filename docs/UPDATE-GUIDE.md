@@ -40,6 +40,12 @@ as `--dry-run` output.
      `llm/ru/cv.html` in full, including their JSON-LD (produced via
      `JSON.stringify`, so it can't go silently invalid on a missing
      comma the way hand-typed JSON-LD could)
+   - the `GENERATED:I18N` block on each page, from
+     `content/locales/*.mjs` — each page gets only its own namespace
+     (`terminal`, `cv`, `notFound`). Adding a language means copying
+     `en.mjs`, translating it, and adding the locale to
+     `site.config.mjs`; the build fails if any locale's key set
+     doesn't match the default locale's exactly
    - `robots.txt`, `llms.txt` and `site.webmanifest` in full — don't
      hand-edit these, the next build overwrites them. Their prose lives
      in `LLMS_TXT` in `content/site-data.mjs`; the crawler allowlist and
