@@ -4,6 +4,7 @@ import { PERSON, SOCIALS, SKILLS, LICENSE_CONTENT } from "../../content/site-dat
 import { escapeHtml } from "../lib/html.mjs";
 import { aboutParagraph } from "../lib/content.mjs";
 import { buildIndexJsonLd, jsonLdScript } from "./jsonld.mjs";
+import { siteUrl, mirrorUrl, host, displayUrl, locales, isDefaultLocale } from "../lib/site-urls.mjs";
 
 const UI = {
   en: {
@@ -31,9 +32,24 @@ const UI = {
 };
 
 function noticeText(lang) {
+  const live = siteUrl("");
+  const otherMirror = mirrorUrl(lang === "ru" ? "en" : "ru", "");
   return lang === "ru"
-    ? `Это статическая HTML-версия <a href="https://nikita.sh/">nikita.sh</a>,\n    опубликованная для краулеров и AI-агентов, которые не выполняют JavaScript.\n    Контент соответствует живому сайту. Для интерактивной версии посетите\n    <a href="https://nikita.sh/">nikita.sh</a>. English version: <a href="https://nikita.sh/llm/">nikita.sh/llm/</a>`
-    : `This is a plain-HTML mirror of <a href="https://nikita.sh/">nikita.sh</a>,\n    published for crawlers and AI agents that don't execute JavaScript. Content\n    matches the live site. Humans should visit <a href="https://nikita.sh/">nikita.sh</a>\n    for the interactive version. Russian version: <a href="https://nikita.sh/llm/ru/">nikita.sh/llm/ru/</a>`;
+    ? `Это статическая HTML-версия <a href="${live}">${host}</a>,\n    опубликованная для краулеров и AI-агентов, которые не выполняют JavaScript.\n    Контент соответствует живому сайту. Для интерактивной версии посетите\n    <a href="${live}">${host}</a>. English version: <a href="${otherMirror}">${displayUrl(otherMirror)}</a>`
+    : `This is a plain-HTML mirror of <a href="${live}">${host}</a>,\n    published for crawlers and AI agents that don't execute JavaScript. Content\n    matches the live site. Humans should visit <a href="${live}">${host}</a>\n    for the interactive version. Russian version: <a href="${otherMirror}">${displayUrl(otherMirror)}</a>`;
+}
+
+// Default locale -> the live page; every other locale -> its mirror
+// (the live site switches language client-side on one URL, so a mirror
+// is the only distinct per-language URL that exists).
+function alternateLinks(file) {
+  return [
+    ...locales.map((l) => {
+      const href = isDefaultLocale(l.code) ? siteUrl(file) : mirrorUrl(l.code, file);
+      return `<link rel="alternate" hreflang="${l.code}" href="${href}">`;
+    }),
+    `<link rel="alternate" hreflang="x-default" href="${siteUrl(file)}">`,
+  ].join("\n");
 }
 
 function licenseText(lang) {
@@ -71,8 +87,7 @@ function buildIndexFragments(lang) {
   <p class="meta">${PERSON.metaLine[lang]}</p>`,
 
     langs: `  <ul class="langs" aria-label="${U.langsAria}">
-    <li><a href="https://nikita.sh/llm/" hreflang="en">EN</a></li>
-    <li><a href="https://nikita.sh/llm/ru/" hreflang="ru">RU</a></li>
+${locales.map((l) => `    <li><a href="${mirrorUrl(l.code, "")}" hreflang="${l.code}">${l.label}</a></li>`).join("\n")}
   </ul>`,
 
     content: `  <h2>${U.about}</h2>
@@ -92,7 +107,7 @@ ${contactRows.map(([k, v]) => `    <tr><th>${escapeHtml(k)}</th><td>${v}</td></t
   </table>`,
 
     resumePointer: `  <h2>${U.resume}</h2>
-  <p>${U.resumeLine("cv.html", `nikita.sh/llm/${lang === "ru" ? "ru/" : ""}cv.html`)}</p>`,
+  <p>${U.resumeLine("cv.html", displayUrl(mirrorUrl(lang, "cv.html")))}</p>`,
 
     notices: `  <p class="notice">
     ${noticeText(lang)}
@@ -112,7 +127,7 @@ export function renderIndexMirror(lang) {
   // instead of wrongly pointing at the English live page — canonical is for
   // same-content duplicates, not cross-language relationships (that's what
   // hreflang, below, is for).
-  const canonicalHref = lang === "ru" ? "https://nikita.sh/llm/ru/" : "https://nikita.sh/";
+  const canonicalHref = isDefaultLocale(lang) ? siteUrl("") : mirrorUrl(lang, "");
   const f = buildIndexFragments(lang);
 
   return `<!DOCTYPE html>
@@ -124,9 +139,7 @@ export function renderIndexMirror(lang) {
 <meta name="description" content="${escapeHtml(U.description)}">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="${canonicalHref}">
-<link rel="alternate" hreflang="en" href="https://nikita.sh/">
-<link rel="alternate" hreflang="ru" href="https://nikita.sh/llm/ru/">
-<link rel="alternate" hreflang="x-default" href="https://nikita.sh/">
+${alternateLinks("")}
 <link rel="stylesheet" href="${stylesheetHref}">
 
 ${jsonLdScript(buildIndexJsonLd(lang))}

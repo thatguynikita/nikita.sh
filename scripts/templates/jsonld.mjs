@@ -4,6 +4,7 @@
 // one can't, by construction.
 
 import { PERSON, SOCIALS, JOBS, CERTS, EDUCATION, JSONLD } from "../../content/site-data.mjs";
+import { siteUrl, host, localeCodes } from "../lib/site-urls.mjs";
 
 // WebSite+Person graph used by llm/index.html + llm/ru/index.html.
 export function buildIndexJsonLd(lang) {
@@ -12,17 +13,17 @@ export function buildIndexJsonLd(lang) {
     "@graph": [
       {
         "@type": "WebSite",
-        "@id": "https://nikita.sh/#website",
-        "name": "nikita.sh",
-        "url": "https://nikita.sh/",
-        "inLanguage": ["en", "ru"],
+        "@id": `${siteUrl("")}#website`,
+        "name": host,
+        "url": siteUrl(""),
+        "inLanguage": localeCodes,
       },
       {
         "@type": "Person",
-        "@id": "https://nikita.sh/#owner",
+        "@id": `${siteUrl("")}#owner`,
         "name": PERSON.name[lang],
         "jobTitle": PERSON.jobTitle[lang],
-        "url": "https://nikita.sh/",
+        "url": siteUrl(""),
         "image": PERSON.photoUrl,
         "email": `mailto:${PERSON.email}`,
         "address": { "@type": "PostalAddress", "addressLocality": PERSON.addressLocality[lang], "addressCountry": PERSON.addressCountry },
@@ -44,10 +45,10 @@ export function buildCvJsonLd(lang) {
     "@type": "ProfilePage",
     "mainEntity": {
       "@type": "Person",
-      "@id": "https://nikita.sh/#owner",
+      "@id": `${siteUrl("")}#owner`,
       "name": PERSON.name[lang],
       "jobTitle": PERSON.jobTitle[lang],
-      "url": "https://nikita.sh/",
+      "url": siteUrl(""),
       "image": PERSON.photoUrl,
       "email": `mailto:${PERSON.email}`,
       "address": { "@type": "PostalAddress", "addressLocality": PERSON.addressLocality[lang], "addressCountry": PERSON.addressCountry },

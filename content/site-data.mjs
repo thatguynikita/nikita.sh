@@ -43,6 +43,39 @@ export const PERSON = {
   addressCountry: "RU",
 };
 
+// -------- per-page <head> metadata --------
+// Feeds the GENERATED:HEAD block on each live page (title, description,
+// Open Graph, Twitter card). Was hand-authored three times over, which
+// meant the domain appeared in ~20 more places than it needed to.
+//
+// Single-language on purpose: the live pages' <head> is rendered once at
+// build time in the default locale and is not re-rendered by the EN/RU
+// toggle — same established behaviour as the JSON-LD and <noscript>
+// blocks. `ogTitle` is separate from `title` because the browser-tab
+// title carries the site name and the share-card title doesn't.
+export const PAGES = {
+  index: {
+    title: "Nikita Chernozipunnikov — nikita.sh",
+    description: "DevOps/SRE portfolio in a silly interactive terminal — with hidden commands and easter eggs.",
+    ogTitle: "Nikita Chernozipunnikov — nikita.sh",
+    ogImage: "assets/img/og-terminal.png",
+    twitterCard: "summary_large_image",
+  },
+  cv: {
+    title: "Nikita Chernozipunnikov — CV — nikita.sh",
+    description: "DevOps / SRE — CV / résumé. AWS, Docker, Kubernetes, Linux.",
+    ogTitle: "Nikita Chernozipunnikov — CV",
+    ogImage: "assets/img/nikita-photo.png",
+    twitterCard: "summary",
+  },
+  // No canonical/OG/Twitter block: it's noindex and served at arbitrary
+  // URLs, so there's no single URL for it to claim or share.
+  notFound: {
+    title: "404 — nikita.sh",
+    description: "404 — page not found.",
+  },
+};
+
 // -------- now-playing widget --------
 // Config for index.html's now-playing poller (the `Playing` row in the
 // neofetch card). `endpoint` is fetched with `cache:'no-store'` every

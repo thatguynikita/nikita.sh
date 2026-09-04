@@ -17,6 +17,9 @@ import { validateSiteData } from "./lib/validate-content.mjs";
 import { renderIndexMirror, renderIndexNoscript } from "./templates/mirror-index.mjs";
 import { renderCvMirror, renderCvNoscript } from "./templates/mirror-cv.mjs";
 import { buildIndexJsonLd, buildCvJsonLd, jsonLdScript } from "./templates/jsonld.mjs";
+import { renderHead } from "./templates/head.mjs";
+import { siteUrl, mirrorUrl, mirrorPath, localeCodes, defaultLocale } from "./lib/site-urls.mjs";
+import { SITE } from "../site.config.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PUBLIC_ROOT = join(ROOT, "public");
@@ -39,6 +42,8 @@ function tupleBlock(rows) {
 
 function buildIndexHtml() {
   let html = read("index.html");
+
+  html = replaceMarker(html, "HEAD", renderHead("index", { pagePath: "", mirrorFile: "" }), { style: "html" });
 
   const aboutBody = `  const ABOUT_EN = \`${ABOUT.en}\`;\n\n  const ABOUT_RU = \`${ABOUT.ru}\`;`;
   html = replaceMarker(html, "ABOUT", aboutBody);
@@ -116,6 +121,8 @@ function legacyJobRow(job) {
 function buildCvHtml() {
   let html = read("cv.html");
 
+  html = replaceMarker(html, "HEAD", renderHead("cv", { pagePath: "cv.html", mirrorFile: "cv.html" }), { style: "html" });
+
   const cvSocials = SOCIALS.filter((s) => s.contexts.includes("cv"));
   const socialsBody = `  const SOCIALS = [\n${tupleBlock(cvSocials.map((s) => [s.label, s.href]))}\n  ];`;
   html = replaceMarker(html, "SOCIALS", socialsBody);
@@ -158,13 +165,28 @@ function buildCvHtml() {
   write("cv.html", html);
 }
 
+// -------- 404.html --------
+// Previously untouched by the build (it had no markers at all). It now
+// carries GENERATED:HEAD so its icon/manifest paths pick up basePath and
+// its title/description come from PAGES like every other page. Nothing
+// else in it is generated — the cat scene and its UI strings stay
+// hand-authored.
+
+function buildNotFoundHtml() {
+  let html = read("404.html");
+  // No canonical/OG/Twitter: it's noindex and served at arbitrary URLs,
+  // so there's no single URL for it to claim or to share.
+  html = replaceMarker(html, "HEAD", renderHead("notFound", { noindex: true, shareable: false }), { style: "html" });
+  write("404.html", html);
+}
+
 // -------- llm/* mirrors (fully regenerated) --------
 
 function buildMirrors() {
-  write("llm/index.html", renderIndexMirror("en"));
-  write("llm/ru/index.html", renderIndexMirror("ru"));
-  write("llm/cv.html", renderCvMirror("en"));
-  write("llm/ru/cv.html", renderCvMirror("ru"));
+  for (const code of localeCodes) {
+    write(mirrorPath(code, "index.html"), renderIndexMirror(code));
+    write(mirrorPath(code, "cv.html"), renderCvMirror(code));
+  }
 }
 
 // -------- sitemap.xml lastmod bump --------
@@ -172,13 +194,19 @@ function buildMirrors() {
 // actually changed in the working tree vs the last commit — git's diff
 // is the source of truth, no separate cache file needed.
 
+// Derived from site.config.mjs rather than hand-listed, so the set stays
+// correct when the domain, the locale list or mirrors.enabled change.
+// Order matters only for the log output; it matches the previous
+// hand-written list (live pages first, then mirrors).
 const SITEMAP_URLS = [
-  { url: "https://nikita.sh/", file: "public/index.html" },
-  { url: "https://nikita.sh/cv.html", file: "public/cv.html" },
-  { url: "https://nikita.sh/llm/", file: "public/llm/index.html" },
-  { url: "https://nikita.sh/llm/cv.html", file: "public/llm/cv.html" },
-  { url: "https://nikita.sh/llm/ru/", file: "public/llm/ru/index.html" },
-  { url: "https://nikita.sh/llm/ru/cv.html", file: "public/llm/ru/cv.html" },
+  { url: siteUrl(""), file: "public/index.html" },
+  { url: siteUrl("cv.html"), file: "public/cv.html" },
+  ...(SITE.mirrors.enabled
+    ? localeCodes.flatMap((code) => [
+        { url: mirrorUrl(code, ""), file: `public/${mirrorPath(code, "index.html")}` },
+        { url: mirrorUrl(code, "cv.html"), file: `public/${mirrorPath(code, "cv.html")}` },
+      ])
+    : []),
 ];
 
 function changedFiles() {
@@ -231,6 +259,7 @@ validateSiteData();
 
 buildIndexHtml();
 buildCvHtml();
+buildNotFoundHtml();
 buildMirrors();
 bumpSitemap();
 console.log("Build complete.");

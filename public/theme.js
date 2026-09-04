@@ -1,7 +1,9 @@
 /* ================================================================
-   theme.js — shared theme/lang/matrix persistence for nikita.sh
+   theme.js — shared theme/lang/matrix persistence.
    Used by index.html, cv.html, and 404.html so a preference set on
-   one page is respected on the others. Exposes window.NikitaTheme.
+   one page is respected on the others. Exposes window.TermTheme,
+   deliberately named after the term: storage-key prefix rather than
+   after whoever owns the site.
    ================================================================ */
 (function(){
   "use strict";
@@ -22,9 +24,9 @@
     sabbatical:{fg:"#5c6166",matrixColor:"#8a9199",matrixFade:"rgba(248,249,250,.12)"},
   };
 
-  const THEME_STORAGE_KEY = 'nikita.sh:theme';
-  const LANG_STORAGE_KEY = 'nikita.sh:lang';
-  const MATRIX_STORAGE_KEY = 'nikita.sh:matrix';
+  const THEME_STORAGE_KEY = 'term:theme';
+  const LANG_STORAGE_KEY = 'term:lang';
+  const MATRIX_STORAGE_KEY = 'term:matrix';
 
   function readStored(key){
     try { return localStorage.getItem(key); } catch(e){ return null; }
@@ -118,7 +120,7 @@
     };
   }
 
-  window.NikitaTheme = {
+  window.TermTheme = {
     THEME_MAP,
     THEME_STORAGE_KEY,
     LANG_STORAGE_KEY,
