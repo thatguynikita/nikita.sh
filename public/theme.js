@@ -1,7 +1,9 @@
 /* ================================================================
-   theme.js — shared theme/lang/matrix persistence for nikita.sh
+   theme.js — shared theme/lang/matrix persistence.
    Used by index.html, cv.html, and 404.html so a preference set on
-   one page is respected on the others. Exposes window.NikitaTheme.
+   one page is respected on the others. Exposes window.TermTheme,
+   deliberately named after the term: storage-key prefix rather than
+   after whoever owns the site.
    ================================================================ */
 (function(){
   "use strict";
@@ -118,7 +120,7 @@
     };
   }
 
-  window.NikitaTheme = {
+  window.TermTheme = {
     THEME_MAP,
     THEME_STORAGE_KEY,
     LANG_STORAGE_KEY,

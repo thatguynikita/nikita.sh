@@ -503,8 +503,8 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
 (function(){
   "use strict";
 
-  if(!window.NikitaTheme){
-    window.NikitaTheme = {
+  if(!window.TermTheme){
+    window.TermTheme = {
       THEME_STORAGE_KEY: 'term:theme',
       LANG_STORAGE_KEY: 'term:lang',
       MATRIX_STORAGE_KEY: 'term:matrix',
@@ -515,8 +515,8 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
   }
 
   /* ================= matrix rain ================= */
-  const matrixRain = window.NikitaTheme.createMatrixRain(document.getElementById('matrix'));
-  const restored = window.NikitaTheme.restoreSettings();
+  const matrixRain = window.TermTheme.createMatrixRain(document.getElementById('matrix'));
+  const restored = window.TermTheme.restoreSettings();
   if(restored.matrixColor) matrixRain.setColor(restored.matrixColor);
   if(restored.matrixFade) matrixRain.setFadeColor(restored.matrixFade);
   matrixRain.setEnabled(restored.matrixEnabled);
@@ -929,7 +929,7 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
     lang = lang === 'en' ? 'ru' : 'en';
     updateLangChip();
     render();
-    window.NikitaTheme.writeStored(window.NikitaTheme.LANG_STORAGE_KEY, lang);
+    window.TermTheme.writeStored(window.TermTheme.LANG_STORAGE_KEY, lang);
     if(langAnnounce) langAnnounce.textContent = UI[lang].langAnnounce;
   });
 

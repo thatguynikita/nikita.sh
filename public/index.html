@@ -401,8 +401,8 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
 (function(){
   "use strict";
 
-  if(!window.NikitaTheme){
-    window.NikitaTheme = {
+  if(!window.TermTheme){
+    window.TermTheme = {
       THEME_STORAGE_KEY: 'term:theme',
       LANG_STORAGE_KEY: 'term:lang',
       MATRIX_STORAGE_KEY: 'term:matrix',
@@ -413,7 +413,7 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
   }
 
   /* ================= matrix rain ================= */
-  const matrixRain = window.NikitaTheme.createMatrixRain(document.getElementById('matrix'));
+  const matrixRain = window.TermTheme.createMatrixRain(document.getElementById('matrix'));
 
   /* ================= boot sequence ================= */
   const bootEl = document.getElementById('boot');
@@ -658,12 +658,12 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
 
   let lang = 'en';
 
-  const THEME_STORAGE_KEY = window.NikitaTheme.THEME_STORAGE_KEY;
-  const LANG_STORAGE_KEY = window.NikitaTheme.LANG_STORAGE_KEY;
-  const MATRIX_STORAGE_KEY = window.NikitaTheme.MATRIX_STORAGE_KEY;
+  const THEME_STORAGE_KEY = window.TermTheme.THEME_STORAGE_KEY;
+  const LANG_STORAGE_KEY = window.TermTheme.LANG_STORAGE_KEY;
+  const MATRIX_STORAGE_KEY = window.TermTheme.MATRIX_STORAGE_KEY;
   const SECRET_THEME_NAME = "sabbatical"; // easter egg unlocked via `claude "add light theme"` (ask twice) or a lucky `theme sabbatical` guess
   {
-    const restored = window.NikitaTheme.restoreSettings();
+    const restored = window.TermTheme.restoreSettings();
     lang = restored.lang;
     if(restored.matrixColor) matrixRain.setColor(restored.matrixColor);
     if(restored.matrixFade) matrixRain.setFadeColor(restored.matrixFade);
@@ -1383,9 +1383,9 @@ and SRE practices into reality.`;
   }
 
   function setTheme(name){
-    const fg = window.NikitaTheme.applyTheme(name);
+    const fg = window.TermTheme.applyTheme(name);
     if(!fg) return false;
-    const t = window.NikitaTheme.THEME_MAP[name];
+    const t = window.TermTheme.THEME_MAP[name];
     matrixRain.setColor((t && t.matrixColor) || fg);
     matrixRain.setFadeColor((t && t.matrixFade) || "rgba(2,4,3,0.08)");
     return true;
@@ -1794,11 +1794,11 @@ and SRE practices into reality.`;
       case "matrix": {
         if(arg === "off"){
           matrixRain.setEnabled(false); printLine(t('matrixOff'));
-          window.NikitaTheme.writeStored(MATRIX_STORAGE_KEY, 'off');
+          window.TermTheme.writeStored(MATRIX_STORAGE_KEY, 'off');
         }
         else if(arg === "on"){
           matrixRain.setEnabled(true); printLine(t('matrixOn'));
-          window.NikitaTheme.writeStored(MATRIX_STORAGE_KEY, 'on');
+          window.TermTheme.writeStored(MATRIX_STORAGE_KEY, 'on');
         }
         else { printLine(t('matrixUsage')); }
         break;
@@ -1806,7 +1806,7 @@ and SRE practices into reality.`;
       case "theme": {
         if(setTheme(arg)){
           printLine(t('themeSet', arg));
-          window.NikitaTheme.writeStored(THEME_STORAGE_KEY, arg);
+          window.TermTheme.writeStored(THEME_STORAGE_KEY, arg);
         }
         else printLine(t('themeUsage'));
         break;
@@ -1817,7 +1817,7 @@ and SRE practices into reality.`;
           lang = choice;
           document.documentElement.lang = lang;
           printLine(t('langSet'));
-          window.NikitaTheme.writeStored(LANG_STORAGE_KEY, choice);
+          window.TermTheme.writeStored(LANG_STORAGE_KEY, choice);
           updateA11yLabels();
         } else {
           printLine(t('langUsage'));
