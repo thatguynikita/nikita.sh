@@ -2,9 +2,13 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, template-v2]
   pull_request:
-    branches: [main]
+    # template-v2 is the long-lived integration branch for the
+    # forkable-template conversion. Without it here, none of the PRs
+    # targeting that branch would get the drift check below — which is
+    # their primary (and for the early ones, only) safety net.
+    branches: [main, template-v2]
 
 permissions:
   contents: read
