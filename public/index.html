@@ -803,113 +803,186 @@ and SRE practices into reality.`;
   ];
   /* GENERATED:SOCIALS:END */
 
-  const HELP_EN = [
-    ["about","who is that guy nikita anyway","about"],
-    ["skills","tech stack","skills"],
-    ["contact","ways to reach me","contact"],
-    ["cv","open CV page","cv"],
-    ["neofetch","system info card","neofetch"],
-    ["whoami","a little too much about you","whoami"],
-    ["ls","list files","ls"],
-    ["cat","print a file","cat "],
-    ["fortune","random sysadmin wisdom","fortune"],
-    ["top","fake process monitor","top"],
-    ["kubectl","peek at a pretend cluster","kubectl "],
-    ["terraform","apply optimism, destroy everything","terraform "],
-    ["ssh","remote login — skip the screening call (or find out what else is out there)","ssh "],
-    ["claude","ask an AI assistant","claude "],
-    ["theme","change terminal color","theme "],
-    ["matrix","toggle background rain","matrix "],
-    ["lang","switch output language","lang "],
-    ["help","show this list","help"],
+  /* GENERATED:I18N:START — edit content/locales/*.mjs, then run scripts/build.mjs */
+  const I18N = {
+    "en": {
+      "availableCommands": "Available commands:",
+      "openingCv": "opening <a href=\"cv.html\" class=\"glow\">cv.html</a> ...",
+      "launchingGame": "launching <span class=\"glow\">cat.nikita.sh</span> in a sandboxed CRT window...",
+      "catNotText": "cat: cv.html: not a text file — use <span class=\"glow\">cv</span> to open it instead",
+      "catUsage": "usage: cat &lt;file&gt;",
+      "catNoFile": "cat: {file}: No such file or directory",
+      "matrixOff": "matrix rain: off",
+      "matrixOn": "matrix rain: on",
+      "matrixUsage": "usage: matrix &lt;on|off&gt;",
+      "themeSet": "theme set to <span class=\"glow\">{name}</span>",
+      "themeUsage": "usage: theme &lt;green|amber|pascal|commodore|solarized|ubuntu&gt;",
+      "langUsage": "usage: lang &lt;ru|en&gt;  /  использование: lang &lt;ru|en&gt;",
+      "langSet": "language switched to <span class=\"glow\">English</span>",
+      "sudo": "<span class=\"amber\">This incident will be reported.</span>",
+      "gameDenied": "bash: ./milk-quest.sh: Permission denied",
+      "loggingOut": "logging out...",
+      "connClosed": "connection to nikita.sh closed.",
+      "notFound": "command not found: <span class=\"accent\">{command}</span>",
+      "notFoundHint": "<span class=\"dim\">this is a silly terminal held together by JavaScript, not a real shell. try <span class=\"glow\">help</span> for what's here</span>",
+      "welcome": "Welcome to my silly terminal. Type 'help' to see what's available.",
+      "welcomeWhisper": "(psst — 'help' is being modest. dig a little.)",
+      "help": {
+        "about": "who is that guy nikita anyway",
+        "skills": "tech stack",
+        "contact": "ways to reach me",
+        "cv": "open CV page",
+        "neofetch": "system info card",
+        "whoami": "a little too much about you",
+        "ls": "list files",
+        "cat": "print a file",
+        "fortune": "random sysadmin wisdom",
+        "top": "fake process monitor",
+        "kubectl": "peek at a pretend cluster",
+        "terraform": "apply optimism, destroy everything",
+        "ssh": "remote login — skip the screening call (or find out what else is out there)",
+        "claude": "ask an AI assistant",
+        "theme": "change terminal color",
+        "matrix": "toggle background rain",
+        "lang": "switch output language",
+        "help": "show this list"
+      },
+      "fortunes": [
+        "It's always DNS.",
+        "99.9% uptime means 8h46m of downtime a year — we've already used six of them today.",
+        "There is no cloud. It's just someone else's Kubernetes cluster.",
+        "Friday deploy energy: high risk, higher regret.",
+        "The bug is never in prod. (The bug is in prod.)",
+        "A watched pipeline never finishes.",
+        "Works on my machine — shipping the machine.",
+        "Chaos engineering: it's not a bug, it's a Tuesday.",
+        "Your on-call shift called. It wants a raise.",
+        "Backups are like flossing — everyone agrees they matter, right up until they don't do them.",
+        "Automate the boring stuff, then automate the automation.",
+        "There's no place like 127.0.0.1.",
+        "A distributed system is one where a machine you've never heard of can stop you from doing your job.",
+        "Monitoring without alerting is just a very expensive screensaver.",
+        "The best runbook is the one nobody has to read at 3am.",
+        "Postmortems: where 'human error' quietly becomes 'process gap'.",
+        "Your load balancer doesn't care about your feelings.",
+        "Idempotency: because running it twice shouldn't cost you twice.",
+        "Every 'temporary' fix becomes permanent the moment it works.",
+        "Kubernetes: making simple things complicated since 2014.",
+        "The graph looked fine until someone zoomed in.",
+        "Infrastructure as Code: now your typos have version history.",
+        "Nothing is really deleted — it's just eventually consistent.",
+        "The rollback button is the most underrated feature in your whole pipeline.",
+        "SLOs: the art of promising slightly less than 100%.",
+        "A good on-call rotation is invisible. A bad one is a group chat at 2am.",
+        "The incident is never really over — it just becomes a Jira ticket nobody assigns.",
+        "You don't need more dashboards. You need to read the ones you have."
+      ]
+    },
+    "ru": {
+      "availableCommands": "Доступные команды:",
+      "openingCv": "открываю <a href=\"cv.html\" class=\"glow\">cv.html</a> ...",
+      "launchingGame": "запускаю <span class=\"glow\">cat.nikita.sh</span> в песочнице CRT-режима...",
+      "catNotText": "cat: cv.html: не текстовый файл — используйте <span class=\"glow\">cv</span>, чтобы открыть его",
+      "catUsage": "использование: cat &lt;файл&gt;",
+      "catNoFile": "cat: {file}: Нет такого файла или каталога",
+      "matrixOff": "дождь из матрицы: выкл",
+      "matrixOn": "дождь из матрицы: вкл",
+      "matrixUsage": "использование: matrix &lt;on|off&gt;",
+      "themeSet": "тема изменена на <span class=\"glow\">{name}</span>",
+      "themeUsage": "использование: theme &lt;green|amber|pascal|commodore|solarized|ubuntu&gt;",
+      "langUsage": "usage: lang &lt;ru|en&gt;  /  использование: lang &lt;ru|en&gt;",
+      "langSet": "язык переключён на <span class=\"glow\">русский</span>",
+      "sudo": "<span class=\"amber\">Об этом инциденте будет доложено.</span>",
+      "gameDenied": "bash: ./milk-quest.sh: отказано в доступе",
+      "loggingOut": "выхожу из системы...",
+      "connClosed": "соединение с nikita.sh закрыто.",
+      "notFound": "команда не найдена: <span class=\"accent\">{command}</span>",
+      "notFoundHint": "<span class=\"dim\">это игрушечный терминал на JavaScript, а не настоящий шелл. попробуй <span class=\"glow\">help</span>, чтобы увидеть, что здесь есть</span>",
+      "welcome": "Добро пожаловать в мой игрушечный терминал. Введите «help», чтобы увидеть список команд.",
+      "welcomeWhisper": "(псс — «help» скромничает. покопайся немного.)",
+      "help": {
+        "about": "кто такой вообще этот никита",
+        "skills": "технологический стек",
+        "contact": "как со мной связаться",
+        "cv": "открыть страницу резюме",
+        "neofetch": "карточка с информацией о системе",
+        "whoami": "узнать о себе немного больше",
+        "ls": "список файлов",
+        "cat": "вывести файл",
+        "fortune": "случайная мудрость сисадмина",
+        "top": "фейковый монитор процессов",
+        "kubectl": "заглянуть в игрушечный кластер",
+        "terraform": "apply обещает, destroy исполняет",
+        "ssh": "удалённая сессия — провести экспресс-скрининг (или узнать, что ещё тут есть)",
+        "claude": "спросить у ИИ ассистента",
+        "theme": "сменить цвет терминала",
+        "matrix": "вкл/выкл фоновый дождь из символов",
+        "lang": "сменить язык вывода",
+        "help": "показать этот список"
+      },
+      "fortunes": [
+        "Это всегда DNS.",
+        "99.9% аптайма — это 8ч46м простоя в год, и шесть из них мы уже потратили сегодня.",
+        "Никакого облака нет. Это просто чей-то кластер Kubernetes.",
+        "Энергия пятничного деплоя: высокий риск, ещё более высокое сожаление.",
+        "Баг никогда не в проде. (Баг в проде.)",
+        "Если следить за пайплайном, он никогда не закончится.",
+        "У меня на ноутбуке всё работает — отгружаем ноутбук.",
+        "Chaos engineering: это не баг, это вторник.",
+        "Ваша дежурная смена звонила. Она хочет прибавку.",
+        "Бэкапы как чистка зубной нитью — все согласны, что это важно, пока не перестают это делать.",
+        "Автоматизируй рутину, а потом автоматизируй саму автоматизацию.",
+        "Нет места лучше, чем 127.0.0.1.",
+        "Распределённая система — это когда неизвестная вам машина мешает вам делать вашу работу.",
+        "Мониторинг без алертинга — это просто очень дорогая заставка.",
+        "Лучший runbook — тот, который никому не приходится читать в три часа ночи.",
+        "Постмортемы: там, где «человеческий фактор» незаметно превращается в «пробел в процессе».",
+        "Балансировщику нагрузки плевать на ваши чувства.",
+        "Идемпотентность нужна, чтобы повторный запуск не обошелся в два раза дороже.",
+        "Любой «временный» костыль становится постоянным в тот момент как он заработал.",
+        "Kubernetes: усложняем простые вещи с 2014 года.",
+        "График выглядел нормально, пока кто-то не приблизил масштаб.",
+        "Infrastructure as Code — теперь у ваших опечаток есть история версий.",
+        "На самом деле ничего не удаляется — оно просто eventually consistent.",
+        "Кнопка rollback — самая недооценённая функция во всём пайплайне.",
+        "SLO — искусство обещать чуть меньше, чем 100%.",
+        "Хорошее дежурство незаметно. Плохое — это групповой чат в два часа ночи.",
+        "Инцидент никогда по-настоящему не заканчивается — он просто становится тикетом в Jira который никому не назначают.",
+        "Вам не нужно больше дашбордов. Вам нужно читать те, что уже есть."
+      ]
+    }
+  };
+  /* GENERATED:I18N:END */
+
+  // Command name + what typing it inserts into the input — identical
+  // in every language, so it lives here and not in the locale files.
+  // The description comes from I18N[lang].help, keyed by command name.
+  const HELP_ROWS = [
+    ["about","about"],
+    ["skills","skills"],
+    ["contact","contact"],
+    ["cv","cv"],
+    ["neofetch","neofetch"],
+    ["whoami","whoami"],
+    ["ls","ls"],
+    ["cat","cat "],
+    ["fortune","fortune"],
+    ["top","top"],
+    ["kubectl","kubectl "],
+    ["terraform","terraform "],
+    ["ssh","ssh "],
+    ["claude","claude "],
+    ["theme","theme "],
+    ["matrix","matrix "],
+    ["lang","lang "],
+    ["help","help"],
   ];
 
-  const HELP_RU = [
-    ["about","кто такой вообще этот никита","about"],
-    ["skills","технологический стек","skills"],
-    ["contact","как со мной связаться","contact"],
-    ["cv","открыть страницу резюме","cv"],
-    ["neofetch","карточка с информацией о системе","neofetch"],
-    ["whoami","узнать о себе немного больше","whoami"],
-    ["ls","список файлов","ls"],
-    ["cat","вывести файл","cat "],
-    ["fortune","случайная мудрость сисадмина","fortune"],
-    ["top","фейковый монитор процессов","top"],
-    ["kubectl","заглянуть в игрушечный кластер","kubectl "],
-    ["terraform","apply обещает, destroy исполняет","terraform "],
-    ["ssh","удалённая сессия — провести экспресс-скрининг (или узнать, что ещё тут есть)","ssh "],
-    ["claude","спросить у ИИ ассистента","claude "],
-    ["theme","сменить цвет терминала","theme "],
-    ["matrix","вкл/выкл фоновый дождь из символов","matrix "],
-    ["lang","сменить язык вывода","lang "],
-    ["help","показать этот список","help"],
-  ];
-
-  function HELP(){ return lang === 'ru' ? HELP_RU : HELP_EN; }
+  function HELP(){ return HELP_ROWS.map(([cmd,chip]) => [cmd, I18N[lang].help[cmd], chip]); }
 
   /* ---------- easter-egg content ---------- */
-  const FORTUNES_EN = [
-    "It's always DNS.",
-    "99.9% uptime means 8h46m of downtime a year — we've already used six of them today.",
-    "There is no cloud. It's just someone else's Kubernetes cluster.",
-    "Friday deploy energy: high risk, higher regret.",
-    "The bug is never in prod. (The bug is in prod.)",
-    "A watched pipeline never finishes.",
-    "Works on my machine — shipping the machine.",
-    "Chaos engineering: it's not a bug, it's a Tuesday.",
-    "Your on-call shift called. It wants a raise.",
-    "Backups are like flossing — everyone agrees they matter, right up until they don't do them.",
-    "Automate the boring stuff, then automate the automation.",
-    "There's no place like 127.0.0.1.",
-    "A distributed system is one where a machine you've never heard of can stop you from doing your job.",
-    "Monitoring without alerting is just a very expensive screensaver.",
-    "The best runbook is the one nobody has to read at 3am.",
-    "Postmortems: where 'human error' quietly becomes 'process gap'.",
-    "Your load balancer doesn't care about your feelings.",
-    "Idempotency: because running it twice shouldn't cost you twice.",
-    "Every 'temporary' fix becomes permanent the moment it works.",
-    "Kubernetes: making simple things complicated since 2014.",
-    "The graph looked fine until someone zoomed in.",
-    "Infrastructure as Code: now your typos have version history.",
-    "Nothing is really deleted — it's just eventually consistent.",
-    "The rollback button is the most underrated feature in your whole pipeline.",
-    "SLOs: the art of promising slightly less than 100%.",
-    "A good on-call rotation is invisible. A bad one is a group chat at 2am.",
-    "The incident is never really over — it just becomes a Jira ticket nobody assigns.",
-    "You don't need more dashboards. You need to read the ones you have.",
-  ];
-  const FORTUNES_RU = [
-    "Это всегда DNS.",
-    "99.9% аптайма — это 8ч46м простоя в год, и шесть из них мы уже потратили сегодня.",
-    "Никакого облака нет. Это просто чей-то кластер Kubernetes.",
-    "Энергия пятничного деплоя: высокий риск, ещё более высокое сожаление.",
-    "Баг никогда не в проде. (Баг в проде.)",
-    "Если следить за пайплайном, он никогда не закончится.",
-    "У меня на ноутбуке всё работает — отгружаем ноутбук.",
-    "Chaos engineering: это не баг, это вторник.",
-    "Ваша дежурная смена звонила. Она хочет прибавку.",
-    "Бэкапы как чистка зубной нитью — все согласны, что это важно, пока не перестают это делать.",
-    "Автоматизируй рутину, а потом автоматизируй саму автоматизацию.",
-    "Нет места лучше, чем 127.0.0.1.",
-    "Распределённая система — это когда неизвестная вам машина мешает вам делать вашу работу.",
-    "Мониторинг без алертинга — это просто очень дорогая заставка.",
-    "Лучший runbook — тот, который никому не приходится читать в три часа ночи.",
-    "Постмортемы: там, где «человеческий фактор» незаметно превращается в «пробел в процессе».",
-    "Балансировщику нагрузки плевать на ваши чувства.",
-    "Идемпотентность нужна, чтобы повторный запуск не обошелся в два раза дороже.",
-    "Любой «временный» костыль становится постоянным в тот момент как он заработал.",
-    "Kubernetes: усложняем простые вещи с 2014 года.",
-    "График выглядел нормально, пока кто-то не приблизил масштаб.",
-    "Infrastructure as Code — теперь у ваших опечаток есть история версий.",
-    "На самом деле ничего не удаляется — оно просто eventually consistent.",
-    "Кнопка rollback — самая недооценённая функция во всём пайплайне.",
-    "SLO — искусство обещать чуть меньше, чем 100%.",
-    "Хорошее дежурство незаметно. Плохое — это групповой чат в два часа ночи.",
-    "Инцидент никогда по-настоящему не заканчивается — он просто становится тикетом в Jira который никому не назначают.",
-    "Вам не нужно больше дашбордов. Вам нужно читать те, что уже есть.",
-  ];
   function fortune(){
-    const arr = lang === 'ru' ? FORTUNES_RU : FORTUNES_EN;
+    const arr = I18N[lang].fortunes;
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
@@ -1070,57 +1143,13 @@ and SRE practices into reality.`;
     ];
   }
 
-  const UI = {
-    en: {
-      availableCommands: "Available commands:",
-      openingCv: `opening <a href="cv.html" class="glow">cv.html</a> ...`,
-      launchingGame: `launching <span class="glow">cat.nikita.sh</span> in a sandboxed CRT window...`,
-      catNotText: `cat: cv.html: not a text file — use <span class="glow">cv</span> to open it instead`,
-      catUsage: `usage: cat &lt;file&gt;`,
-      catNoFile: (f)=>`cat: ${f}: No such file or directory`,
-      matrixOff: "matrix rain: off",
-      matrixOn: "matrix rain: on",
-      matrixUsage: "usage: matrix &lt;on|off&gt;",
-      themeSet: (n)=>`theme set to <span class="glow">${n}</span>`,
-      themeUsage: `usage: theme &lt;green|amber|pascal|commodore|solarized|ubuntu&gt;`,
-      langUsage: `usage: lang &lt;ru|en&gt;  /  использование: lang &lt;ru|en&gt;`,
-      langSet: `language switched to <span class="glow">English</span>`,
-      sudo: `<span class="amber">This incident will be reported.</span>`,
-      gameDenied: `bash: ./milk-quest.sh: Permission denied`,
-      loggingOut: "logging out...",
-      connClosed: "connection to nikita.sh closed.",
-      notFound: (b)=>`command not found: <span class="accent">${b}</span>`,
-      notFoundHint: `<span class="dim">this is a silly terminal held together by JavaScript, not a real shell. try <span class="glow">help</span> for what's here</span>`,
-      welcome: "Welcome to my silly terminal. Type 'help' to see what's available.",
-      welcomeWhisper: "(psst — 'help' is being modest. dig a little.)",
-    },
-    ru: {
-      availableCommands: "Доступные команды:",
-      openingCv: `открываю <a href="cv.html" class="glow">cv.html</a> ...`,
-      launchingGame: `запускаю <span class="glow">cat.nikita.sh</span> в песочнице CRT-режима...`,
-      catNotText: `cat: cv.html: не текстовый файл — используйте <span class="glow">cv</span>, чтобы открыть его`,
-      catUsage: `использование: cat &lt;файл&gt;`,
-      catNoFile: (f)=>`cat: ${f}: Нет такого файла или каталога`,
-      matrixOff: "дождь из матрицы: выкл",
-      matrixOn: "дождь из матрицы: вкл",
-      matrixUsage: "использование: matrix &lt;on|off&gt;",
-      themeSet: (n)=>`тема изменена на <span class="glow">${n}</span>`,
-      themeUsage: `использование: theme &lt;green|amber|pascal|commodore|solarized|ubuntu&gt;`,
-      langUsage: `usage: lang &lt;ru|en&gt;  /  использование: lang &lt;ru|en&gt;`,
-      langSet: `язык переключён на <span class="glow">русский</span>`,
-      sudo: `<span class="amber">Об этом инциденте будет доложено.</span>`,
-      gameDenied: `bash: ./milk-quest.sh: отказано в доступе`,
-      loggingOut: "выхожу из системы...",
-      connClosed: "соединение с nikita.sh закрыто.",
-      notFound: (b)=>`команда не найдена: <span class="accent">${b}</span>`,
-      notFoundHint: `<span class="dim">это игрушечный терминал на JavaScript, а не настоящий шелл. попробуй <span class="glow">help</span>, чтобы увидеть, что здесь есть</span>`,
-      welcome: "Добро пожаловать в мой игрушечный терминал. Введите «help», чтобы увидеть список команд.",
-      welcomeWhisper: "(псс — «help» скромничает. покопайся немного.)",
-    },
-  };
-  function t(key, ...args){
-    const v = UI[lang][key];
-    return typeof v === 'function' ? v(...args) : v;
+  // t('key') for a plain string; t('key', {file:'x'}) fills the
+  // "{file}"-style placeholders. Named rather than positional so a
+  // translation can reorder or repeat them.
+  function t(key, params){
+    const v = I18N[lang][key];
+    if(typeof v !== 'string' || !params) return v;
+    return v.replace(/\{(\w+)\}/g, (m, k) => (k in params ? params[k] : m));
   }
 
   const COMMANDS = ["about","skills","contact","cv","neofetch","whoami","ls","cat","history","matrix","theme","lang","sudo","fortune","top","kubectl","terraform","ssh","claude","clear","help"];
@@ -1667,7 +1696,7 @@ and SRE practices into reality.`;
           lines.forEach(l => printLine(`<span class="dim">${l}</span>`));
         }
         else if(!arg) { printLine(t('catUsage')); }
-        else { printLine(t('catNoFile', escapeHtml(arg))); }
+        else { printLine(t('catNoFile', {file: escapeHtml(arg)})); }
         break;
       }
       case "echo": {
@@ -1805,7 +1834,7 @@ and SRE practices into reality.`;
       }
       case "theme": {
         if(setTheme(arg)){
-          printLine(t('themeSet', arg));
+          printLine(t('themeSet', {name: arg}));
           window.TermTheme.writeStored(THEME_STORAGE_KEY, arg);
         }
         else printLine(t('themeUsage'));
@@ -2092,7 +2121,7 @@ and SRE practices into reality.`;
         break;
       }
       default: {
-        printLine(t('notFound', escapeHtml(rawB)));
+        printLine(t('notFound', {command: escapeHtml(rawB)}));
         printLine(t('notFoundHint'));
       }
     }
