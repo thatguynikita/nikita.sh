@@ -23,14 +23,14 @@
    ================================================================ */
 
 import * as data from "../../content/site-data.mjs";
+import { SITE } from "../../site.config.mjs";
 
-// The locales content/site-data.mjs is expected to carry. Every "i18n"
-// field must have exactly these keys — no missing translations, no
-// stray extras.
-//
-// NOTE: this is intentionally a single const. A later PR moves the
-// locale list into site.config.mjs; this is the one line that changes.
-const LOCALES = ["en", "ru"];
+// The locales content/site-data.mjs is expected to carry — taken from
+// site.config.mjs so there is exactly one place that decides which
+// languages this site has. Every "i18n" field must have exactly these
+// keys: no missing translations, no stray extras. Add a locale to the
+// config and the build starts demanding translations for it.
+const LOCALES = SITE.locales.map((l) => l.code);
 
 // -------- schema --------
 // Leaf types:
@@ -57,6 +57,14 @@ const SCHEMA = {
     photoUrl: "str",
     addressLocality: "i18n",
     addressCountry: "str",
+  },
+
+  // Single-language on purpose (see the note on PAGES in site-data.mjs).
+  // notFound has no share block, so no ogTitle/ogImage/twitterCard.
+  PAGES: {
+    index: { title: "str", description: "str", ogTitle: "str", ogImage: "str", twitterCard: "str" },
+    cv: { title: "str", description: "str", ogTitle: "str", ogImage: "str", twitterCard: "str" },
+    notFound: { title: "str", description: "str" },
   },
 
   NOW_PLAYING: {

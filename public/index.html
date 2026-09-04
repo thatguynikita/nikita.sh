@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- GENERATED:HEAD:START — edit content/site-data.mjs, then run scripts/build.mjs -->
 <title>Nikita Chernozipunnikov — nikita.sh</title>
 <meta name="description" content="DevOps/SRE portfolio in a silly interactive terminal — with hidden commands and easter eggs.">
 <meta name="theme-color" content="#060a08">
@@ -16,7 +17,7 @@
 <meta property="og:title" content="Nikita Chernozipunnikov — nikita.sh">
 <meta property="og:description" content="DevOps/SRE portfolio in a silly interactive terminal — with hidden commands and easter eggs.">
 <meta property="og:image" content="https://nikita.sh/assets/img/og-terminal.png">
-<meta property="og:url" content="https://nikita.sh">
+<meta property="og:url" content="https://nikita.sh/">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Nikita Chernozipunnikov — nikita.sh">
 <meta name="twitter:description" content="DevOps/SRE portfolio in a silly interactive terminal — with hidden commands and easter eggs.">
@@ -26,6 +27,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
 <link rel="manifest" href="/site.webmanifest">
+<!-- GENERATED:HEAD:END -->
 <!-- GENERATED:JSONLD:START — edit content/site-data.mjs, then run scripts/build.mjs -->
 <script type="application/ld+json">
 {
@@ -401,9 +403,9 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
 
   if(!window.NikitaTheme){
     window.NikitaTheme = {
-      THEME_STORAGE_KEY: 'nikita.sh:theme',
-      LANG_STORAGE_KEY: 'nikita.sh:lang',
-      MATRIX_STORAGE_KEY: 'nikita.sh:matrix',
+      THEME_STORAGE_KEY: 'term:theme',
+      LANG_STORAGE_KEY: 'term:lang',
+      MATRIX_STORAGE_KEY: 'term:matrix',
       readStored: function(){ return null; },
       writeStored: function(){},
       applyTheme: function(){ return null; },
@@ -547,7 +549,7 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
   ];
   let bootHTML = "";
   let li = 0;
-  const BOOTED_SESSION_KEY = 'nikita.sh:booted';
+  const BOOTED_SESSION_KEY = 'term:booted';
   let skipBoot = false;
   try { skipBoot = sessionStorage.getItem(BOOTED_SESSION_KEY) === '1'; } catch(e) {}
 

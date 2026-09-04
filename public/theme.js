@@ -22,9 +22,9 @@
     sabbatical:{fg:"#5c6166",matrixColor:"#8a9199",matrixFade:"rgba(248,249,250,.12)"},
   };
 
-  const THEME_STORAGE_KEY = 'nikita.sh:theme';
-  const LANG_STORAGE_KEY = 'nikita.sh:lang';
-  const MATRIX_STORAGE_KEY = 'nikita.sh:matrix';
+  const THEME_STORAGE_KEY = 'term:theme';
+  const LANG_STORAGE_KEY = 'term:lang';
+  const MATRIX_STORAGE_KEY = 'term:matrix';
 
   function readStored(key){
     try { return localStorage.getItem(key); } catch(e){ return null; }

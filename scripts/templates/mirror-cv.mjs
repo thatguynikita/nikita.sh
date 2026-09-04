@@ -7,6 +7,7 @@ import { PERSON, SOCIALS, SKILLS, JOBS, CERTS, LANGUAGES, EDUCATION, LICENSE_CON
 import { escapeHtml } from "../lib/html.mjs";
 import { aboutCvParagraph, jobWhenLine } from "../lib/content.mjs";
 import { buildCvJsonLd, jsonLdScript } from "./jsonld.mjs";
+import { siteUrl, mirrorUrl, displayUrl, locales, isDefaultLocale } from "../lib/site-urls.mjs";
 
 const UI = {
   en: {
@@ -46,9 +47,24 @@ function langsList(lang) {
 }
 
 function noticeText(lang) {
+  const live = siteUrl("cv.html");
+  const liveLabel = displayUrl(live);
+  const other = lang === "ru" ? "en" : "ru";
+  const otherLabel = displayUrl(mirrorUrl(other, "cv.html"));
   return lang === "ru"
-    ? `Это статическая HTML-версия <a href="https://nikita.sh/cv.html">nikita.sh/cv.html</a>,\n    опубликованная для краулеров и AI-агентов, которые не выполняют JavaScript. Контент\n    соответствует живому сайту. Для интерактивной версии посетите\n    <a href="https://nikita.sh/cv.html">nikita.sh/cv.html</a>. English version:\n    <a href="../cv.html">nikita.sh/llm/cv.html</a> · <a href="index.html">← назад</a>`
-    : `This is a plain-HTML mirror of <a href="https://nikita.sh/cv.html">nikita.sh/cv.html</a>,\n    published for crawlers and AI agents that don't execute JavaScript. Content matches the\n    live site. Humans should visit <a href="https://nikita.sh/cv.html">nikita.sh/cv.html</a>\n    for the live version. Russian version: <a href="ru/cv.html">nikita.sh/llm/ru/cv.html</a> ·\n    <a href="index.html">← back</a>`;
+    ? `Это статическая HTML-версия <a href="${live}">${liveLabel}</a>,\n    опубликованная для краулеров и AI-агентов, которые не выполняют JavaScript. Контент\n    соответствует живому сайту. Для интерактивной версии посетите\n    <a href="${live}">${liveLabel}</a>. English version:\n    <a href="../cv.html">${otherLabel}</a> · <a href="index.html">← назад</a>`
+    : `This is a plain-HTML mirror of <a href="${live}">${liveLabel}</a>,\n    published for crawlers and AI agents that don't execute JavaScript. Content matches the\n    live site. Humans should visit <a href="${live}">${liveLabel}</a>\n    for the live version. Russian version: <a href="ru/cv.html">${otherLabel}</a> ·\n    <a href="index.html">← back</a>`;
+}
+
+// See the matching helper in mirror-index.mjs.
+function alternateLinks(file) {
+  return [
+    ...locales.map((l) => {
+      const href = isDefaultLocale(l.code) ? siteUrl(file) : mirrorUrl(l.code, file);
+      return `<link rel="alternate" hreflang="${l.code}" href="${href}">`;
+    }),
+    `<link rel="alternate" hreflang="x-default" href="${siteUrl(file)}">`,
+  ].join("\n");
 }
 
 function licenseText(lang) {
@@ -149,7 +165,7 @@ export function renderCvMirror(lang) {
   const stylesheetHref = lang === "ru" ? "../style.css" : "style.css";
   // See the matching comment in mirror-index.mjs: EN defers to the live
   // cv.html, RU self-canonicalizes since there's no distinct live RU URL.
-  const canonicalHref = lang === "ru" ? "https://nikita.sh/llm/ru/cv.html" : "https://nikita.sh/cv.html";
+  const canonicalHref = isDefaultLocale(lang) ? siteUrl("cv.html") : mirrorUrl(lang, "cv.html");
   const U = UI[lang];
   const f = buildCvFragments(lang);
 
@@ -162,9 +178,7 @@ export function renderCvMirror(lang) {
 <meta name="description" content="${escapeHtml(U.description)}">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="${canonicalHref}">
-<link rel="alternate" hreflang="en" href="https://nikita.sh/cv.html">
-<link rel="alternate" hreflang="ru" href="https://nikita.sh/llm/ru/cv.html">
-<link rel="alternate" hreflang="x-default" href="https://nikita.sh/cv.html">
+${alternateLinks("cv.html")}
 <link rel="stylesheet" href="${stylesheetHref}">
 
 ${jsonLdScript(buildCvJsonLd(lang))}
