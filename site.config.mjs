@@ -53,4 +53,22 @@ export const SITE = {
     enabled: true,
     path: "llm",
   },
+
+  // Where `npm run deploy` uploads to.
+  //
+  //   target  "yandex" (Yandex Object Storage, via the `yc` CLI) or
+  //           "aws" (S3, via the `aws` CLI). Both upload one object at
+  //           a time with an explicit Content-Type; see
+  //           scripts/lib/deploy-targets.mjs.
+  //   bucket  default bucket, overridable with --bucket or the
+  //           NIKITASH_BUCKET env var. Leave "" to always pass it
+  //           explicitly.
+  //
+  // GitHub Pages is not a target here — it publishes the public/
+  // directory through .github/workflows/pages.yml instead, and needs no
+  // credentials or bucket. If that's your host, ignore this section.
+  deploy: {
+    target: "yandex",
+    bucket: "",
+  },
 };

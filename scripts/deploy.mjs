@@ -1,11 +1,16 @@
 #!/usr/bin/env node
-// Deploys the static site to Yandex Object Storage via the `yc` CLI.
-// Zero npm dependencies — shells out to `yc storage s3api put-object`,
-// same tool the manual workflow in docs/UPDATE-GUIDE.md already used.
+// Deploys the static site to an object store, one PUT per file. Zero npm
+// dependencies — shells out to the target's own CLI.
+//
+// Which store is `deploy.target` in site.config.mjs ("yandex" or "aws");
+// the per-target command lives in scripts/lib/deploy-targets.mjs and is
+// the only part that differs. GitHub Pages is not a target here — it
+// publishes public/ through .github/workflows/pages.yml.
 //
 // Usage:
 //   node scripts/deploy.mjs --dry-run                        # preview everything, no network calls, no bucket needed
 //   node scripts/deploy.mjs --bucket my-bucket                # deploy the full manifest
+//   node scripts/deploy.mjs --bucket my-bucket --target aws   # override the configured target
 //   node scripts/deploy.mjs --bucket my-bucket index.html cv.html
 //                                                               # deploy only these files
 //   NIKITASH_BUCKET=my-bucket node scripts/deploy.mjs llm/index.html
@@ -24,6 +29,9 @@ import { readdirSync, statSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join, extname, relative } from "node:path";
+
+import { SITE } from "../site.config.mjs";
+import { TARGETS, resolveTarget } from "./lib/deploy-targets.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PUBLIC_ROOT = join(ROOT, "public");
@@ -80,11 +88,12 @@ function contentTypeFor(key) {
 // -------- args --------
 
 function parseArgs(argv) {
-  const args = { dryRun: false, bucket: null, profile: process.env.YC_PROFILE || null, files: [] };
+  const args = { dryRun: false, bucket: null, profile: null, target: SITE.deploy.target, files: [] };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === "--dry-run") args.dryRun = true;
     else if (argv[i] === "--bucket") args.bucket = argv[++i];
     else if (argv[i] === "--profile") args.profile = argv[++i];
+    else if (argv[i] === "--target") args.target = argv[++i];
     else if (argv[i].startsWith("--")) {
       console.error(`Error: unknown flag "${argv[i]}".`);
       process.exit(1);
@@ -92,7 +101,12 @@ function parseArgs(argv) {
       args.files.push(argv[i].replace(/^\.\//, "").split("\\").join("/"));
     }
   }
-  if (!args.bucket) args.bucket = process.env.NIKITASH_BUCKET || null;
+  // Bucket: --bucket, then the env var, then site.config.mjs.
+  if (!args.bucket) args.bucket = process.env.NIKITASH_BUCKET || SITE.deploy.bucket || null;
+  // Profile: --profile, then whichever env var this target reads. A
+  // non-throwing lookup — main() reports an unknown target properly.
+  const target = TARGETS[args.target];
+  if (!args.profile && target) args.profile = process.env[target.profileEnv] || null;
   return args;
 }
 
@@ -126,12 +140,22 @@ function warnIfDirty() {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
+  let target;
+  try {
+    target = resolveTarget(args.target);
+  } catch (err) {
+    console.error("Error: " + err.message);
+    process.exit(1);
+  }
   const fullManifest = buildManifest();
   const manifest = selectFiles(fullManifest, args.files);
   const selectionNote = args.files.length ? ` (${manifest.length} of ${fullManifest.length} deployable files selected)` : "";
 
   if (args.dryRun) {
-    console.log(`Dry run${selectionNote} — ${manifest.length} file(s) would be uploaded to bucket "${args.bucket || "<bucket not set>"}":\n`);
+    console.log(
+      `Dry run${selectionNote} — ${manifest.length} file(s) would be uploaded to ` +
+        `${target.label} bucket "${args.bucket || "<bucket not set>"}" via \`${target.cli}\`:\n`
+    );
     for (const key of manifest) {
       console.log(`  ${key.padEnd(40)} -> ${contentTypeFor(key)}`);
     }
@@ -146,20 +170,24 @@ function main() {
 
   warnIfDirty();
 
-  console.log(`Deploying ${manifest.length} file(s)${selectionNote} to bucket "${args.bucket}":\n`);
+  console.log(`Deploying ${manifest.length} file(s)${selectionNote} to ${target.label} bucket "${args.bucket}":\n`);
 
   const results = { ok: [], failed: [] };
   for (const key of manifest) {
     const contentType = contentTypeFor(key);
     const body = join(PUBLIC_ROOT, key);
-    const cmd = ["storage", "s3api", "put-object", "--body", body, "--bucket", args.bucket, "--key", key, "--content-type", contentType];
-    if (args.profile) cmd.push("--profile", args.profile);
+    const cmd = target.args({ bucket: args.bucket, key, body, contentType, profile: args.profile });
 
     try {
-      execFileSync("yc", cmd, { stdio: "pipe" });
+      execFileSync(target.cli, cmd, { stdio: "pipe" });
       console.log(`  uploaded  ${key}`);
       results.ok.push(key);
     } catch (err) {
+      if (err.code === "ENOENT") {
+        console.error(`\nError: \`${target.cli}\` is not installed or not on PATH.`);
+        console.error(`${target.label} needs it to upload. See ${target.installHint}`);
+        process.exit(1);
+      }
       console.error(`  FAILED    ${key}: ${err.stderr ? err.stderr.toString().trim() : err.message}`);
       results.failed.push(key);
     }

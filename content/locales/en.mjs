@@ -35,7 +35,7 @@ export default {
     matrixUsage: "usage: matrix &lt;on|off&gt;",
     themeSet: 'theme set to <span class="glow">{name}</span>',
     themeUsage: "usage: theme &lt;green|amber|pascal|commodore|solarized|ubuntu&gt;",
-    langUsage: "usage: lang &lt;ru|en&gt;  /  использование: lang &lt;ru|en&gt;",
+    langUsage: "usage: lang &lt;{codes}&gt;",
     langSet: 'language switched to <span class="glow">English</span>',
     sudo: {
       reported: '<span class="amber">This incident will be reported.</span>',
@@ -357,8 +357,7 @@ export default {
     signOff: "$ <span class=\"accent\">echo</span> <span class=\"amber\">\"thanks for reading this far. let's build something reliable together.\"</span>",
     print: "print",
     footerBack: "back to terminal",
-    langChip: "RU",
-    langSwitchLabel: "Switch to Russian",
+    langSwitchLabel: "Switch to {language}",
     langAnnounce: "Language switched to English",
   },
   notFound: {
@@ -366,8 +365,7 @@ export default {
     message1: "Oops! Looks like the cat ate all the condensed milk... and this page too.",
     catAlt: "An orange cat lies on its back, tired, surrounded by spilled condensed-milk cans.",
     footerBack: "back to terminal",
-    langChip: "RU",
-    langSwitchLabel: "Switch to Russian",
+    langSwitchLabel: "Switch to {language}",
     langAnnounce: "Language switched to English",
   },
 };

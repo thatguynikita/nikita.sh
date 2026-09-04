@@ -73,7 +73,9 @@ as `--dry-run` output.
    drop `-- --bucket ...` for `npm run deploy` alone). This uploads
    everything under `public/` (`index.html`, `cv.html`, `404.html`,
    `theme.css`, `theme.js`, `favicon.ico`, `robots.txt`, `sitemap.xml`,
-   `site.webmanifest`, `llms.txt`, `assets/`, `llm/`) — via
+   `site.webmanifest`, `llms.txt`, `assets/`, `llm/`) — to whichever
+   object store `deploy.target` in `site.config.mjs` names (`yandex` or
+   `aws`; `--target` overrides it for one run), via
    `yc storage s3api put-object`, one call per file, with the
    `--content-type` picked automatically from a table in the script
    (this is exactly what caused the `llms.txt` charset-garbling bug in

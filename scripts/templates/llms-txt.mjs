@@ -10,7 +10,7 @@
 
 import { SITE } from "../../site.config.mjs";
 import { PERSON, SOCIALS, LLMS_TXT } from "../../content/site-data.mjs";
-import { siteUrl, mirrorUrl, host, locales, languageName, languageEndonym } from "../lib/site-urls.mjs";
+import { siteUrl, mirrorUrl, host, locales, defaultLocale, languageName, languageEndonym } from "../lib/site-urls.mjs";
 
 // "Nikita Chernozipunnikov / Никита Чернозипунников" — the person's
 // name in every locale the site is published in, so a crawler matching
@@ -53,8 +53,9 @@ export function renderLlmsTxt() {
     for (const l of locales) {
       out.push("");
       out.push(`## ${languageEndonym(l.code)}`);
-      out.push(`- [${UI[l.code]?.profile ?? UI.en.profile}](${mirrorUrl(l.code, "")})`);
-      out.push(`- [${UI[l.code]?.cv ?? UI.en.cv}](${mirrorUrl(l.code, "cv.html")})`);
+      const labels = uiFor(l.code);
+      out.push(`- [${labels.profile}](${mirrorUrl(l.code, "")})`);
+      out.push(`- [${labels.cv}](${mirrorUrl(l.code, "cv.html")})`);
     }
   }
 
@@ -77,10 +78,13 @@ export function renderLlmsTxt() {
   return out.join("\n") + "\n";
 }
 
-// Link labels per locale. Falls back to the default locale's wording
-// for any locale not listed, so adding a locale to site.config.mjs
-// produces a correct (if untranslated) file rather than "undefined".
+// Link labels per locale. Falls back to the default locale's wording,
+// then to English, for any locale not listed — so adding a locale to
+// site.config.mjs produces a correct (if untranslated) file rather than
+// a crash or the word "undefined".
 const UI = {
   en: { profile: "Profile", cv: "CV" },
   ru: { profile: "Профиль", cv: "Резюме" },
 };
+
+const uiFor = (code) => UI[code] ?? UI[defaultLocale.code] ?? UI.en;

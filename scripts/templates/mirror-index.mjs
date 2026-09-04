@@ -4,7 +4,7 @@ import { PERSON, SOCIALS, SKILLS, LICENSE_CONTENT } from "../../content/site-dat
 import { escapeHtml } from "../lib/html.mjs";
 import { aboutParagraph } from "../lib/content.mjs";
 import { buildIndexJsonLd, jsonLdScript } from "./jsonld.mjs";
-import { siteUrl, mirrorUrl, host, displayUrl, locales, isDefaultLocale, mirrorRootRelPath, otherLocales, languageName } from "../lib/site-urls.mjs";
+import { siteUrl, mirrorUrl, host, displayUrl, locales, defaultLocale, isDefaultLocale, mirrorRootRelPath, otherLocales, languageName } from "../lib/site-urls.mjs";
 
 const UI = {
   en: {
@@ -55,18 +55,34 @@ function otherVersionsHtml(lang, file, urlOf) {
     .join(" ");
 }
 
+// Page chrome for a locale this file has no entry for — a fork that adds
+// { code: "de" } to site.config.mjs before translating these — falls back
+// to the default locale rather than crashing on UI[lang].x. The result is
+// an untranslated page, which is visibly wrong and therefore fixable; a
+// TypeError during the build is neither.
+const uiFor = (lang) => UI[lang] ?? UI[defaultLocale.code] ?? UI.en;
+
 function noticeText(lang) {
   const live = siteUrl("");
   const liveLink = `<a href="${live}">${host}</a>`;
   const others = otherVersionsHtml(lang, "", (code) => mirrorUrl(code, ""));
-  return UI[lang].notice(liveLink, others);
+  // `others` is empty on a single-language site; trim so the notice
+  // doesn't end in a stray space.
+  return uiFor(lang).notice(liveLink, others).replace(/\s+$/, "");
 }
 
 // Default locale -> the live page; every other locale -> its mirror
 // (the live site switches language client-side on one URL, so a mirror
 // is the only distinct per-language URL that exists).
 function alternateLinks(file) {
-  return [
+  // Nothing to declare with one locale — a self-referencing hreflang
+  // plus an x-default pointing at the same page is noise, and the live
+  // pages' <head> already makes the same call (see head.mjs).
+  if (locales.length < 2) return "";
+  // Leading newline rather than a trailing one: the call site appends
+  // this to the canonical link's line, so returning "" leaves no blank
+  // line behind in a single-locale build.
+  return ["", 
     ...locales.map((l) => {
       const href = isDefaultLocale(l.code) ? siteUrl(file) : mirrorUrl(l.code, file);
       return `<link rel="alternate" hreflang="${l.code}" href="${href}">`;
@@ -75,7 +91,7 @@ function alternateLinks(file) {
   ].join("\n");
 }
 
-const licenseText = (lang) => UI[lang].license(LICENSE_CONTENT);
+const licenseText = (lang) => uiFor(lang).license(LICENSE_CONTENT);
 
 // Shared building blocks for both the full llm/index.html mirror and the
 // live index.html's <noscript> fallback — kept as named fragments (not one
@@ -83,7 +99,7 @@ const licenseText = (lang) => UI[lang].license(LICENSE_CONTENT);
 // order it needs, without regex-stripping the other's markup. Mirrors the
 // buildCvFragments pattern in mirror-cv.mjs.
 function buildIndexFragments(lang) {
-  const U = UI[lang];
+  const U = uiFor(lang);
   const name = PERSON.name[lang];
 
   const skillsRows = SKILLS.filter((s) => s.contexts.includes("index")).map((s) => [s.key[lang], escapeHtml(s.val)]);
@@ -104,7 +120,9 @@ function buildIndexFragments(lang) {
     roleMeta: `  <p class="role">${PERSON.roleTagline[lang]}</p>
   <p class="meta">${PERSON.metaLine[lang]}</p>`,
 
-    langs: `  <ul class="langs" aria-label="${U.langsAria}">
+    // Omitted entirely on a single-language site — a switcher with one
+    // entry is a menu you can't leave.
+    langs: locales.length < 2 ? "" : `  <ul class="langs" aria-label="${U.langsAria}">
 ${locales.map((l) => `    <li><a href="${mirrorUrl(l.code, "")}" hreflang="${l.code}">${l.label}</a></li>`).join("\n")}
   </ul>`,
 
@@ -137,7 +155,7 @@ ${contactRows.map(([k, v]) => `    <tr><th>${escapeHtml(k)}</th><td>${v}</td></t
 }
 
 export function renderIndexMirror(lang) {
-  const U = UI[lang];
+  const U = uiFor(lang);
   const stylesheetHref = mirrorRootRelPath(lang, "style.css");
   // EN defers to the live (JS-rendered) homepage, since it's the same
   // content; RU has no distinct live URL to defer to (the live site
@@ -156,8 +174,7 @@ export function renderIndexMirror(lang) {
 <title>${escapeHtml(U.title)}</title>
 <meta name="description" content="${escapeHtml(U.description)}">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="${canonicalHref}">
-${alternateLinks("")}
+<link rel="canonical" href="${canonicalHref}">${alternateLinks("")}
 <link rel="stylesheet" href="${stylesheetHref}">
 
 ${jsonLdScript(buildIndexJsonLd(lang))}

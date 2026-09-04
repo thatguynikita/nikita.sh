@@ -7,7 +7,7 @@ import { PERSON, SOCIALS, SKILLS, JOBS, CERTS, LANGUAGES, EDUCATION, LICENSE_CON
 import { escapeHtml } from "../lib/html.mjs";
 import { aboutCvParagraph, jobWhenLine } from "../lib/content.mjs";
 import { buildCvJsonLd, jsonLdScript } from "./jsonld.mjs";
-import { siteUrl, mirrorUrl, displayUrl, locales, isDefaultLocale, mirrorRelPath, mirrorRootRelPath, otherLocales, languageName } from "../lib/site-urls.mjs";
+import { siteUrl, mirrorUrl, displayUrl, locales, defaultLocale, isDefaultLocale, mirrorRelPath, mirrorRootRelPath, otherLocales, languageName } from "../lib/site-urls.mjs";
 
 const UI = {
   en: {
@@ -66,8 +66,15 @@ function langsList(lang) {
     .join("\n    ");
 }
 
+// Page chrome for a locale this file has no entry for — a fork that adds
+// { code: "de" } to site.config.mjs before translating these — falls back
+// to the default locale rather than crashing on UI[lang].x. The result is
+// an untranslated page, which is visibly wrong and therefore fixable; a
+// TypeError during the build is neither.
+const uiFor = (lang) => UI[lang] ?? UI[defaultLocale.code] ?? UI.en;
+
 function noticeText(lang) {
-  const U = UI[lang];
+  const U = uiFor(lang);
   const live = siteUrl("cv.html");
   const liveLink = `<a href="${live}">${displayUrl(live)}</a>`;
   // English language names on purpose, on every locale's page — see the
@@ -81,12 +88,24 @@ function noticeText(lang) {
       )
     )
     .join(" ");
-  return U.notice(liveLink, others, `<a href="index.html">${U.back}</a>`);
+  const back = `<a href="index.html">${U.back}</a>`;
+  // With one locale `others` is empty, which would leave the notice
+  // reading "... for the live version.  · ← back".
+  return others
+    ? U.notice(liveLink, others, back)
+    : U.notice(liveLink, others, back).replace(/\s*·\s*/, " ").replace(/\s{2,}/g, " ");
 }
 
 // See the matching helper in mirror-index.mjs.
 function alternateLinks(file) {
-  return [
+  // Nothing to declare with one locale — a self-referencing hreflang
+  // plus an x-default pointing at the same page is noise, and the live
+  // pages' <head> already makes the same call (see head.mjs).
+  if (locales.length < 2) return "";
+  // Leading newline rather than a trailing one: the call site appends
+  // this to the canonical link's line, so returning "" leaves no blank
+  // line behind in a single-locale build.
+  return ["", 
     ...locales.map((l) => {
       const href = isDefaultLocale(l.code) ? siteUrl(file) : mirrorUrl(l.code, file);
       return `<link rel="alternate" hreflang="${l.code}" href="${href}">`;
@@ -95,7 +114,7 @@ function alternateLinks(file) {
   ].join("\n");
 }
 
-const licenseText = (lang) => UI[lang].license(LICENSE_CONTENT);
+const licenseText = (lang) => uiFor(lang).license(LICENSE_CONTENT);
 
 function renderJob(job, lang, U) {
   const bullets = job.bullets[lang].map((b) => `      <li>${escapeHtml(b)}</li>`).join("\n");
@@ -114,7 +133,7 @@ ${bullets}
 // flat string) so each caller can compose only the pieces it needs, in
 // the order it needs, without regex-stripping the other's markup.
 function buildCvFragments(lang) {
-  const U = UI[lang];
+  const U = uiFor(lang);
   const name = PERSON.name[lang];
 
   const linksRow = SOCIALS.filter((s) => s.contexts.includes("cv") && s.sameAs)
@@ -136,7 +155,8 @@ function buildCvFragments(lang) {
   <p class="role">${PERSON.roleTagline[lang]}</p>
   <p class="meta">${PERSON.metaLine[lang]}</p>`,
 
-    langs: `  <ul class="langs" aria-label="${U.langsAria}">
+    // See the matching note in mirror-index.mjs.
+    langs: locales.length < 2 ? "" : `  <ul class="langs" aria-label="${U.langsAria}">
     ${langsList(lang)}
   </ul>`,
 
@@ -189,7 +209,7 @@ export function renderCvMirror(lang) {
   // See the matching comment in mirror-index.mjs: EN defers to the live
   // cv.html, RU self-canonicalizes since there's no distinct live RU URL.
   const canonicalHref = isDefaultLocale(lang) ? siteUrl("cv.html") : mirrorUrl(lang, "cv.html");
-  const U = UI[lang];
+  const U = uiFor(lang);
   const f = buildCvFragments(lang);
 
   return `<!DOCTYPE html>
@@ -200,8 +220,7 @@ export function renderCvMirror(lang) {
 <title>${escapeHtml(U.title)}</title>
 <meta name="description" content="${escapeHtml(U.description)}">
 <meta name="robots" content="index, follow">
-<link rel="canonical" href="${canonicalHref}">
-${alternateLinks("cv.html")}
+<link rel="canonical" href="${canonicalHref}">${alternateLinks("cv.html")}
 <link rel="stylesheet" href="${stylesheetHref}">
 
 ${jsonLdScript(buildCvJsonLd(lang))}

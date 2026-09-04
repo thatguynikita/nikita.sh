@@ -163,6 +163,9 @@
     letter-spacing:.03em; padding:6px 8px; border-radius:4px;
   }
   #langChip{display:inline-block; width:calc(2.5ch + 16px); text-align:center;}
+  /* A specific display rule beats the UA stylesheet's [hidden]{display:none},
+     so a single-language build would still lay the chip out. */
+  #langChip[hidden]{display:none;}
   #printBtn{display:inline-block; width:calc(7ch + 16px); text-align:center;}
 
   .term-body{padding:20px 22px 8px; font-size:14px; line-height:1.6;}
@@ -319,7 +322,7 @@
     <a href="https://nikita.sh">&larr; nikita.sh</a>
     <div class="right">
       <button id="printBtn" onclick="window.print()">print</button>
-      <button id="langChip" data-lang="ru">RU</button>
+      <button id="langChip" hidden>RU</button>
       <span class="glow" style="display:inline-block; padding:6px 8px;">cv.html<span aria-hidden="true" style="visibility:hidden"> &rarr;</span></span>
     </div>
   </div>
@@ -510,13 +513,30 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
       MATRIX_STORAGE_KEY: 'term:matrix',
       readStored: function(){ return null; },
       writeStored: function(){},
+      fillTemplate: function(s, p){
+        return typeof s === 'string'
+          ? s.replace(/\{(\w+)\}/g, function(m, k){ return k in p ? p[k] : m; })
+          : s;
+      },
       applyTheme: function(){ return null; },
     };
   }
 
   /* ================= matrix rain ================= */
+  /* GENERATED:LOCALES:START — edit site.config.mjs, then run scripts/build.mjs */
+  const LOCALES = [
+    { code: "en", label: "EN", name: "English" },
+    { code: "ru", label: "RU", name: "Русский" },
+  ];
+  /* GENERATED:LOCALES:END */
+
+  const LOCALE_CODES = LOCALES.map(l => l.code);
+  // A single-language site has nothing to switch between: the lang
+  // command, its help row, and the switcher chip all disappear.
+  const MULTILINGUAL = LOCALES.length > 1;
+
   const matrixRain = window.TermTheme.createMatrixRain(document.getElementById('matrix'));
-  const restored = window.TermTheme.restoreSettings();
+  const restored = window.TermTheme.restoreSettings(LOCALE_CODES);
   if(restored.matrixColor) matrixRain.setColor(restored.matrixColor);
   if(restored.matrixFade) matrixRain.setFadeColor(restored.matrixFade);
   matrixRain.setEnabled(restored.matrixEnabled);
@@ -807,8 +827,7 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
       "signOff": "$ <span class=\"accent\">echo</span> <span class=\"amber\">\"thanks for reading this far. let's build something reliable together.\"</span>",
       "print": "print",
       "footerBack": "back to terminal",
-      "langChip": "RU",
-      "langSwitchLabel": "Switch to Russian",
+      "langSwitchLabel": "Switch to {language}",
       "langAnnounce": "Language switched to English"
     },
     "ru": {
@@ -820,8 +839,7 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
       "signOff": "$ <span class=\"accent\">echo</span> <span class=\"amber\">\"спасибо, что дочитали до конца. давайте построим что-то надёжное вместе.\"</span>",
       "print": "печать",
       "footerBack": "назад в терминал",
-      "langChip": "EN",
-      "langSwitchLabel": "Переключить на английский",
+      "langSwitchLabel": "Переключить на {language}",
       "langAnnounce": "Язык переключён на русский"
     }
   };
@@ -936,12 +954,21 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
 
   const langChip = document.getElementById('langChip');
   const langAnnounce = document.getElementById('langAnnounce');
+  function nextLocale(){
+    const i = LOCALE_CODES.indexOf(lang);
+    return LOCALES[(i + 1) % LOCALES.length];
+  }
   function updateLangChip(){
-    langChip.textContent = UI[lang].langChip;
-    langChip.setAttribute('aria-label', UI[lang].langSwitchLabel);
+    // Markup ships it hidden, so a single-language fork never shows a
+    // switcher that would only ever switch to the language you're on.
+    langChip.hidden = !MULTILINGUAL;
+    if(!MULTILINGUAL) return;
+    const next = nextLocale();
+    langChip.textContent = next.label;
+    langChip.setAttribute('aria-label', window.TermTheme.fillTemplate(UI[lang].langSwitchLabel, {language: next.name}));
   }
   langChip.addEventListener('click', ()=>{
-    lang = lang === 'en' ? 'ru' : 'en';
+    lang = nextLocale().code;
     updateLangChip();
     render();
     window.TermTheme.writeStored(window.TermTheme.LANG_STORAGE_KEY, lang);

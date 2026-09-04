@@ -18,6 +18,9 @@ import { locales, isDefaultLocale, siteUrl, mirrorUrl } from "../lib/site-urls.m
  * already declare one.
  */
 function alternates(file) {
+  // One locale has no alternates to declare — a group of one is noise,
+  // and it would drag in the xhtml namespace for nothing.
+  if (locales.length < 2) return [];
   return locales.map((l) => {
     const href = isDefaultLocale(l.code) ? siteUrl(file) : mirrorUrl(l.code, file);
     return `    <xhtml:link rel="alternate" hreflang="${l.code}" href="${href}"/>`;
@@ -28,7 +31,7 @@ function alternates(file) {
  * @param {Array<{url:string, lastmod:string, image?:{loc:string,title:string}, alternateFile?:string}>} entries
  */
 export function renderSitemapXml(entries) {
-  const usesXhtml = entries.some((e) => e.alternateFile !== undefined);
+  const usesXhtml = entries.some((e) => e.alternateFile !== undefined && alternates(e.alternateFile).length);
   const usesImage = entries.some((e) => e.image);
 
   const lines = [];
