@@ -38,7 +38,11 @@ export const PERSON = {
   },
   email: "me@nikita.sh",
   website: "https://nikita.sh",
-  photoUrl: "https://nikita.sh/assets/img/nikita-photo.png",
+  // Site-relative, like PAGES' ogImage — it's a file in public/, so the
+  // absolute URL is siteUrl()'s job. An absolute URL here would keep
+  // pointing at the original site after a fork changed baseUrl, and the
+  // only place it shows up is JSON-LD, where nobody would notice.
+  photoPath: "assets/img/nikita-photo.png",
   addressLocality: { en: "Saint Petersburg", ru: "Санкт-Петербург" },
   addressCountry: "RU",
 };

@@ -54,7 +54,7 @@ const SCHEMA = {
     metaLine: "i18n",
     email: "str",
     website: "str",
-    photoUrl: "str",
+    photoPath: "str",
     addressLocality: "i18n",
     addressCountry: "str",
   },

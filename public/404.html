@@ -86,7 +86,9 @@
 
 <div class="wrap">
   <div class="topbar">
-    <a href="https://nikita.sh">&larr; nikita.sh</a>
+    <!-- GENERATED:BACKLINK:START — edit site.config.mjs, then run scripts/build.mjs -->
+    <a href="https://nikita.sh/">&larr; nikita.sh</a>
+    <!-- GENERATED:BACKLINK:END -->
     <div class="right">
       <button id="langChip" hidden>RU</button>
       <a href="/cv.html">cv.html &rarr;</a>
@@ -97,10 +99,12 @@
   <main class="term" role="main">
     <div class="term-head">
       <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+    <!-- GENERATED:TERMTITLE:START — edit site.config.mjs, then run scripts/build.mjs -->
       <span class="term-title">guest@nikita.sh — bash — 404</span>
+    <!-- GENERATED:TERMTITLE:END -->
     </div>
     <div class="term-body">
-      <div class="line"><span class="ps">guest@nikita.sh <span class="path">~</span> $</span>ls <span id="reqPath">requested-path</span></div>
+      <div class="line"><span class="ps">guest@<span id="promptHost"></span> <span class="path">~</span> $</span>ls <span id="reqPath">requested-path</span></div>
       <div class="line err">ls: <span id="reqPathEcho">requested-path</span>: <span id="notFoundText">No such file or directory</span></div>
 
       <div class="scene">
@@ -116,9 +120,13 @@
   </main>
 
   <footer id="pageFooter">
-    © 2026 <a href="https://nikita.sh" target="_blank" rel="noopener">Nikita Chernozipunnikov</a> ·
+    <!-- GENERATED:FOOTER:START — edit content/site-data.mjs, then run scripts/build.mjs -->
+    © 2026 <a href="https://nikita.sh/" target="_blank" rel="noopener">Nikita Chernozipunnikov</a> ·
     <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" rel="noopener">CC BY-NC-ND 4.0</a>
-    · <a href="https://nikita.sh" id="footerBack">back to terminal</a>
+    <!-- GENERATED:FOOTER:END -->
+    <!-- GENERATED:FOOTER_BACK:START — edit site.config.mjs, then run scripts/build.mjs -->
+    · <a href="https://nikita.sh/" id="footerBack">back to terminal</a>
+    <!-- GENERATED:FOOTER_BACK:END -->
   </footer>
 </div>
 
@@ -154,6 +162,12 @@
   // A single-language site has nothing to switch between: the lang
   // command, its help row, and the switcher chip all disappear.
   const MULTILINGUAL = LOCALES.length > 1;
+
+  /* GENERATED:TERMINAL:START — edit site.config.mjs, then run scripts/build.mjs */
+  const TERMINAL_HOST = "nikita.sh";
+  const SITE_URL = "https://nikita.sh/";
+  const GAME = { enabled: true, url: "https://cat.nikita.sh", label: "cat.nikita.sh", title: "Котик и Сгущенка" };
+  /* GENERATED:TERMINAL:END */
 
   const matrixRain = window.TermTheme.createMatrixRain(document.getElementById('matrix'));
   const restored = window.TermTheme.restoreSettings(LOCALE_CODES);
@@ -199,6 +213,7 @@
     const U = UI[lang];
     document.documentElement.lang = lang;
 
+    document.getElementById('promptHost').textContent = TERMINAL_HOST;
     document.getElementById('reqPath').textContent = requestedPath;
     document.getElementById('reqPathEcho').textContent = requestedPath;
     document.getElementById('notFoundText').textContent = U.notFound;

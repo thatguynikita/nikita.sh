@@ -46,6 +46,34 @@ export const SITE = {
     { code: "ru", ogLocale: "ru_RU", label: "RU" },
   ],
 
+  // The host the terminal *pretends* to be: the `guest@…` prompt, the
+  // window title, the boot line, `uname`, and the ssh persona's address
+  // (`ssh recruiter@<terminalHost>`).
+  //
+  // Separate from `baseUrl` on purpose, even though they're the same
+  // string here. baseUrl is where the site is actually served; this is
+  // set dressing, and a fork hosted at username.github.io is entitled
+  // to a nicer-looking prompt than that. Note PERSON.email is a third,
+  // fully independent value — a forker's may well be on Gmail — and is
+  // never derived from either.
+  terminalHost: "nikita.sh",
+
+  // The game `sudo ./milk-quest.sh` opens in a CRT-framed iframe.
+  //
+  // NOT a subdomain of this site — any embeddable web game works, and
+  // cat.nikita.sh is just what happens to be embedded in the demo. The
+  // page it points at must allow being framed (no X-Frame-Options
+  // DENY / frame-ancestors 'none'), which is why this ships with a
+  // real URL rather than a placeholder: a broken frame is a worse
+  // first impression than an honest one you can switch off.
+  game: {
+    enabled: true,
+    url: "https://cat.nikita.sh",
+    // Accessible name for the <iframe>, announced by screen readers.
+    // Not translated — it's the game's own name.
+    title: "Котик и Сгущенка",
+  },
+
   // The generated plain-HTML crawler mirror (see README). `path` is the
   // directory under the site root; the default locale's mirror lives at
   // `<path>/` and every other locale at `<path>/<code>/`.
