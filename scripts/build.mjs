@@ -261,7 +261,12 @@ function buildMirrors() {
   // <noscript> fallbacks come out of these same templates and are
   // unaffected — they never reference a mirror URL.
   if (!SITE.mirrors.enabled) {
-    console.log(`mirrors: disabled in site.config.mjs — skipping public/${SITE.mirrors.path}/`);
+    // Not just "don't write them": a fork clones this repo with the
+    // original site's mirror pages already committed, and skipping would
+    // leave them on disk, in the deploy manifest, and live — in whatever
+    // language and about whoever the original was.
+    pruneMirrorLocales({ all: true });
+    console.log(`mirrors: disabled in site.config.mjs — public/${SITE.mirrors.path}/ not generated`);
     return;
   }
 
@@ -289,10 +294,24 @@ function buildMirrors() {
 // like generated mirrors (they contain an index.html). llm/style.css is
 // hand-authored and sits outside any locale directory, so it's never a
 // candidate.
-function pruneMirrorLocales() {
+function pruneMirrorLocales({ all = false } = {}) {
   const root = path(SITE.mirrors.path);
   if (!existsSync(root)) return;
-  const keep = new Set(localeCodes);
+
+  // With mirrors switched off, remove the two pages the default locale
+  // keeps at the mirror root too. Only those two: llm/style.css is
+  // hand-authored, so the build doesn't get to delete it.
+  if (all) {
+    for (const file of ["index.html", "cv.html"]) {
+      const full = join(root, file);
+      if (existsSync(full)) {
+        rmSync(full);
+        console.log(`mirrors: removed public/${SITE.mirrors.path}/${file}`);
+      }
+    }
+  }
+
+  const keep = all ? new Set() : new Set(localeCodes);
   for (const entry of readdirSync(root, { withFileTypes: true })) {
     if (!entry.isDirectory() || keep.has(entry.name)) continue;
     const dir = join(root, entry.name);
@@ -405,7 +424,15 @@ function buildSitemap() {
 // Fail before writing anything: a shape error in site-data.mjs (a plain
 // string where a locale map belongs, or vice versa) generates wrong-but-
 // consistent output that the drift check would happily accept.
-validateSiteData();
+// Reported as a message, not a stack trace: this is the first command a
+// forker runs, and 70 lines of node internals underneath the answer is
+// not a good introduction.
+try {
+  validateSiteData();
+} catch (err) {
+  console.error(`\n${err.message}\n`);
+  process.exit(1);
+}
 
 // Loads content/locales/*.mjs and fails if any locale disagrees with the
 // default one's key set — before a page is written with "undefined" in it.

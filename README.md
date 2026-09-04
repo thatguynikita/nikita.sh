@@ -2,102 +2,162 @@
 
 <p align="center">
   <a href="https://github.com/thatguynikita/nikita.sh/actions/workflows/ci.yml"><img src="https://github.com/thatguynikita/nikita.sh/actions/workflows/ci.yml/badge.svg" alt="CI status"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/thatguynikita/nikita.sh" alt="Code license: MIT"></a>
-  <a href="LICENSE-CONTENT"><img src="https://img.shields.io/badge/content-CC_BY--NC--ND_4.0-lightgrey" alt="Content license: CC BY-NC-ND 4.0"></a>
-  <a href="https://nikita.sh"><img src="https://img.shields.io/badge/site-nikita.sh-brightgreen" alt="Live site"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/code-MIT-blue" alt="Code license: MIT"></a>
+  <a href="LICENSE-CONTENT"><img src="https://img.shields.io/badge/bio_%26_photo-CC_BY--NC--ND-lightgrey" alt="Personal content license: CC BY-NC-ND 4.0"></a>
+  <a href="https://nikita.sh"><img src="https://img.shields.io/badge/demo-nikita.sh-brightgreen" alt="Live demo"></a>
 </p>
 
 <p align="center">
-  <img src="docs/media/theme-preview.gif" width="560" alt="nikita.sh cycling through all 7 terminal color themes — green, amber, pascal, commodore, solarized, ubuntu, and the hidden sabbatical theme">
+  <img src="docs/media/theme-preview.gif" width="560" alt="A terminal portfolio cycling through seven retro colour themes — green, amber, Turbo Pascal blue, Commodore, Solarized, Ubuntu, and a hidden light theme">
 </p>
 
-**[nikita.sh](https://nikita.sh)** is a DevOps/SRE portfolio built as an
-interactive terminal you can actually type into. Type `help` once
-you're in; there's more worth poking at than the obvious commands. A
-proper résumé lives underneath it too (`cv.html`).
+<p align="center">
+  <b>A terminal portfolio with a hidden platformer, live Spotify, and seven retro themes —<br>
+  that also happens to be readable by screen readers, search engines, and AI agents.<br>
+  Zero dependencies.</b>
+</p>
 
-Bilingual (EN/RU), hand-authored HTML/CSS/JS with zero runtime
-dependencies or build step, plus a generated plain-HTML mirror so
-crawlers and AI agents that skip JavaScript still get the real content.
-Everything that's actually deployed lives under `public/` — the repo
-root is source/tooling only.
+<p align="center">
+  <a href="https://nikita.sh">Try it</a> · <a href="docs/SETUP.md">Make it yours</a> · <a href="docs/TERMINAL.md">What's hidden in it</a>
+</p>
 
-## What's in this repo
+---
 
-- the interactive terminal portfolio (`public/index.html`) and résumé
-  (`public/cv.html`)
-- a themed 404 page (`public/404.html`) — same terminal look, its own
-  cat-themed scene, fully hand-authored
-- a generated bilingual plain-HTML mirror for crawlers/LLMs (`public/llm/`)
-- a small zero-dependency Node pipeline that keeps content and structured
-  data in sync across all of the above from one source of truth
-  (`content/`, `scripts/`)
-- the `Playing` line above is fed by a separate widget backend, in its
-  own repo:
-  [spotify-now-playing](https://github.com/thatguynikita/spotify-now-playing)
+## It's a toy first
+
+Type `help` and it will tell you about eleven commands. There are more
+than twenty. That's deliberate — the site rewards poking at it:
+
+- **`sudo ./milk-quest.sh`** opens a playable web platformer inside a
+  CRT-framed window.
+- **`ssh recruiter@nikita.sh`** starts an interactive Q&A that answers
+  screening questions in-terminal.
+- **`sudo rm -rf /`** does what you'd hope, then admits it didn't.
+- **`claude "add light theme"`** starts an argument with a fake AI CLI.
+  Ask twice and it builds you a hidden seventh theme.
+- **`whoami`** reads your browser, OS and timezone, then makes a
+  time-of-day-appropriate remark about your life choices.
+- Plus a virtual filesystem with a readable `.bashrc`, 28 fortunes, and
+  fake `top` / `kubectl` / `terraform` / `df` / `ps` that are all more
+  detailed than they need to be.
+
+The neofetch card's `Playing` line is real, fed by a separate
+[Spotify widget backend](https://github.com/thatguynikita/spotify-now-playing).
+
+## And an actual portfolio second
+
+The engineering is why it's worth forking rather than just enjoying:
+
+**It works on a phone.** The most deserved criticism of terminal
+portfolios is "cute on desktop, useless on mobile — I'm not typing
+commands on a touchscreen." Context-aware tappable hint chips surface
+the available commands and argument completions as buttons, so the whole
+site is navigable with thumbs and never needs the keyboard.
+
+**It's legible to machines.** `llms.txt`, plain-HTML `/llm/` mirrors for
+crawlers that don't run JavaScript, Content-Signals in `robots.txt`,
+correct `hreflang` with `x-default`, JSON-LD, and `<noscript>` fallbacks
+carrying the entire CV. A JS-only portfolio is invisible to a lot of the
+web; this one isn't.
+
+**Accessibility is actually done.** An `sr-only` `<h1>`, `aria-live`
+announcements on language changes, real landmarks, labelled controls,
+`prefers-reduced-motion`.
+
+**Seven hand-tuned retro themes** with real provenance — Commodore,
+Turbo Pascal, DEC VT52 amber, Solarized, Ubuntu — every one checked
+against WCAG AA rather than copied on vibes. (Commodore's reference
+palette came in at 2.26:1 and had to be retuned.)
+
+**Real bilingual i18n**, or one language, or three. Every user-facing
+string lives in `content/locales/`, and a missing translation fails the
+build instead of printing `undefined` at a visitor.
+
+**Zero runtime dependencies and no build step for the live pages.** The
+Node pipeline that keeps facts in sync across the pages, the mirrors,
+the sitemap and the JSON-LD has no npm dependencies either. `npm install`
+does nothing, because there's nothing to install.
+
+## Make it yours
+
+```bash
+npm run init      # asks a handful of questions, writes site.config.mjs
+npm run build
+```
+
+Two files hold everything: **`site.config.mjs`** (where the site lives,
+which languages, which features) and **`content/site-data.mjs`** (who you
+are). You should never need to type your domain into an HTML file — if
+you do, that's a bug worth an issue.
+
+**Honest caveats**, because a feature that turns out to need extra setup
+is worse than one that was never promised:
+
+- The **game** is a configurable slot — `game.url` points at any
+  embeddable page. `cat.nikita.sh` is just what's in the demo. Set
+  `game.enabled: false` and it leaves the terminal's fiction entirely.
+- **Now-playing** needs a separate backend (linked above) and is a URL in
+  `content/site-data.mjs`. Point it somewhere or leave it; the card
+  degrades to a static line.
+- The **404 page** is only half-usable on a GitHub *project* page, because
+  GitHub only serves it under `/repo/`. A user/org page or custom domain
+  avoids that.
+
+Full walkthrough, including what you're legally required to replace:
+**[docs/SETUP.md](docs/SETUP.md)**.
+
+## Licence
+
+Two licences, and the line is probably not where you'd guess.
+
+**MIT** ([`LICENSE`](LICENSE)) covers the code *and the entire terminal
+persona* — the fortunes, the boot sequence, the fake command output, the
+sudo jokes, the fake `claude` conversation, and the ssh recruiter Q&A
+including its answers. That's the part worth forking, so it's yours to
+adapt.
+
+**CC BY-NC-ND** ([`LICENSE-CONTENT`](LICENSE-CONTENT)) covers only the
+things that are statements about a real person: the photograph, the name,
+the biography, the work history, and the résumé text. Don't ship someone
+else's career as your own.
+
+Some MIT-licensed copy still describes a specific person — the recruiter
+answers, the "eleven years" jokes. You're allowed to keep them. You
+shouldn't. `docs/SETUP.md` lists them.
 
 ## Docs
 
 | Doc | Covers |
 |---|---|
-| **This file** | Repo layout, the bilingual `/llm/` crawler mirror, SEO/discovery notes |
-| [docs/UPDATE-GUIDE.md](docs/UPDATE-GUIDE.md) | Editing content, running the build, deploying to Yandex Object Storage |
-| [docs/TERMINAL.md](docs/TERMINAL.md) | What you can do in `index.html`'s terminal — commands, easter eggs, and hidden features |
-| [docs/CV.md](docs/CV.md) | What's on the `cv.html` résumé page and how printing/language switching work |
-| [docs/404.md](docs/404.md) | What the `404.html` error page shows visitors |
+| [docs/SETUP.md](docs/SETUP.md) | Forking this: configuration, languages, publishing, what to replace |
+| [docs/TERMINAL.md](docs/TERMINAL.md) | Every command and easter egg in `index.html` |
+| [docs/UPDATE-GUIDE.md](docs/UPDATE-GUIDE.md) | Editing content, running the build, deploying |
+| [docs/CV.md](docs/CV.md) | The `cv.html` résumé page — printing, language switching |
+| [docs/404.md](docs/404.md) | The themed error page |
+| [CLAUDE.md](CLAUDE.md) | Deep architecture notes — why things are shaped the way they are, and what has bitten people before |
 
 ## Project structure
 
 | Path | What it is |
 |---|---|
-| `public/` | Everything actually deployed — its contents map 1:1 to the site's root (`public/index.html` -> `nikita.sh/index.html`, `public/assets/...` -> `nikita.sh/assets/...`); see `scripts/deploy.mjs` |
-| `public/index.html`, `public/cv.html` | The live site — hand-authored; only their `GENERATED:*` data blocks are generator-owned |
-| `public/404.html` | Custom error page — fully hand-authored, no `GENERATED:*` blocks (`content/site-data.mjs` doesn't apply to it) |
-| `public/theme.css`, `public/theme.js` | Shared styling/JS for all three live pages |
-| `public/favicon.ico`, `public/robots.txt`, `public/site.webmanifest`, `public/sitemap.xml`, `public/llms.txt` | Deployed to the site root as `/favicon.ico` etc. — browser/crawler convention requires it, not a choice |
-| `public/assets/icons/` | Favicons, apple-touch-icon, android-chrome |
-| `public/assets/img/` | `nikita-photo.png`, `og-terminal.png` (OG images), `404-cat.png` (404 page art) |
-| `content/site-data.mjs` | Single source of truth for shared facts (bio, socials, skills, jobs, certs, JSON-LD) |
-| `scripts/` | `build.mjs` propagates `content/site-data.mjs` into `public/index.html`, `public/cv.html`, and `public/llm/*`; `deploy.mjs` pushes everything under `public/` to Yandex Object Storage |
-| `public/llm/` | Plain-HTML crawler mirror (see below) |
-| `docs/UPDATE-GUIDE.md` | The content-update + deploy workflow |
-| `docs/media/` | Preview assets for this README (not deployed, not linked from the live site) |
+| `public/` | Everything deployed, mapping 1:1 to the site root. This boundary is also the deploy allowlist. |
+| `public/index.html` | The terminal. Hand-authored; only its `GENERATED:*` blocks belong to the build. |
+| `public/cv.html`, `public/404.html` | Résumé and error page, same arrangement. |
+| `public/theme.css`, `public/theme.js` | Shared across all three pages. Adding a theme is one CSS block. |
+| `public/llm/` | Generated plain-HTML crawler mirror — never hand-edited. |
+| `content/site-data.mjs` | Who the person is: bio, skills, jobs, certs, socials. |
+| `content/locales/*.mjs` | Every user-facing string, one file per language. |
+| `site.config.mjs` | Where the site lives and how it's assembled. |
+| `scripts/` | Build, deploy, and the three checks. Zero dependencies. |
+| `tests/golden-strings.json` | Snapshot of every string, so none can vanish unnoticed. |
 
 ## Crawler mirror (`/llm/`)
 
-`index.html` and `cv.html` are the live, JS-rendered site. `public/llm/`
-is a generated plain-HTML mirror of the same content — English at
-`/llm/`, Russian at `/llm/ru/` — for crawlers and AI agents that don't
-execute JavaScript. It's generated from `content/site-data.mjs` by
-`node scripts/build.mjs`, not hand-maintained (see `docs/UPDATE-GUIDE.md`).
+`index.html` and `cv.html` never link to `/llm/` on purpose — a JS page
+and a plain-HTML page serving the same content at different URLs would
+read as cloaking. Discovery goes through `sitemap.xml` and `llms.txt`
+instead, which list the mirrors directly, plus `hreflang` cross-links
+between each language pair and a visible switcher on every mirror page.
 
-| File | What it is |
-|---|---|
-| `public/robots.txt` | Allows named AI/search crawlers, points to sitemap, declares [Content Signals](https://contentsignals.org/) usage preferences |
-| `public/llms.txt` | Summary + direct links, both languages |
-| `public/sitemap.xml` | Lists live pages + both mirrors, with hreflang alternates |
-| `public/llm/style.css` | Shared stylesheet for the mirror pages |
-| `public/llm/index.html` | EN profile (about, skills, contact) |
-| `public/llm/cv.html` | EN full CV (experience, education, certs, languages, skills) |
-| `public/llm/ru/index.html` | RU profile |
-| `public/llm/ru/cv.html` | RU full CV |
-
-**Discovery**: `index.html`/`cv.html` never link to `/llm/` on purpose —
-a JS page and a plain-HTML page serving the same content differently at
-the same URL would read as cloaking to search engines. Instead
-`sitemap.xml` and `llms.txt` list `/llm/` and `/llm/ru/` directly, each
-EN/RU pair cross-references the other via `hreflang` (plus `x-default`
-pointing at EN), and every mirror page has a visible `EN`/`RU` switcher
-for anyone who lands on the wrong language.
-
-## License
-
-Dual-licensed:
-
-- **Code** (the terminal engine, the content-generation pipeline, build/
-  deploy tooling, page structure/styling) — [MIT](LICENSE).
-- **Content** (biography, résumé text, photography, and the terminal
-  persona's writing — fortunes, boot-sequence lines, easter-egg dialogue,
-  and similar) — [CC BY-NC-ND 4.0](LICENSE-CONTENT). View and share with
-  attribution; no commercial use, no adaptations of the persona/bio/photo
-  as your own.
+Switch the whole thing off with `mirrors.enabled: false` and every one of
+those references disappears with it.

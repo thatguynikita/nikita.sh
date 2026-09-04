@@ -223,6 +223,26 @@ for (const [page, strings] of Object.entries(golden.pages)) {
   }
 }
 
+const total = Object.values(golden.pages).reduce((n, a) => n + a.length, 0);
+
+// A fork that has replaced the original copy fails this by hundreds, on
+// its first `npm test`, which reads as a broken repo rather than an
+// out-of-date snapshot. Past a fifth of everything, it isn't a
+// regression — it's a different site.
+if (missing.length > total / 5) {
+  console.error(
+    `${missing.length} of ${total} recorded strings are gone — that's most of the site.\n\n` +
+      `This is what re-writing the content looks like, not a bug: the snapshot in\n` +
+      `tests/golden-strings.json still describes the site this was forked from.\n\n` +
+      `Re-record it, then review the diff — that diff is the list of copy you\n` +
+      `changed, which is the thing worth looking at:\n\n` +
+      `  node scripts/harvest-strings.mjs HEAD\n\n` +
+      `From then on this check does its real job: catching a single line that\n` +
+      `vanishes when you didn't mean it to.\n`
+  );
+  process.exit(1);
+}
+
 if (missing.length) {
   console.error(`${missing.length} string(s) from tests/golden-strings.json no longer exist:\n`);
   for (const { page, s, change } of missing) {
@@ -239,5 +259,4 @@ if (missing.length) {
   process.exit(1);
 }
 
-const total = Object.values(golden.pages).reduce((n, a) => n + a.length, 0);
 console.log(`All ${total} strings from tests/golden-strings.json accounted for (snapshot ref: ${golden.ref}).`);

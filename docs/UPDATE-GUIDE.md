@@ -1,3 +1,6 @@
+> Forking this to make your own site? Start with **[SETUP.md](SETUP.md)**
+> instead — this guide is for keeping an existing site up to date.
+
 # Updating content: nikita.sh, cv.html, and the /llm/ mirrors
 
 Facts that appear in more than one place on the site (bio, socials, skills,
