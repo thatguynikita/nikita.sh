@@ -22,6 +22,31 @@ export const localeCodes = SITE.locales.map((l) => l.code);
 export const isDefaultLocale = (code) => code === defaultLocale.code;
 export const localeByCode = (code) => SITE.locales.find((l) => l.code === code);
 
+/**
+ * A locale's language name, rendered in `inLocale` (default: the site's
+ * own default locale). `languageName("ru")` is "Russian" on an
+ * English-default site; `languageEndonym("ru")` is "Русский".
+ *
+ * Derived rather than configured: Intl.DisplayNames ships with Node's
+ * bundled ICU, so a fork adding `{ code: "ja" }` gets "Japanese" and
+ * "\u65e5\u672c\u8a9e" for free instead of filling in two more config fields.
+ * Falls back to the bare code if ICU has no entry for it.
+ */
+export function languageName(code, inLocale = defaultLocale.code) {
+  try {
+    const name = new Intl.DisplayNames([inLocale], { type: "language" }).of(code);
+    if (!name || name === code) return code;
+    // ICU lower-cases endonyms in languages that don't capitalise them
+    // ("\u0440\u0443\u0441\u0441\u043a\u0438\u0439"); these are used as headings, so title-case them.
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  } catch {
+    return code;
+  }
+}
+
+/** A locale's name in itself — "English", "Русский", "Deutsch". */
+export const languageEndonym = (code) => languageName(code, code);
+
 /** Bare host for display/branding — "nikita.sh", no scheme. */
 export const host = ORIGIN.replace(/^https?:\/\//, "") + PREFIX;
 

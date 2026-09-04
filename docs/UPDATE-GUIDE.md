@@ -33,16 +33,23 @@ as `--dry-run` output.
    ```
    (equivalent to `node scripts/build.mjs` directly, if you'd rather skip npm)
    This regenerates:
-   - the `GENERATED:*` data blocks inside `index.html` and `cv.html`
-     (everything else in those files — layout, terminal logic, styling —
-     is untouched)
+   - the `GENERATED:*` data blocks inside `index.html`, `cv.html` and
+     `404.html` (everything else in those files — layout, terminal
+     logic, styling — is untouched)
    - `llm/index.html`, `llm/cv.html`, `llm/ru/index.html`,
      `llm/ru/cv.html` in full, including their JSON-LD (produced via
      `JSON.stringify`, so it can't go silently invalid on a missing
      comma the way hand-typed JSON-LD could)
-   - `sitemap.xml`'s `<lastmod>`, bumped to today only for the URLs whose
-     backing file actually changed (git's working-tree diff decides
-     this — no separate cache file)
+   - `robots.txt`, `llms.txt` and `site.webmanifest` in full — don't
+     hand-edit these, the next build overwrites them. Their prose lives
+     in `LLMS_TXT` in `content/site-data.mjs`; the crawler allowlist and
+     Content-Signal policy are named constants at the top of
+     `scripts/templates/robots-txt.mjs`
+   - `sitemap.xml` in full. Its `<lastmod>` dates are carried over from
+     the sitemap already in the tree and bumped to today only for the
+     URLs whose backing file actually changed (git's working-tree diff
+     decides this — no separate cache file), so building twice in a row
+     never produces a different file
 
 3. **Review the diff:**
    ```bash

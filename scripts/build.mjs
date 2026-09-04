@@ -5,12 +5,12 @@
 //
 // No npm dependencies — Node built-ins only.
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
-import { ABOUT, SOCIALS, SKILLS, JOBS, CERTS, LANGUAGES, EDUCATION, TRAITS, NOW_PLAYING } from "../content/site-data.mjs";
+import { ABOUT, SOCIALS, SKILLS, JOBS, CERTS, LANGUAGES, EDUCATION, TRAITS, NOW_PLAYING, PAGES } from "../content/site-data.mjs";
 import { aboutCvParagraph, jobLocationText } from "./lib/content.mjs";
 import { replaceMarker } from "./lib/markers.mjs";
 import { validateSiteData } from "./lib/validate-content.mjs";
@@ -18,6 +18,10 @@ import { renderIndexMirror, renderIndexNoscript } from "./templates/mirror-index
 import { renderCvMirror, renderCvNoscript } from "./templates/mirror-cv.mjs";
 import { buildIndexJsonLd, buildCvJsonLd, jsonLdScript } from "./templates/jsonld.mjs";
 import { renderHead } from "./templates/head.mjs";
+import { renderRobotsTxt } from "./templates/robots-txt.mjs";
+import { renderLlmsTxt } from "./templates/llms-txt.mjs";
+import { renderWebmanifest } from "./templates/webmanifest.mjs";
+import { renderSitemapXml } from "./templates/sitemap-xml.mjs";
 import { siteUrl, mirrorUrl, mirrorPath, localeCodes, defaultLocale } from "./lib/site-urls.mjs";
 import { SITE } from "../site.config.mjs";
 
@@ -26,6 +30,7 @@ const PUBLIC_ROOT = join(ROOT, "public");
 const path = (p) => join(PUBLIC_ROOT, p);
 const read = (p) => readFileSync(path(p), "utf8");
 const write = (p, content) => writeFileSync(path(p), content);
+const exists = (p) => existsSync(path(p));
 
 // -------- small formatters matching the hand-written array/object style
 // already used in index.html / cv.html (compact, unquoted object keys) --------
@@ -189,29 +194,69 @@ function buildMirrors() {
   }
 }
 
-// -------- sitemap.xml lastmod bump --------
-// Bumps <lastmod> only for the sitemapped URLs whose backing file
-// actually changed in the working tree vs the last commit — git's diff
-// is the source of truth, no separate cache file needed.
+// -------- robots.txt / llms.txt / site.webmanifest --------
+// Fully regenerated, like the mirrors. Nothing in them is stateful, so
+// they're a plain render of site.config.mjs + content/site-data.mjs.
 
-// Derived from site.config.mjs rather than hand-listed, so the set stays
-// correct when the domain, the locale list or mirrors.enabled change.
-// Order matters only for the log output; it matches the previous
-// hand-written list (live pages first, then mirrors).
-const SITEMAP_URLS = [
+function buildMetaFiles() {
+  write("robots.txt", renderRobotsTxt());
+  write("llms.txt", renderLlmsTxt());
+  write("site.webmanifest", renderWebmanifest());
+}
+
+// -------- sitemap.xml --------
+// The URL set is derived from site.config.mjs rather than hand-listed,
+// so it stays correct when the domain, the locale list or
+// mirrors.enabled change. Order matches the previous hand-written file
+// (live pages first, then mirrors).
+
+const SITEMAP_ENTRIES = [
   { url: siteUrl(""), file: "public/index.html" },
-  { url: siteUrl("cv.html"), file: "public/cv.html" },
+  {
+    url: siteUrl("cv.html"),
+    file: "public/cv.html",
+    image: { loc: siteUrl(PAGES.cv.sitemapImage.file), title: PAGES.cv.sitemapImage.title },
+  },
   ...(SITE.mirrors.enabled
     ? localeCodes.flatMap((code) => [
-        { url: mirrorUrl(code, ""), file: `public/${mirrorPath(code, "index.html")}` },
-        { url: mirrorUrl(code, "cv.html"), file: `public/${mirrorPath(code, "cv.html")}` },
+        { url: mirrorUrl(code, ""), file: `public/${mirrorPath(code, "index.html")}`, alternateFile: "" },
+        { url: mirrorUrl(code, "cv.html"), file: `public/${mirrorPath(code, "cv.html")}`, alternateFile: "cv.html" },
       ])
     : []),
 ];
 
+// -------- lastmod --------
+// <lastmod> is the one thing in the generated output that isn't a pure
+// function of the sources: "when did this page last change" is a fact
+// about history, not about the current content.
+//
+// So it's carried forward from the sitemap already in the tree, and
+// only bumped to today for URLs whose backing file is dirty in the
+// working tree right now (git's diff is the source of truth; no
+// separate cache file). That keeps the property the whole build relies
+// on — running the build twice produces the same bytes — while still
+// dating a page the day you actually change it.
+//
+// Note this rules out the more obvious-looking `git log -1 --format=%cs
+// -- <file>`: the commit that changes index.html is the same commit
+// that carries the regenerated sitemap.xml, so the date to write is one
+// the build cannot know yet. CI would then regenerate a different date
+// than the one committed and fail the drift check on every content
+// commit. The working-tree check reads the same intent a moment
+// earlier, while the answer is still knowable.
+
+function existingLastmods() {
+  if (!exists("sitemap.xml")) return new Map();
+  const xml = read("sitemap.xml");
+  const map = new Map();
+  const re = /<loc>([^<]+)<\/loc>\s*<lastmod>([^<]+)<\/lastmod>/g;
+  for (const m of xml.matchAll(re)) map.set(m[1], m[2]);
+  return map;
+}
+
 function changedFiles() {
   try {
-    const out = execFileSync("git", ["status", "--porcelain", "--", ...SITEMAP_URLS.map((u) => u.file)], {
+    const out = execFileSync("git", ["status", "--porcelain", "--", ...SITEMAP_ENTRIES.map((u) => u.file)], {
       cwd: ROOT,
       encoding: "utf8",
     });
@@ -222,31 +267,28 @@ function changedFiles() {
         .map((line) => line.slice(3).trim())
     );
   } catch {
-    return new Set(); // not a git repo / git unavailable — skip lastmod bump
+    return new Set(); // not a git repo / git unavailable — keep existing dates
   }
 }
 
-function bumpSitemap() {
+function buildSitemap() {
+  const previous = existingLastmods();
   const changed = changedFiles();
-  if (changed.size === 0) return;
-
-  let xml = read("sitemap.xml");
   const today = new Date().toISOString().slice(0, 10);
-  let bumped = [];
+  const bumped = [];
 
-  for (const { url, file } of SITEMAP_URLS) {
-    if (!changed.has(file)) continue;
-    const escapedUrl = url.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&");
-    const re = new RegExp(`(<loc>${escapedUrl}</loc>\\s*<lastmod>)[^<]+(</lastmod>)`);
-    if (re.test(xml)) {
-      xml = xml.replace(re, `$1${today}$2`);
-      bumped.push(url);
-    }
-  }
+  const entries = SITEMAP_ENTRIES.map((e) => {
+    // A URL with no previous date is new to the sitemap, so today is
+    // both the best answer and the only one available.
+    const lastmod = changed.has(e.file) || !previous.has(e.url) ? today : previous.get(e.url);
+    if (lastmod !== previous.get(e.url)) bumped.push(e.url);
+    return { ...e, lastmod };
+  });
+
+  write("sitemap.xml", renderSitemapXml(entries));
 
   if (bumped.length) {
-    write("sitemap.xml", xml);
-    console.log(`sitemap.xml: bumped lastmod -> ${today} for:\n  ${bumped.join("\n  ")}`);
+    console.log(`sitemap.xml: lastmod -> ${today} for:\n  ${bumped.join("\n  ")}`);
   }
 }
 
@@ -261,5 +303,6 @@ buildIndexHtml();
 buildCvHtml();
 buildNotFoundHtml();
 buildMirrors();
-bumpSitemap();
+buildMetaFiles();
+buildSitemap();
 console.log("Build complete.");
