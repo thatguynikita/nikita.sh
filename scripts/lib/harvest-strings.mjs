@@ -21,14 +21,41 @@ const LITERAL = /'((?:[^'\\\n]|\\.)*)'|"((?:[^"\\\n]|\\.)*)"|`((?:[^`\\]|\\.)*)`
 // separators and property keys, never translatable copy.
 const MIN_LENGTH = 3;
 
-/** Every distinct string literal in `source`, sorted. */
+// Source text carries escapes ("that\\'s"); a locale file's parsed value
+// doesn't ("that's"). Comparing the two forms directly reports every
+// migrated string as missing, so both sides are normalised to the value.
+// `${...}` is left alone — placeholder rewrites are a real change and
+// belong in EXPECTED_CHANGES, not hidden by normalisation.
+function unescapeLiteral(raw) {
+  return raw.replace(/\\(u\{[0-9a-fA-F]+\}|u[0-9a-fA-F]{4}|x[0-9a-fA-F]{2}|[\s\S])/g, (m, esc) => {
+    switch (esc[0]) {
+      case "n": return "\n";
+      case "t": return "\t";
+      case "r": return "\r";
+      case "b": return "\b";
+      case "f": return "\f";
+      case "v": return "\v";
+      case "0": return esc === "0" ? "\0" : esc;
+      case "x": return String.fromCharCode(parseInt(esc.slice(1), 16));
+      case "u":
+        return esc[1] === "{"
+          ? String.fromCodePoint(parseInt(esc.slice(2, -1), 16))
+          : String.fromCharCode(parseInt(esc.slice(1), 16));
+      case "\n": return "";
+      default: return esc;
+    }
+  });
+}
+
+/** Every distinct string literal in `source`, sorted, as values. */
 export function harvestStrings(source) {
   const found = new Set();
   for (const m of source.matchAll(LITERAL)) {
     const raw = m[1] ?? m[2] ?? m[3];
     if (raw === undefined) continue;
-    if (raw.length < MIN_LENGTH) continue;
-    found.add(raw);
+    const value = unescapeLiteral(raw);
+    if (value.length < MIN_LENGTH) continue;
+    found.add(value);
   }
   return [...found].sort();
 }

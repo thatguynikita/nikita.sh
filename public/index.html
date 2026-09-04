@@ -523,9 +523,7 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
     const { browser, os } = detectClient();
     const tz = detectTimezone();
     const tzQuip = timeQuip(new Date().getHours());
-    const L = lang === 'ru'
-      ? { user:'Пользователь', browser:'Браузер', os:'ОС', tz:'Часовой пояс' }
-      : { user:'User', browser:'Browser', os:'OS', tz:'Timezone' };
+    const L = t('whoami.labels');
     let html = `<div><span class="accent">${L.user}:</span> guest</div>`;
     html += `<div><span class="accent">${L.browser}:</span> ${browser}</div>`;
     html += `<div><span class="accent">${L.os}:</span> ${os}</div>`;
@@ -684,8 +682,8 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
       const row = wrap.closest('.np-row');
       const isPlaying = typeof npLatest === 'string';
       let text;
-      if(npLatest === undefined) text = lang === 'ru' ? "spotify недоступен" : "spotify offline";
-      else if(npLatest === null) text = lang === 'ru' ? "сейчас ничего не играет" : "nothing playing right now";
+      if(npLatest === undefined) text = t('nowPlaying.offline');
+      else if(npLatest === null) text = t('nowPlaying.idle');
       else text = npLatest;
 
       if(npLatest && npUrl){
@@ -724,15 +722,7 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
   setInterval(fetchNowPlaying, NP_POLL_MS);
 
   function neofetchHTML(){
-    const L = lang === 'ru'
-      ? { name:"Имя", role:"Должность", uptime:"Стаж", shell:"Оболочка", stack:"Стек", status:"Статус", playing:"Играет",
-          nameVal:"Никита Чернозипунников",
-          roleVal:"DevOps / SRE", uptimeVal:"11+ лет в проде", stackVal:"AWS · OpenStack · Kubernetes · Linux",
-          statusVal:"в творческом отпуске (алерты замьючены)" }
-      : { name:"Name", role:"Role", uptime:"Uptime", shell:"Shell", stack:"Stack", status:"Status", playing:"Playing",
-          nameVal:"Nikita Chernozipunnikov",
-          roleVal:"DevOps / SRE", uptimeVal:"11+ years in production", stackVal:"AWS · OpenStack · Kubernetes · Linux",
-          statusVal:"on sabbatical (pager silenced)" };
+    const L = t('neofetch.labels');
     const html = `<div class="neofetch">
       <div class="nf-art">${NEOFETCH}</div>
       <div class="nf-info">
@@ -752,44 +742,48 @@ DevOps/SRE with eleven years of experience in Application Support and Operations
   }
 
   /* GENERATED:ABOUT:START — edit content/site-data.mjs, then run scripts/build.mjs */
-  const ABOUT_EN = `DevOps/SRE with eleven years of experience in Application Support and Operations,
+  const ABOUT_TEXT = {
+    en: `DevOps/SRE with eleven years of experience in Application Support and Operations,
 gradually developing towards AI-driven Software Development.
 
 Solid knowledge of how modern computer systems work (and how they don't),
 extensive Linux and network administration experience, a sound understanding
 of Computer Science concepts, and plenty of enthusiasm for bringing DevOps
-and SRE practices into reality.`;
+and SRE practices into reality.`,
 
-  const ABOUT_RU = `DevOps/SRE-инженер с одиннадцатилетним опытом в Application Support и Operations,
+    ru: `DevOps/SRE-инженер с одиннадцатилетним опытом в Application Support и Operations,
 постепенно развивающийся в сторону разработки ПО с применением ИИ.
 
 Хорошее понимание того, как устроены современные компьютерные системы
 (и как именно они ломаются), богатый опыт администрирования Linux и сетей,
 крепкое понимание основ Computer Science и море энтузиазма по внедрению
-практик DevOps и SRE в реальную жизнь.`;
+практик DevOps и SRE в реальную жизнь.`,
+  };
   /* GENERATED:ABOUT:END */
 
-  function ABOUT(){ return lang === 'ru' ? ABOUT_RU : ABOUT_EN; }
+  function ABOUT(){ return ABOUT_TEXT[lang]; }
 
   /* GENERATED:SKILLS:START — edit content/site-data.mjs, then run scripts/build.mjs */
-  const SKILLS_EN = [
-    ["Linux","RHEL, CentOS, Ubuntu, RedOS"],
-    ["Network","TCP/IP, HTTP(S), DNS, SSH, SSL/TLS, APIs, proxies, load balancers, routing, security"],
-    ["Containers","ECS, Kubernetes, OpenShift, Docker, Helm"],
-    ["Cloud","AWS (primarily), GCP, Azure, Yandex Cloud, OpenStack"],
-    ["Databases","PostgreSQL, MariaDB, MySQL, ClickHouse, MongoDB"],
-  ];
+  const SKILLS_ROWS = {
+    en: [
+      ["Linux","RHEL, CentOS, Ubuntu, RedOS"],
+      ["Network","TCP/IP, HTTP(S), DNS, SSH, SSL/TLS, APIs, proxies, load balancers, routing, security"],
+      ["Containers","ECS, Kubernetes, OpenShift, Docker, Helm"],
+      ["Cloud","AWS (primarily), GCP, Azure, Yandex Cloud, OpenStack"],
+      ["Databases","PostgreSQL, MariaDB, MySQL, ClickHouse, MongoDB"],
+    ],
 
-  const SKILLS_RU = [
-    ["Linux","RHEL, CentOS, Ubuntu, RedOS"],
-    ["Сети","TCP/IP, HTTP(S), DNS, SSH, SSL/TLS, APIs, proxies, load balancers, routing, security"],
-    ["Контейнеры","ECS, Kubernetes, OpenShift, Docker, Helm"],
-    ["Облако","AWS (primarily), GCP, Azure, Yandex Cloud, OpenStack"],
-    ["Базы данных","PostgreSQL, MariaDB, MySQL, ClickHouse, MongoDB"],
-  ];
+    ru: [
+      ["Linux","RHEL, CentOS, Ubuntu, RedOS"],
+      ["Сети","TCP/IP, HTTP(S), DNS, SSH, SSL/TLS, APIs, proxies, load balancers, routing, security"],
+      ["Контейнеры","ECS, Kubernetes, OpenShift, Docker, Helm"],
+      ["Облако","AWS (primarily), GCP, Azure, Yandex Cloud, OpenStack"],
+      ["Базы данных","PostgreSQL, MariaDB, MySQL, ClickHouse, MongoDB"],
+    ],
+  };
   /* GENERATED:SKILLS:END */
 
-  function SKILLS(){ return lang === 'ru' ? SKILLS_RU : SKILLS_EN; }
+  function SKILLS(){ return SKILLS_ROWS[lang]; }
 
   /* GENERATED:SOCIALS:START — edit content/site-data.mjs, then run scripts/build.mjs */
   const SOCIALS = [
@@ -819,7 +813,11 @@ and SRE practices into reality.`;
       "themeUsage": "usage: theme &lt;green|amber|pascal|commodore|solarized|ubuntu&gt;",
       "langUsage": "usage: lang &lt;ru|en&gt;  /  использование: lang &lt;ru|en&gt;",
       "langSet": "language switched to <span class=\"glow\">English</span>",
-      "sudo": "<span class=\"amber\">This incident will be reported.</span>",
+      "sudo": {
+        "reported": "<span class=\"amber\">This incident will be reported.</span>",
+        "justKidding": "<span class=\"amber\">...just kidding. nice try though.</span>",
+        "nothingHarmed": "<span class=\"dim\">(nothing was harmed — this is a static site, you're in a browser, not a real server)</span>"
+      },
       "gameDenied": "bash: ./milk-quest.sh: Permission denied",
       "loggingOut": "logging out...",
       "connClosed": "connection to nikita.sh closed.",
@@ -876,7 +874,185 @@ and SRE practices into reality.`;
         "A good on-call rotation is invisible. A bad one is a group chat at 2am.",
         "The incident is never really over — it just becomes a Jira ticket nobody assigns.",
         "You don't need more dashboards. You need to read the ones you have."
-      ]
+      ],
+      "whoami": {
+        "labels": {
+          "user": "User",
+          "browser": "Browser",
+          "os": "OS",
+          "tz": "Timezone"
+        }
+      },
+      "nowPlaying": {
+        "offline": "spotify offline",
+        "idle": "nothing playing right now"
+      },
+      "neofetch": {
+        "labels": {
+          "name": "Name",
+          "role": "Role",
+          "uptime": "Uptime",
+          "shell": "Shell",
+          "stack": "Stack",
+          "status": "Status",
+          "playing": "Playing",
+          "nameVal": "Nikita Chernozipunnikov",
+          "roleVal": "DevOps / SRE",
+          "uptimeVal": "11+ years in production",
+          "stackVal": "AWS · OpenStack · Kubernetes · Linux",
+          "statusVal": "on sabbatical (pager silenced)"
+        }
+      },
+      "top": {
+        "headers": [
+          "PID",
+          "CMD",
+          "CPU%",
+          "MEM%",
+          "STATUS"
+        ],
+        "running": "running",
+        "sleeping": "sleeping",
+        "zombie": "zombie",
+        "quitChip": "q — quit",
+        "quitHint": "(top — q to quit)",
+        "quitHintDim": "<span class=\"dim\">press <span class=\"accent\">q</span> or type <span class=\"accent\">exit</span> to quit</span>",
+        "exited": "exited top.",
+        "quitPrompt": "press <span class=\"accent\">q</span> or type <span class=\"accent\">exit</span> to quit"
+      },
+      "kubectl": {
+        "headers": [
+          "NAME",
+          "READY",
+          "STATUS",
+          "AGE"
+        ],
+        "running": "Running",
+        "describeUsage": "usage: kubectl describe pod <name>",
+        "podNotFound": "Error from server (NotFound): pods \"{pod}\" not found",
+        "help": "kubectl controls the Kubernetes cluster manager.",
+        "subcommands": "available subcommands: <span class=\"glow\">get pods</span>, <span class=\"glow\">describe pod &lt;name&gt;</span>",
+        "unknownCommand": "error: unknown command \"{command}\" for \"kubectl\"",
+        "reasonLabel": "Reason",
+        "barelyReady": "just barely",
+        "pods": {
+          "condensed-milk-store-0": {
+            "reason": "OOMKilled (ate too much condensed milk)",
+            "events": [
+              "Killing — container exceeded sugar limit",
+              "BackOff — restart delayed, container is recovering",
+              "Pulling — image \"cat:hungry-latest\""
+            ]
+          },
+          "sre-sanity-canary": {
+            "status": "Running",
+            "reason": "held together by coffee and stubbornness",
+            "events": [
+              "Started — container started",
+              "Warning — anxiety level approaching critical"
+            ]
+          },
+          "deploy-friday-afternoon": {
+            "reason": "node pressure: it's Friday, 5:58pm",
+            "events": [
+              "Evicted — the node decided it was done for the day"
+            ]
+          },
+          "cat-deployment-7f9d8c-x2m4q": {
+            "status": "Running",
+            "reason": "fully motivated, condensed milk cans: 0/30",
+            "events": [
+              "Started — container started 11 years ago",
+              "Normal — more stable than most production services"
+            ]
+          }
+        }
+      },
+      "a11y": {
+        "inputLabel": "Terminal command input",
+        "outputLabel": "Terminal output"
+      },
+      "ssh": {
+        "handshake": [
+          "requesting handshake with {host} ...",
+          "ECDSA key fingerprint is SHA256:7hR3s+kn0wYouR3Wo7rth.",
+          "Are you sure you want to continue connecting (yes/no)? yes",
+          "Warning: Permanently added '{host}' (ECDSA) to the list of known hosts.",
+          "authenticating...",
+          "access granted."
+        ],
+        "askPrompt": "Type a command to ask a question, or \"exit\" to disconnect:",
+        "topicsLabel": "topics:",
+        "connected": "connected to <span class=\"glow\">{host}</span>.",
+        "closing": "closing connection to {host}...",
+        "askAnother": "<span class=\"dim\">ask another question, or type \"exit\"</span>",
+        "unrecognized": "unrecognized command — available: {commands} or \"exit\"",
+        "usage": "usage: ssh &lt;user@host&gt;",
+        "knownHosts": "<span class=\"dim\"># known hosts on this machine:</span> {hosts}"
+      },
+      "game": {
+        "script": [
+          "#!/bin/bash",
+          "# milk-quest.sh — don't read it, just run it",
+          "# see also: <a href=\"https://cat.nikita.sh\" target=\"_blank\" rel=\"noopener\">cat.nikita.sh</a>",
+          "# note: you'll need sudo",
+          "echo \"opening a little surprise...\"",
+          "xdg-open https://cat.nikita.sh 2&gt;/dev/null"
+        ]
+      },
+      "claude": {
+        "usage": "usage: claude \"&lt;prompt&gt;\" &nbsp;|&nbsp; claude log --oneline &nbsp;|&nbsp; claude --confess",
+        "log": {
+          "hidCommands": "feat: hid a few extra commands, didn't tell anyone",
+          "cursorPixel": "fix: cursor was one pixel to the right on empty line",
+          "sudoGate": "feat: sudo-gate the game, because permission systems are so funny",
+          "androidKeyboard": "fix: android keyboard scrambled the first typed letter (again)",
+          "fakeSsh": "feat: fake ssh failures, with a fourth-wall break",
+          "revert": "revert: user asked less nicely this time :("
+        },
+        "logNote": "<span class=\"dim\">this website has a longer commit history with me than most of my actual relationships</span>",
+        "confess": "yes — this terminal was built by asking an AI (hi, that's me).",
+        "lightTheme": {
+          "checking": "I'll take a look at the current theming setup.",
+          "foundNone": "Found it — this site doesn't have a light theme. It never has. It never will.",
+          "mightUpsetCat": "I could add one, but I'd like to flag it may upset the cat.",
+          "wontFix": "Marking as won't-fix. Anything else?",
+          "persistent": "Alright, you're persistent. Let me actually build it this time.",
+          "guessIWriteOne": "No light theme in here. Guess I'll have to write one.",
+          "sketching": "Sketching out a light palette... something in the spirit of Ayu Light.",
+          "wiringUp": "Wiring it up and naming it something nobody will guess.",
+          "shipped": "Shipped it. The cat has been informed and is filing a complaint.",
+          "flipSwitch": "Building it was my job — flipping the switch is yours: theme {theme}.",
+          "unmarking": "Un-marking as won't-fix. Anything else?",
+          "beenOverThis": "We've been over this.",
+          "ticketDone": "Ticket's marked done. Nothing left to build — just type theme {theme}."
+        },
+        "fixBug": {
+          "noBug": "There is no bug. There has never been a bug. I checked. Twice."
+        },
+        "addTests": {
+          "foundZero": "Found 0 tests. This is either very concerning or a bold design decision.",
+          "boldDecision": "I'm going to go with \"bold design decision\" and move on."
+        },
+        "generic": {
+          "gotIt": "Got it. Working on that now.",
+          "mightTakeLonger": "Actually, this might take longer than expected. Adding it to the list.",
+          "theListIsLong": "(the list is long. the list is always long.)"
+        }
+      },
+      "terraform": {
+        "willPerform": "<span class=\"dim\">Terraform will perform the following actions:</span>",
+        "destroyWeekend": "<span class=\"amber\">This will destroy your weekend. Only 'yes' will be accepted to approve.</span>",
+        "applyCancelled": "<span class=\"dim\">Enter a value: (timed out) — apply cancelled.</span>",
+        "acquiringLock": "<span class=\"dim\">Acquiring state lock (this may take a few moments)...</span>",
+        "willDestroy": "<span class=\"dim\">Terraform will destroy:</span>",
+        "confirmDestroy": "Do you really want to destroy all resources? Only 'yes' will be accepted to approve.",
+        "enterValue": "<span class=\"dim\">Enter a value: <span class=\"glow\">yes</span> (the terminal answered for you)</span>",
+        "ripWeekend": "<span class=\"dim\">(RIP weekend.)</span>",
+        "usage": "usage: terraform <subcommand>",
+        "subcommands": "available subcommands: <span class=\"glow\">apply</span>, <span class=\"glow\">destroy</span>",
+        "unknownSubcommand": "terraform: unknown subcommand \"{command}\""
+      }
     },
     "ru": {
       "availableCommands": "Доступные команды:",
@@ -892,7 +1068,11 @@ and SRE practices into reality.`;
       "themeUsage": "использование: theme &lt;green|amber|pascal|commodore|solarized|ubuntu&gt;",
       "langUsage": "usage: lang &lt;ru|en&gt;  /  использование: lang &lt;ru|en&gt;",
       "langSet": "язык переключён на <span class=\"glow\">русский</span>",
-      "sudo": "<span class=\"amber\">Об этом инциденте будет доложено.</span>",
+      "sudo": {
+        "reported": "<span class=\"amber\">Об этом инциденте будет доложено.</span>",
+        "justKidding": "<span class=\"amber\">...шутка. но неплохая попытка.</span>",
+        "nothingHarmed": "<span class=\"dim\">(ничего не пострадало — это статичный сайт, ты в браузере, а не на реальном сервере)</span>"
+      },
       "gameDenied": "bash: ./milk-quest.sh: отказано в доступе",
       "loggingOut": "выхожу из системы...",
       "connClosed": "соединение с nikita.sh закрыто.",
@@ -949,7 +1129,185 @@ and SRE practices into reality.`;
         "Хорошее дежурство незаметно. Плохое — это групповой чат в два часа ночи.",
         "Инцидент никогда по-настоящему не заканчивается — он просто становится тикетом в Jira который никому не назначают.",
         "Вам не нужно больше дашбордов. Вам нужно читать те, что уже есть."
-      ]
+      ],
+      "whoami": {
+        "labels": {
+          "user": "Пользователь",
+          "browser": "Браузер",
+          "os": "ОС",
+          "tz": "Часовой пояс"
+        }
+      },
+      "nowPlaying": {
+        "offline": "spotify недоступен",
+        "idle": "сейчас ничего не играет"
+      },
+      "neofetch": {
+        "labels": {
+          "name": "Имя",
+          "role": "Должность",
+          "uptime": "Стаж",
+          "shell": "Оболочка",
+          "stack": "Стек",
+          "status": "Статус",
+          "playing": "Играет",
+          "nameVal": "Никита Чернозипунников",
+          "roleVal": "DevOps / SRE",
+          "uptimeVal": "11+ лет в проде",
+          "stackVal": "AWS · OpenStack · Kubernetes · Linux",
+          "statusVal": "в творческом отпуске (алерты замьючены)"
+        }
+      },
+      "top": {
+        "headers": [
+          "PID",
+          "КОМАНДА",
+          "CPU%",
+          "MEM%",
+          "СТАТУС"
+        ],
+        "running": "работает",
+        "sleeping": "ожидание",
+        "zombie": "зомби",
+        "quitChip": "q — выход",
+        "quitHint": "(top — q для выхода)",
+        "quitHintDim": "<span class=\"dim\">нажмите <span class=\"accent\">q</span> или введите <span class=\"accent\">exit</span>, чтобы выйти</span>",
+        "exited": "вышли из top.",
+        "quitPrompt": "нажмите <span class=\"accent\">q</span> или введите <span class=\"accent\">exit</span>, чтобы выйти"
+      },
+      "kubectl": {
+        "headers": [
+          "ИМЯ",
+          "ГОТОВНОСТЬ",
+          "СТАТУС",
+          "ВОЗРАСТ"
+        ],
+        "running": "Работает",
+        "describeUsage": "использование: kubectl describe pod &lt;имя&gt;",
+        "podNotFound": "Error from server (NotFound): pods \"{pod}\" не найден",
+        "help": "kubectl управляет менеджером кластера Kubernetes.",
+        "subcommands": "доступные подкоманды: <span class=\"glow\">get pods</span>, <span class=\"glow\">describe pod &lt;имя&gt;</span>",
+        "unknownCommand": "error: неизвестная команда \"{command}\" для \"kubectl\"",
+        "reasonLabel": "Причина",
+        "barelyReady": "еле-еле",
+        "pods": {
+          "condensed-milk-store-0": {
+            "reason": "OOMKilled (переел сгущёнки)",
+            "events": [
+              "Killing — контейнер превысил лимит по сахару",
+              "BackOff — перезапуск отложен, контейнер приходит в себя",
+              "Pulling — image \"cat:hungry-latest\""
+            ]
+          },
+          "sre-sanity-canary": {
+            "status": "Работает",
+            "reason": "держится на кофе и упрямстве",
+            "events": [
+              "Started — контейнер запущен",
+              "Warning — уровень тревожности приближается к критическому"
+            ]
+          },
+          "deploy-friday-afternoon": {
+            "reason": "node pressure: пятница, 17:58",
+            "events": [
+              "Evicted — узел решил, что с него хватит на сегодня"
+            ]
+          },
+          "cat-deployment-7f9d8c-x2m4q": {
+            "status": "Работает",
+            "reason": "заряжен на результат, сгущёнки: 0/30",
+            "events": [
+              "Started — контейнер запущен 11 лет назад",
+              "Normal — работает стабильнее, чем большинство прод-сервисов"
+            ]
+          }
+        }
+      },
+      "a11y": {
+        "inputLabel": "Поле ввода команд терминала",
+        "outputLabel": "Вывод терминала"
+      },
+      "ssh": {
+        "handshake": [
+          "запрашиваю рукопожатие с {host} ...",
+          "ECDSA key fingerprint is SHA256:7hR3s+kn0wYouR3Wo7rth.",
+          "Are you sure you want to continue connecting (yes/no)? yes",
+          "Warning: Permanently added '{host}' (ECDSA) to the list of known hosts.",
+          "аутентификация...",
+          "доступ разрешён."
+        ],
+        "askPrompt": "Введите команду, чтобы задать вопрос, или \"exit\", чтобы отключиться:",
+        "topicsLabel": "темы:",
+        "connected": "подключено к <span class=\"glow\">{host}</span>.",
+        "closing": "разрываю соединение с {host}...",
+        "askAnother": "<span class=\"dim\">задайте другой вопрос, или введите \"exit\"</span>",
+        "unrecognized": "неизвестная команда — доступны: {commands} или \"exit\"",
+        "usage": "использование: ssh &lt;user@host&gt;",
+        "knownHosts": "<span class=\"dim\"># известные хосты на этой машине:</span> {hosts}"
+      },
+      "game": {
+        "script": [
+          "#!/bin/bash",
+          "# milk-quest.sh — ой, да не читай, просто запусти",
+          "# см. также: <a href=\"https://cat.nikita.sh\" target=\"_blank\" rel=\"noopener\">cat.nikita.sh</a>",
+          "# заметка: понадобится sudo",
+          "echo \"открываю маленький сюрприз...\"",
+          "xdg-open https://cat.nikita.sh 2&gt;/dev/null"
+        ]
+      },
+      "claude": {
+        "usage": "использование: claude \"&lt;промпт&gt;\" &nbsp;|&nbsp; claude log --oneline &nbsp;|&nbsp; claude --confess",
+        "log": {
+          "hidCommands": "feat: спрятал пару лишних команд, никому не сказал",
+          "cursorPixel": "fix: курсор появлялся на пиксель правее на пустой строке",
+          "sudoGate": "feat: спрятать игру за sudo, ведь системы пермиссий это так весело",
+          "androidKeyboard": "fix: клавиатура на android перепутала первую введённую букву (опять)",
+          "fakeSsh": "feat: фейковые ошибки ssh, с проламыванием четвёртой стены",
+          "revert": "revert: пользователь попросил менее вежливо в этот раз :("
+        },
+        "logNote": "<span class=\"dim\">с этим сайтом у меня история коммитов длиннее, чем с большинством моих реальных отношений</span>",
+        "confess": "да — этот терминал был собран с помощью ИИ (привет, это я).",
+        "lightTheme": {
+          "checking": "Проверю текущую систему тем.",
+          "foundNone": "Нашёл — у этого сайта нет светлой темы. Никогда не было. И не будет.",
+          "mightUpsetCat": "Могу добавить, но хочу отметить — коту это может не понравиться.",
+          "wontFix": "Помечаю как won't-fix. Что-нибудь ещё?",
+          "persistent": "Ладно, ты настойчив. На этот раз действительно сделаю это.",
+          "guessIWriteOne": "Светлой темы тут нет. Видимо, придётся написать самому.",
+          "sketching": "Набрасываю светлую палитру... что-то в духе Ayu Light.",
+          "wiringUp": "Подключаю её и называю так, чтобы никто не угадал.",
+          "shipped": "Готово. Кота уведомили — он подаёт жалобу.",
+          "flipSwitch": "Написать — моя работа, переключать — уже твоя: theme {theme}.",
+          "unmarking": "Снимаю пометку won't-fix. Что-нибудь ещё?",
+          "beenOverThis": "Мы это уже обсуждали.",
+          "ticketDone": "Тикет помечен как выполненный. Строить больше нечего — просто набери theme {theme}."
+        },
+        "fixBug": {
+          "noBug": "Багов нет. Багов никогда не было. Я проверил. Дважды."
+        },
+        "addTests": {
+          "foundZero": "Найдено 0 тестов. Это весьма тревожно конечно, либо смелое дизайн-решение.",
+          "boldDecision": "Остановлюсь на «смелом дизайн-решении» и пойду дальше."
+        },
+        "generic": {
+          "gotIt": "Понял. Уже работаю над этим.",
+          "mightTakeLonger": "На самом деле это может занять больше времени чем ожидалось. Добавляю в список.",
+          "theListIsLong": "(список длинный. список всегда длинный.)"
+        }
+      },
+      "terraform": {
+        "willPerform": "<span class=\"dim\">Terraform выполнит следующие действия:</span>",
+        "destroyWeekend": "<span class=\"amber\">Это уничтожит твои выходные. Только \"yes\" будет принято для подтверждения.</span>",
+        "applyCancelled": "<span class=\"dim\">Enter a value: (тайм-аут) — apply отменён.</span>",
+        "acquiringLock": "<span class=\"dim\">Acquiring state lock (это может занять некоторое время)...</span>",
+        "willDestroy": "<span class=\"dim\">Terraform уничтожит:</span>",
+        "confirmDestroy": "Вы действительно хотите уничтожить все ресурсы? Только \"yes\" будет принято для подтверждения.",
+        "enterValue": "<span class=\"dim\">Enter a value: <span class=\"glow\">yes</span> (терминал ответил за вас)</span>",
+        "ripWeekend": "<span class=\"dim\">(покойтесь с миром, выходные.)</span>",
+        "usage": "использование: terraform &lt;subcommand&gt;",
+        "subcommands": "доступные подкоманды: <span class=\"glow\">apply</span>, <span class=\"glow\">destroy</span>",
+        "unknownSubcommand": "terraform: неизвестная подкоманда \"{command}\""
+      }
     }
   };
   /* GENERATED:I18N:END */
@@ -987,10 +1345,10 @@ and SRE practices into reality.`;
   }
 
   function topTable(){
-    const H = lang === 'ru' ? ["PID","КОМАНДА","CPU%","MEM%","СТАТУС"] : ["PID","CMD","CPU%","MEM%","STATUS"];
-    const running = lang === 'ru' ? "работает" : "running";
-    const sleeping = lang === 'ru' ? "ожидание" : "sleeping";
-    const zombie = lang === 'ru' ? "зомби" : "zombie";
+    const H = t('top.headers');
+    const running = t('top.running');
+    const sleeping = t('top.sleeping');
+    const zombie = t('top.zombie');
     const procs = [
       ["1","coffee.service",(10+Math.random()*10).toFixed(1),(2+Math.random()*3).toFixed(1),running],
       ["2","cat_herder.py",(70+Math.random()*20).toFixed(1),(30+Math.random()*15).toFixed(1),running],
@@ -1003,77 +1361,35 @@ and SRE practices into reality.`;
   }
 
   function kubectlPods(){
-    const H = lang === 'ru' ? ["ИМЯ","ГОТОВНОСТЬ","СТАТУС","ВОЗРАСТ"] : ["NAME","READY","STATUS","AGE"];
-    const running = lang === 'ru' ? "Работает" : "Running";
+    const H = t('kubectl.headers');
+    const running = t('kubectl.running');
     const pods = [
       ["cat-deployment-7f9d8c-x2m4q","1/1",running,"11y"],
       ["condensed-milk-store-0","0/1","CrashLoopBackOff","3m"],
-      ["sre-sanity-canary","1/1",running,lang==='ru'?"еле-еле":"just barely"],
+      ["sre-sanity-canary","1/1",running,t('kubectl.barelyReady')],
       ["deploy-friday-afternoon","0/1","Evicted","2m"],
     ];
     return tableHTML(H, pods);
   }
 
   function describePod(name){
+    // Pod names and restart counts are data, not copy. `status` is only
+    // translated where it's an English word ("Running"); a Kubernetes
+    // state string ("CrashLoopBackOff", "Evicted") is the same
+    // everywhere, so it stays here and the locale files don't carry it.
     const known = {
-      "condensed-milk-store-0": {
-        status: "CrashLoopBackOff",
-        reason: lang === 'ru' ? "OOMKilled (переел сгущёнки)" : "OOMKilled (ate too much condensed milk)",
-        restarts: "47",
-        events: lang === 'ru' ? [
-          "Killing — контейнер превысил лимит по сахару",
-          "BackOff — перезапуск отложен, контейнер приходит в себя",
-          "Pulling — image \"cat:hungry-latest\"",
-        ] : [
-          "Killing — container exceeded sugar limit",
-          "BackOff — restart delayed, container is recovering",
-          "Pulling — image \"cat:hungry-latest\"",
-        ],
-      },
-      "sre-sanity-canary": {
-        status: lang === 'ru' ? "Работает" : "Running",
-        reason: lang === 'ru' ? "держится на кофе и упрямстве" : "held together by coffee and stubbornness",
-        restarts: "0",
-        events: lang === 'ru' ? [
-          "Started — контейнер запущен",
-          "Warning — уровень тревожности приближается к критическому",
-        ] : [
-          "Started — container started",
-          "Warning — anxiety level approaching critical",
-        ],
-      },
-      "deploy-friday-afternoon": {
-        status: "Evicted",
-        reason: lang === 'ru' ? "node pressure: пятница, 17:58" : "node pressure: it's Friday, 5:58pm",
-        restarts: "0",
-        events: lang === 'ru' ? [
-          "Evicted — узел решил, что с него хватит на сегодня",
-        ] : [
-          "Evicted — the node decided it was done for the day",
-        ],
-      },
-      "cat-deployment-7f9d8c-x2m4q": {
-        status: lang === 'ru' ? "Работает" : "Running",
-        reason: lang === 'ru' ? "заряжен на результат, сгущёнки: 0/30" : "fully motivated, condensed milk cans: 0/30",
-        restarts: "0",
-        events: lang === 'ru' ? [
-          "Started — контейнер запущен 11 лет назад",
-          "Normal — работает стабильнее, чем большинство прод-сервисов",
-        ] : [
-          "Started — container started 11 years ago",
-          "Normal — more stable than most production services",
-        ],
-      },
+      "condensed-milk-store-0":      { status: "CrashLoopBackOff", restarts: "47" },
+      "sre-sanity-canary":           { restarts: "0" },
+      "deploy-friday-afternoon":     { status: "Evicted", restarts: "0" },
+      "cat-deployment-7f9d8c-x2m4q": { restarts: "0" },
     };
-    const d = known[name];
-    if(!d){
-      return null;
-    }
+    if(!known[name]) return null;
+    const d = { ...known[name], ...t('kubectl.pods')[name] };
     let html = `<div><span class="accent">Name:</span> ${escapeHtml(name)}</div>`;
     html += `<div><span class="accent">Status:</span> ${d.status}</div>`;
-    html += `<div><span class="accent">${lang==='ru'?'Причина':'Reason'}:</span> ${d.reason}</div>`;
+    html += `<div><span class="accent">${t('kubectl.reasonLabel')}:</span> ${d.reason}</div>`;
     html += `<div><span class="accent">Restarts:</span> ${d.restarts}</div>`;
-    html += `<div class="dim">${lang==='ru'?'Events':'Events'}:</div>`;
+    html += `<div class="dim">Events:</div>`;
     d.events.forEach(ev=>{ html += `<div class="dim">  ${ev}</div>`; });
     return html;
   }
@@ -1143,13 +1459,18 @@ and SRE practices into reality.`;
     ];
   }
 
-  // t('key') for a plain string; t('key', {file:'x'}) fills the
-  // "{file}"-style placeholders. Named rather than positional so a
-  // translation can reorder or repeat them.
+  // t('a.b.c') reads a dotted path out of the current locale;
+  // t('key', {file:'x'}) fills the "{file}"-style placeholders. Named
+  // rather than positional so a translation can reorder or repeat them.
+  // Arrays are filled element-wise, so a multi-line block of output can
+  // be one key instead of one key per line.
   function t(key, params){
-    const v = I18N[lang][key];
-    if(typeof v !== 'string' || !params) return v;
-    return v.replace(/\{(\w+)\}/g, (m, k) => (k in params ? params[k] : m));
+    const v = key.split('.').reduce((o, k) => (o == null ? o : o[k]), I18N[lang]);
+    if(!params) return v;
+    const fill = (s) => typeof s === 'string'
+      ? s.replace(/\{(\w+)\}/g, (m, k) => (k in params ? params[k] : m))
+      : s;
+    return Array.isArray(v) ? v.map(fill) : fill(v);
   }
 
   const COMMANDS = ["about","skills","contact","cv","neofetch","whoami","ls","cat","history","matrix","theme","lang","sudo","fortune","top","kubectl","terraform","ssh","claude","clear","help"];
@@ -1315,7 +1636,7 @@ and SRE practices into reality.`;
       let items;
 
       if(mode === 'top'){
-        items = [{label: lang === 'ru' ? 'q — выход' : 'q — quit', value:'q'}];
+        items = [{label: t('top.quitChip'), value:'q'}];
       } else if(mode === 'ssh'){
         const cmds = [...PERSONAS[sshPersonaKey].qa().map(q => q.cmd), 'exit'];
         const prefix = raw.trim().toLowerCase();
@@ -1381,7 +1702,7 @@ and SRE practices into reality.`;
   let topContainerEl = null;
   function psHTML(){
     if(mode === 'ssh') return `${PERSONAS[sshPersonaKey].host} <span class="path">~</span> $`;
-    if(mode === 'top') return `<span class="dim">${lang === 'ru' ? '(top — q для выхода)' : '(top — q to quit)'}</span>`;
+    if(mode === 'top') return `<span class="dim">${t('top.quitHint')}</span>`;
     return `guest@nikita.sh <span class="path">~</span> $`;
   }
   function updatePromptUI(){
@@ -1397,8 +1718,8 @@ and SRE practices into reality.`;
   }
 
   function updateA11yLabels(){
-    if(cmdInput) cmdInput.setAttribute('aria-label', lang === 'ru' ? 'Поле ввода команд терминала' : 'Terminal command input');
-    if(body) body.setAttribute('aria-label', lang === 'ru' ? 'Вывод терминала' : 'Terminal output');
+    if(cmdInput) cmdInput.setAttribute('aria-label', t('a11y.inputLabel'));
+    if(body) body.setAttribute('aria-label', t('a11y.outputLabel'));
   }
 
   function commonPrefix(arr){
@@ -1449,31 +1770,13 @@ and SRE practices into reality.`;
     body.innerHTML = "";
     await sleep(1500);
     document.body.classList.remove('panic');
-    printLine(lang === 'ru'
-      ? `<span class="amber">...шутка. но неплохая попытка.</span>`
-      : `<span class="amber">...just kidding. nice try though.</span>`);
-    printLine(lang === 'ru'
-      ? `<span class="dim">(ничего не пострадало — это статичный сайт, ты в браузере, а не на реальном сервере)</span>`
-      : `<span class="dim">(nothing was harmed — this is a static site, you're in a browser, not a real server)</span>`);
-    printLine(t('sudo'));
+    printLine(t('sudo.justKidding'));
+    printLine(t('sudo.nothingHarmed'));
+    printLine(t('sudo.reported'));
   }
 
   async function sshHandshake(host){
-    const lines = lang === 'ru' ? [
-      `запрашиваю рукопожатие с ${host} ...`,
-      "ECDSA key fingerprint is SHA256:7hR3s+kn0wYouR3Wo7rth.",
-      "Are you sure you want to continue connecting (yes/no)? yes",
-      `Warning: Permanently added '${host}' (ECDSA) to the list of known hosts.`,
-      "аутентификация...",
-      "доступ разрешён.",
-    ] : [
-      `requesting handshake with ${host} ...`,
-      "ECDSA key fingerprint is SHA256:7hR3s+kn0wYouR3Wo7rth.",
-      "Are you sure you want to continue connecting (yes/no)? yes",
-      `Warning: Permanently added '${host}' (ECDSA) to the list of known hosts.`,
-      "authenticating...",
-      "access granted.",
-    ];
+    const lines = t('ssh.handshake', {host});
     await playSequence(lines.map((l, i) => ({ text: `<span class="dim">${l}</span>`, delay: i === 0 ? 0 : 260 })));
     await sleep(260);
     await sleep(150);
@@ -1481,10 +1784,8 @@ and SRE practices into reality.`;
 
   function personaMenuHTML(personaKey){
     const qa = PERSONAS[personaKey].qa();
-    let html = `<div>${lang === 'ru'
-      ? `Введите команду, чтобы задать вопрос, или "exit", чтобы отключиться:`
-      : `Type a command to ask a question, or "exit" to disconnect:`}</div>`;
-    html += `<div class="dim">${lang === 'ru' ? 'темы:' : 'topics:'}</div>`;
+    let html = `<div>${t('ssh.askPrompt')}</div>`;
+    html += `<div class="dim">${t('ssh.topicsLabel')}</div>`;
     html += `<table class="tbl kv-tbl">`;
     qa.forEach(item=>{ html += `<tr><td class="accent">${item.cmd}</td><td>${item.q}</td></tr>`; });
     html += `</table>`;
@@ -1497,9 +1798,7 @@ and SRE practices into reality.`;
     mode = 'ssh';
     sshPersonaKey = personaKey;
     updatePromptUI();
-    printLine(lang === 'ru'
-      ? `подключено к <span class="glow">${host}</span>.`
-      : `connected to <span class="glow">${host}</span>.`);
+    printLine(t('ssh.connected', {host}));
     printLine(personaMenuHTML(personaKey));
   }
 
@@ -1509,9 +1808,7 @@ and SRE practices into reality.`;
     const lc = cmd.toLowerCase();
     const host = PERSONAS[sshPersonaKey].host;
     if(lc === 'exit' || lc === 'logout' || lc === 'quit'){
-      printLine(lang === 'ru'
-        ? `разрываю соединение с ${host}...`
-        : `closing connection to ${host}...`);
+      printLine(t('ssh.closing', {host}));
       mode = 'shell';
       sshPersonaKey = null;
       updatePromptUI();
@@ -1524,16 +1821,12 @@ and SRE practices into reality.`;
       await playSequence([
         { text: `<span class="accent">${item.q}</span>` },
         { text: item.a, typed: true },
-        { text: lang === 'ru'
-            ? `<span class="dim">задайте другой вопрос, или введите "exit"</span>`
-            : `<span class="dim">ask another question, or type "exit"</span>` },
+        { text: t('ssh.askAnother') },
       ]);
     } else if(lc === 'help' || lc === ''){
       printLine(personaMenuHTML(sshPersonaKey));
     } else {
-      printLine(lang === 'ru'
-        ? `неизвестная команда — доступны: ${qa.map(q=>q.cmd).join(', ')} или "exit"`
-        : `unrecognized command — available: ${qa.map(q=>q.cmd).join(', ')} or "exit"`);
+      printLine(t('ssh.unrecognized', {commands: qa.map(q=>q.cmd).join(', ')}));
     }
   }
 
@@ -1545,9 +1838,7 @@ and SRE practices into reality.`;
     mode = 'top';
     updatePromptUI();
     refreshTopView();
-    printLine(lang === 'ru'
-      ? `<span class="dim">нажмите <span class="accent">q</span> или введите <span class="accent">exit</span>, чтобы выйти</span>`
-      : `<span class="dim">press <span class="accent">q</span> or type <span class="accent">exit</span> to quit</span>`);
+    printLine(t('top.quitHintDim'));
     topInterval = setInterval(()=>{
       if(topContainerEl) topContainerEl.innerHTML = topTable();
     }, 1200);
@@ -1558,7 +1849,7 @@ and SRE practices into reality.`;
     topContainerEl = null;
     mode = 'shell';
     updatePromptUI();
-    printLine(lang === 'ru' ? 'вышли из top.' : 'exited top.');
+    printLine(t('top.exited'));
   }
 
   async function runTopCommand(raw){
@@ -1567,9 +1858,7 @@ and SRE practices into reality.`;
     if(cmd === 'q' || cmd === 'exit' || cmd === 'quit'){
       exitTopMode();
     } else {
-      printLine(lang === 'ru'
-        ? `нажмите <span class="accent">q</span> или введите <span class="accent">exit</span>, чтобы выйти`
-        : `press <span class="accent">q</span> or type <span class="accent">exit</span> to quit`);
+      printLine(t('top.quitPrompt'));
     }
   }
 
@@ -1678,21 +1967,7 @@ and SRE practices into reality.`;
           ALIASES.forEach(line => printLine(line));
         }
         else if(arg === "milk-quest.sh" || arg === "./milk-quest.sh") {
-          const lines = lang === 'ru' ? [
-            `#!/bin/bash`,
-            `# milk-quest.sh — ой, да не читай, просто запусти`,
-            `# см. также: <a href="https://cat.nikita.sh" target="_blank" rel="noopener">cat.nikita.sh</a>`,
-            `# заметка: понадобится sudo`,
-            `echo "открываю маленький сюрприз..."`,
-            `xdg-open https://cat.nikita.sh 2&gt;/dev/null`,
-          ] : [
-            `#!/bin/bash`,
-            `# milk-quest.sh — don't read it, just run it`,
-            `# see also: <a href="https://cat.nikita.sh" target="_blank" rel="noopener">cat.nikita.sh</a>`,
-            `# note: you'll need sudo`,
-            `echo "opening a little surprise..."`,
-            `xdg-open https://cat.nikita.sh 2&gt;/dev/null`,
-          ];
+          const lines = t('game.script');
           lines.forEach(l => printLine(`<span class="dim">${l}</span>`));
         }
         else if(!arg) { printLine(t('catUsage')); }
@@ -1861,7 +2136,7 @@ and SRE practices into reality.`;
           printLine(t('launchingGame'));
           openGame();
         } else {
-          printLine(t('sudo'));
+          printLine(t('sudo.reported'));
         }
         break;
       }
@@ -1874,28 +2149,22 @@ and SRE practices into reality.`;
         const al = a.toLowerCase();
         if(!a){
           printLine(`<span class="glow">Claude Code v2.1.4</span>`);
-          printLine(lang === 'ru'
-            ? 'использование: claude "&lt;промпт&gt;" &nbsp;|&nbsp; claude log --oneline &nbsp;|&nbsp; claude --confess'
-            : 'usage: claude "&lt;prompt&gt;" &nbsp;|&nbsp; claude log --oneline &nbsp;|&nbsp; claude --confess');
+          printLine(t('claude.usage'));
         } else if(al === 'log --oneline' || al === 'log'){
           const commits = [
-            ['t3u4v5w', lang === 'ru' ? "feat: спрятал пару лишних команд, никому не сказал" : "feat: hid a few extra commands, didn't tell anyone"],
-            ['a1b2c3d', lang === 'ru' ? 'fix: курсор появлялся на пиксель правее на пустой строке' : 'fix: cursor was one pixel to the right on empty line'],
-            ['e4f5g6h', lang === 'ru' ? 'feat: спрятать игру за sudo, ведь системы пермиссий это так весело' : 'feat: sudo-gate the game, because permission systems are so funny'],
-            ['h7i8j9k', lang === 'ru' ? 'fix: клавиатура на android перепутала первую введённую букву (опять)' : 'fix: android keyboard scrambled the first typed letter (again)'],
-            ['k1l2m3n', lang === 'ru' ? 'feat: фейковые ошибки ssh, с проламыванием четвёртой стены' : 'feat: fake ssh failures, with a fourth-wall break'],
-            ['n4o5p6q', lang === 'ru' ? 'revert: пользователь попросил менее вежливо в этот раз :(' : 'revert: user asked less nicely this time :('],
+            ['t3u4v5w', t('claude.log.hidCommands')],
+            ['a1b2c3d', t('claude.log.cursorPixel')],
+            ['e4f5g6h', t('claude.log.sudoGate')],
+            ['h7i8j9k', t('claude.log.androidKeyboard')],
+            ['k1l2m3n', t('claude.log.fakeSsh')],
+            ['n4o5p6q', t('claude.log.revert')],
           ];
           commits.forEach(([hash, msg]) => printLine(`<span class="dim">${hash}</span> ${escapeHtml(msg)}`));
           printLine(`<span class="dim">...</span>`);
-          printLine(lang === 'ru'
-            ? `<span class="dim">с этим сайтом у меня история коммитов длиннее, чем с большинством моих реальных отношений</span>`
-            : `<span class="dim">this website has a longer commit history with me than most of my actual relationships</span>`);
+          printLine(t('claude.logNote'));
         } else if(al === '--confess' || al === 'confess'){
           await playSequence([
-            { text: lang === 'ru'
-                ? 'да — этот терминал был собран с помощью ИИ (привет, это я).'
-                : 'yes — this terminal was built by asking an AI (hi, that\'s me).', delay: 500, typed: true },
+            { text: t('claude.confess'), delay: 500, typed: true },
           ]);
         } else {
           const prompt = a.replace(/^["'](.*)["']$/, '$1');
@@ -1904,77 +2173,53 @@ and SRE practices into reality.`;
             lightThemeAttempts++;
             if(lightThemeAttempts === 1){
               await playSequence([
-                { text: lang === 'ru' ? 'Проверю текущую систему тем.' : "I'll take a look at the current theming setup.", delay: 750, typed: true },
+                { text: t('claude.lightTheme.checking'), delay: 750, typed: true },
                 { text: `<span class="dim"> ⎿  Read index.html</span>`, delay: 200 },
-                { text: lang === 'ru'
-                    ? 'Нашёл — у этого сайта нет светлой темы. Никогда не было. И не будет.'
-                    : "Found it — this site doesn't have a light theme. It never has. It never will.", delay: 700, typed: true },
-                { text: lang === 'ru'
-                    ? 'Могу добавить, но хочу отметить — коту это может не понравиться.'
-                    : "I could add one, but I'd like to flag it may upset the cat.", delay: 350, typed: true },
-                { text: lang === 'ru' ? 'Помечаю как won\'t-fix. Что-нибудь ещё?' : "Marking as won't-fix. Anything else?", delay: 350, typed: true },
+                { text: t('claude.lightTheme.foundNone'), delay: 700, typed: true },
+                { text: t('claude.lightTheme.mightUpsetCat'), delay: 350, typed: true },
+                { text: t('claude.lightTheme.wontFix'), delay: 350, typed: true },
               ]);
             } else if(lightThemeAttempts === 2){
               await playSequence([
-                { text: lang === 'ru' ? 'Ладно, ты настойчив. На этот раз действительно сделаю это.' : "Alright, you're persistent. Let me actually build it this time.", delay: 600, typed: true },
+                { text: t('claude.lightTheme.persistent'), delay: 600, typed: true },
                 { text: `<span class="dim"> ⎿  Read theme.js</span>`, delay: 250 },
                 { text: `<span class="dim"> ⎿  Read theme.css</span>`, delay: 200 },
-                { text: lang === 'ru'
-                    ? 'Светлой темы тут нет. Видимо, придётся написать самому.'
-                    : "No light theme in here. Guess I'll have to write one.", delay: 650, typed: true },
+                { text: t('claude.lightTheme.guessIWriteOne'), delay: 650, typed: true },
                 { text: `<span class="dim"> ⎿  Edit theme.css</span>`, delay: 300 },
-                { text: lang === 'ru'
-                    ? 'Набрасываю светлую палитру... что-то в духе Ayu Light.'
-                    : 'Sketching out a light palette... something in the spirit of Ayu Light.', delay: 500, typed: true },
+                { text: t('claude.lightTheme.sketching'), delay: 500, typed: true },
                 { text: `<span class="dim"> ⎿  Edit theme.js</span>`, delay: 250 },
-                { text: lang === 'ru'
-                    ? 'Подключаю её и называю так, чтобы никто не угадал.'
-                    : "Wiring it up and naming it something nobody will guess.", delay: 450, typed: true },
-                { text: lang === 'ru' ? 'Готово. Кота уведомили — он подаёт жалобу.' : "Shipped it. The cat has been informed and is filing a complaint.", delay: 450, typed: true },
-                { text: lang === 'ru'
-                    ? `Написать — моя работа, переключать — уже твоя: theme ${SECRET_THEME_NAME}.`
-                    : `Building it was my job — flipping the switch is yours: theme ${SECRET_THEME_NAME}.`, delay: 450, typed: true },
+                { text: t('claude.lightTheme.wiringUp'), delay: 450, typed: true },
+                { text: t('claude.lightTheme.shipped'), delay: 450, typed: true },
+                { text: t('claude.lightTheme.flipSwitch', {theme: SECRET_THEME_NAME}), delay: 450, typed: true },
               ]);
               sabbaticalUnlocked = true;
               await playSequence([
-                { text: lang === 'ru' ? 'Снимаю пометку won\'t-fix. Что-нибудь ещё?' : "Un-marking as won't-fix. Anything else?", delay: 350, typed: true },
+                { text: t('claude.lightTheme.unmarking'), delay: 350, typed: true },
               ]);
             } else {
               await playSequence([
-                { text: lang === 'ru' ? 'Мы это уже обсуждали.' : "We've been over this.", delay: 500, typed: true },
-                { text: lang === 'ru'
-                    ? `Тикет помечен как выполненный. Строить больше нечего — просто набери theme ${SECRET_THEME_NAME}.`
-                    : `Ticket's marked done. Nothing left to build — just type theme ${SECRET_THEME_NAME}.`, delay: 400, typed: true },
+                { text: t('claude.lightTheme.beenOverThis'), delay: 500, typed: true },
+                { text: t('claude.lightTheme.ticketDone', {theme: SECRET_THEME_NAME}), delay: 400, typed: true },
               ]);
             }
           } else if(pl === 'fix the bug'){
             await playSequence([
               { text: `<span class="dim"> ⎿  Searched for "bug"</span>`, delay: 750 },
-              { text: lang === 'ru'
-                  ? 'Багов нет. Багов никогда не было. Я проверил. Дважды.'
-                  : 'There is no bug. There has never been a bug. I checked. Twice.', delay: 700, typed: true },
+              { text: t('claude.fixBug.noBug'), delay: 700, typed: true },
             ]);
           } else if(pl === 'add tests'){
             await playSequence([
               { text: `<span class="dim"> ⎿  Searched for "test"</span>`, delay: 750 },
-              { text: lang === 'ru'
-                  ? 'Найдено 0 тестов. Это весьма тревожно конечно, либо смелое дизайн-решение.'
-                  : 'Found 0 tests. This is either very concerning or a bold design decision.', delay: 700, typed: true },
-              { text: lang === 'ru'
-                  ? 'Остановлюсь на «смелом дизайн-решении» и пойду дальше.'
-                  : 'I\'m going to go with "bold design decision" and move on.', delay: 350, typed: true },
+              { text: t('claude.addTests.foundZero'), delay: 700, typed: true },
+              { text: t('claude.addTests.boldDecision'), delay: 350, typed: true },
             ]);
           } else {
             await playSequence([
               { text: `<span class="dim"> ⎿  Read index.html</span>`, delay: 750 },
-              { text: lang === 'ru' ? 'Понял. Уже работаю над этим.' : 'Got it. Working on that now.', delay: 700, typed: true },
+              { text: t('claude.generic.gotIt'), delay: 700, typed: true },
               { text: `...`, delay: 400 },
-              { text: lang === 'ru'
-                  ? 'На самом деле это может занять больше времени чем ожидалось. Добавляю в список.'
-                  : 'Actually, this might take longer than expected. Adding it to the list.', delay: 600, typed: true },
-              { text: lang === 'ru'
-                  ? '(список длинный. список всегда длинный.)'
-                  : '(the list is long. the list is always long.)', delay: 350, typed: true, cls: 'dim' },
+              { text: t('claude.generic.mightTakeLonger'), delay: 600, typed: true },
+              { text: t('claude.generic.theListIsLong'), delay: 350, typed: true, cls: 'dim' },
             ]);
           }
         }
@@ -1991,24 +2236,20 @@ and SRE practices into reality.`;
         } else if(a.startsWith('describe pod')){
           const podName = arg.trim().slice(arg.trim().toLowerCase().indexOf('describe pod') + 'describe pod'.length).trim();
           if(!podName){
-            printLine(lang === 'ru' ? 'использование: kubectl describe pod &lt;имя&gt;' : 'usage: kubectl describe pod <name>');
+            printLine(t('kubectl.describeUsage'));
           } else {
             const desc = describePod(podName);
             if(desc){
               printLine(desc);
             } else {
-              printLine(lang === 'ru'
-                ? `Error from server (NotFound): pods "${escapeHtml(podName)}" не найден`
-                : `Error from server (NotFound): pods "${escapeHtml(podName)}" not found`);
+              printLine(t('kubectl.podNotFound', {pod: escapeHtml(podName)}));
             }
           }
         } else if(!a){
-          printLine(lang === 'ru' ? 'kubectl управляет менеджером кластера Kubernetes.' : 'kubectl controls the Kubernetes cluster manager.');
-          printLine(lang === 'ru'
-            ? 'доступные подкоманды: <span class="glow">get pods</span>, <span class="glow">describe pod &lt;имя&gt;</span>'
-            : 'available subcommands: <span class="glow">get pods</span>, <span class="glow">describe pod &lt;name&gt;</span>');
+          printLine(t('kubectl.help'));
+          printLine(t('kubectl.subcommands'));
         } else {
-          printLine(lang === 'ru' ? `error: неизвестная команда "${escapeHtml(arg)}" для "kubectl"` : `error: unknown command "${escapeHtml(arg)}" for "kubectl"`);
+          printLine(t('kubectl.unknownCommand', {command: escapeHtml(arg)}));
         }
         break;
       }
@@ -2016,16 +2257,12 @@ and SRE practices into reality.`;
         const a = arg.trim().toLowerCase();
         if(a === 'apply'){
           await playSequence([
-            { text: lang === 'ru' ? `<span class="dim">Terraform выполнит следующие действия:</span>` : `<span class="dim">Terraform will perform the following actions:</span>` },
+            { text: t('terraform.willPerform') },
             { text: `  <span class="amber">~</span> resource "aws_instance" "sre_sleep_schedule" { hours = 0 -&gt; 8 }` },
             { text: `  <span style="color:var(--red)">-</span> resource "personal_time" "weekend" {}` },
             { text: `  <span class="glow">+</span> resource "incident" "unplanned" { severity = "sev1" }` },
-            { text: lang === 'ru'
-                ? `<span class="amber">Это уничтожит твои выходные. Только "yes" будет принято для подтверждения.</span>`
-                : `<span class="amber">This will destroy your weekend. Only 'yes' will be accepted to approve.</span>`, delay: 500 },
-            { text: lang === 'ru'
-                ? `<span class="dim">Enter a value: (тайм-аут) — apply отменён.</span>`
-                : `<span class="dim">Enter a value: (timed out) — apply cancelled.</span>`, delay: 2000 },
+            { text: t('terraform.destroyWeekend'), delay: 500 },
+            { text: t('terraform.applyCancelled'), delay: 2000 },
           ]);
         } else if(a === 'destroy'){
           const resources = [
@@ -2038,23 +2275,17 @@ and SRE practices into reality.`;
             {addr:'aws_backup_plan.will_to_live', block:'resource "aws_backup_plan" "will_to_live" {}', id:'retention-inf', t:23},
           ];
 
-          printLine(lang === 'ru'
-            ? `<span class="dim">Acquiring state lock (это может занять некоторое время)...</span>`
-            : `<span class="dim">Acquiring state lock (this may take a few moments)...</span>`);
+          printLine(t('terraform.acquiringLock'));
           await sleep(1500);
-          printLine(lang === 'ru' ? `<span class="dim">Terraform уничтожит:</span>` : `<span class="dim">Terraform will destroy:</span>`);
+          printLine(t('terraform.willDestroy'));
           for(const r of resources){
             printLine(`  <span style="color:var(--red)">-</span> ${r.block}`);
             await sleep(400);
           }
           printLine(`<span class="amber">Plan: 0 to add, 0 to change, ${resources.length} to destroy.</span>`);
-          printLine(lang === 'ru'
-            ? `Вы действительно хотите уничтожить все ресурсы? Только "yes" будет принято для подтверждения.`
-            : `Do you really want to destroy all resources? Only 'yes' will be accepted to approve.`);
+          printLine(t('terraform.confirmDestroy'));
           await sleep(2500);
-          printLine(lang === 'ru'
-            ? `<span class="dim">Enter a value: <span class="glow">yes</span> (терминал ответил за вас)</span>`
-            : `<span class="dim">Enter a value: <span class="glow">yes</span> (the terminal answered for you)</span>`);
+          printLine(t('terraform.enterValue'));
           await sleep(1500);
 
           document.body.classList.add('panic-amber');
@@ -2075,27 +2306,21 @@ and SRE practices into reality.`;
           document.body.classList.remove('panic-amber');
 
           printLine(`<span class="amber">Destroy complete! Resources: ${resources.length} destroyed.</span>`);
-          printLine(lang === 'ru'
-            ? `<span class="dim">(покойтесь с миром, выходные.)</span>`
-            : `<span class="dim">(RIP weekend.)</span>`);
+          printLine(t('terraform.ripWeekend'));
         } else if(!a){
-          printLine(lang === 'ru' ? 'использование: terraform &lt;subcommand&gt;' : 'usage: terraform <subcommand>');
-          printLine(lang === 'ru'
-            ? 'доступные подкоманды: <span class="glow">apply</span>, <span class="glow">destroy</span>'
-            : 'available subcommands: <span class="glow">apply</span>, <span class="glow">destroy</span>');
+          printLine(t('terraform.usage'));
+          printLine(t('terraform.subcommands'));
         } else {
-          printLine(lang === 'ru' ? `terraform: неизвестная подкоманда "${escapeHtml(arg)}"` : `terraform: unknown subcommand "${escapeHtml(arg)}"`);
+          printLine(t('terraform.unknownSubcommand', {command: escapeHtml(arg)}));
         }
         break;
       }
       case "ssh": {
         const target = arg.trim();
         if(!target){
-          printLine(lang === 'ru' ? 'использование: ssh &lt;user@host&gt;' : 'usage: ssh &lt;user@host&gt;');
+          printLine(t('ssh.usage'));
           const hostList = Object.values(PERSONAS).map(p => `<span class="glow">${p.host}</span>`).join(', ');
-          printLine(lang === 'ru'
-            ? `<span class="dim"># известные хосты на этой машине:</span> ${hostList}`
-            : `<span class="dim"># known hosts on this machine:</span> ${hostList}`);
+          printLine(t('ssh.knownHosts', {hosts: hostList}));
         } else {
           const personaKey = resolveSSHTarget(target);
           if(personaKey){

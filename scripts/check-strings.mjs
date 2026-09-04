@@ -25,43 +25,105 @@ import { localeCodes } from "./lib/site-urls.mjs";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const read = (p) => readFileSync(join(ROOT, p), "utf8");
 
-// old string -> { to, why }. `to` must itself be present, so a typo in
-// the replacement fails the check rather than silently excusing it.
-const EXPECTED_CHANGES = {
-  "cat: ${f}: No such file or directory": {
-    to: "cat: {file}: No such file or directory",
-    why: "t() moved from varargs to named params",
-  },
-  "cat: ${f}: Нет такого файла или каталога": {
-    to: "cat: {file}: Нет такого файла или каталога",
-    why: "t() moved from varargs to named params",
-  },
-  'theme set to <span class="glow">${n}</span>': {
-    to: 'theme set to <span class="glow">{name}</span>',
-    why: "t() moved from varargs to named params",
-  },
-  'тема изменена на <span class="glow">${n}</span>': {
-    to: 'тема изменена на <span class="glow">{name}</span>',
-    why: "t() moved from varargs to named params",
-  },
-  'command not found: <span class="accent">${b}</span>': {
-    to: 'command not found: <span class="accent">{command}</span>',
-    why: "t() moved from varargs to named params",
-  },
-  'команда не найдена: <span class="accent">${b}</span>': {
-    to: 'команда не найдена: <span class="accent">{command}</span>',
-    why: "t() moved from varargs to named params",
-  },
-};
+// Strings that legitimately changed shape or disappeared, grouped by
+// reason so the list stays readable as it grows. Everything in
+// EXPECTED_CHANGES must have its replacement actually present, so a typo
+// in a replacement fails the check rather than silently excusing the
+// original. Nothing user-visible should ever end up in
+// EXPECTED_REMOVALS — that list is for literals that were code, or for
+// artefacts of the harvester's deliberately-crude tokenisation.
 
-// Literals that genuinely no longer exist and shouldn't. The harvest is
-// deliberately over-broad — it takes every literal, including ones that
-// are code rather than copy — so this is where those land, each with a
-// reason. A user-visible string should never appear here; it belongs in
-// EXPECTED_CHANGES or is a bug.
-const EXPECTED_REMOVALS = {
-  function: "t() no longer accepts function values, so its `typeof v === 'function'` test is gone. Not copy.",
-};
+const EXPECTED_CHANGES = [
+  {
+    why:
+      "A ${expr} interpolation became a {name} placeholder when the string moved into a locale file. t() fills it in at the call site.",
+    pairs: [
+      ["<span class=\"dim\"># known hosts on this machine:</span> ${hostList}",
+       "<span class=\"dim\"># known hosts on this machine:</span> {hosts}"],
+      ["<span class=\"dim\"># известные хосты на этой машине:</span> ${hostList}",
+       "<span class=\"dim\"># известные хосты на этой машине:</span> {hosts}"],
+      ["Building it was my job — flipping the switch is yours: theme ${SECRET_THEME_NAME}.",
+       "Building it was my job — flipping the switch is yours: theme {theme}."],
+      ["Error from server (NotFound): pods \"${escapeHtml(podName)}\" not found",
+       "Error from server (NotFound): pods \"{pod}\" not found"],
+      ["Error from server (NotFound): pods \"${escapeHtml(podName)}\" не найден",
+       "Error from server (NotFound): pods \"{pod}\" не найден"],
+      ["Ticket's marked done. Nothing left to build — just type theme ${SECRET_THEME_NAME}.",
+       "Ticket's marked done. Nothing left to build — just type theme {theme}."],
+      ["Warning: Permanently added '${host}' (ECDSA) to the list of known hosts.",
+       "Warning: Permanently added '{host}' (ECDSA) to the list of known hosts."],
+      ["closing connection to ${host}...",
+       "closing connection to {host}..."],
+      ["connected to <span class=\"glow\">${host}</span>.",
+       "connected to <span class=\"glow\">{host}</span>."],
+      ["error: unknown command \"${escapeHtml(arg)}\" for \"kubectl\"",
+       "error: unknown command \"{command}\" for \"kubectl\""],
+      ["error: неизвестная команда \"${escapeHtml(arg)}\" для \"kubectl\"",
+       "error: неизвестная команда \"{command}\" для \"kubectl\""],
+      ["requesting handshake with ${host} ...",
+       "requesting handshake with {host} ..."],
+      ["terraform: unknown subcommand \"${escapeHtml(arg)}\"",
+       "terraform: unknown subcommand \"{command}\""],
+      ["terraform: неизвестная подкоманда \"${escapeHtml(arg)}\"",
+       "terraform: неизвестная подкоманда \"{command}\""],
+      ["unrecognized command — available: ${qa.map(q=>q.cmd).join(', ')} or \"exit\"",
+       "unrecognized command — available: {commands} or \"exit\""],
+      ["Написать — моя работа, переключать — уже твоя: theme ${SECRET_THEME_NAME}.",
+       "Написать — моя работа, переключать — уже твоя: theme {theme}."],
+      ["Тикет помечен как выполненный. Строить больше нечего — просто набери theme ${SECRET_THEME_NAME}.",
+       "Тикет помечен как выполненный. Строить больше нечего — просто набери theme {theme}."],
+      ["запрашиваю рукопожатие с ${host} ...",
+       "запрашиваю рукопожатие с {host} ..."],
+      ["неизвестная команда — доступны: ${qa.map(q=>q.cmd).join(', ')} или \"exit\"",
+       "неизвестная команда — доступны: {commands} или \"exit\""],
+      ["подключено к <span class=\"glow\">${host}</span>.",
+       "подключено к <span class=\"glow\">{host}</span>."],
+      ["разрываю соединение с ${host}...",
+       "разрываю соединение с {host}..."],
+    ],
+  },
+  {
+    why:
+      "A template literal that wrapped a `lang === 'ru' ? … : …` ternary now wraps a t() call. The literal's own text is unchanged; only what it interpolates moved.",
+    pairs: [
+      ["<div class=\"dim\">${lang === 'ru' ? 'темы:' : 'topics:'}</div>",
+       "<div class=\"dim\">${t('ssh.topicsLabel')}</div>"],
+      ["<span class=\"dim\">${lang === 'ru' ? '(top — q для выхода)' : '(top — q to quit)'}</span>",
+       "<span class=\"dim\">${t('top.quitHint')}</span>"],
+      ["<div><span class=\"accent\">${lang==='ru'?'Причина':'Reason'}:</span> ${d.reason}</div>",
+       "<div><span class=\"accent\">${t('kubectl.reasonLabel')}:</span> ${d.reason}</div>"],
+    ],
+  },
+  {
+    why:
+      "A ternary whose two branches were the identical string — it never translated anything — replaced by that string.",
+    pairs: [
+      ["<div class=\"dim\">${lang==='ru'?'Events':'Events'}:</div>",
+       "<div class=\"dim\">Events:</div>"],
+    ],
+  },
+];
+
+const EXPECTED_REMOVALS = [
+  {
+    why: "t() no longer accepts function values, so its `typeof v === 'function'` test is gone. Not copy.",
+    strings: ["function"],
+  },
+  {
+    why:
+      "Not a string at all: the harvester's regex tokenises a multi-line template literal that contained a nested ternary into fragments. The literal it came from still exists, with a t() call where the ternary was.",
+    strings: [
+      "\n      : ",
+      "<div>${lang === 'ru'\n      ? ",
+      "}</div>",
+    ],
+  },
+];
+
+const changeTo = new Map();
+for (const g of EXPECTED_CHANGES) for (const [from, to] of g.pairs) changeTo.set(from, { to, why: g.why });
+const removed = new Map();
+for (const g of EXPECTED_REMOVALS) for (const str of g.strings) removed.set(str, g.why);
 
 const golden = JSON.parse(read("tests/golden-strings.json"));
 
@@ -79,8 +141,8 @@ const missing = [];
 for (const [page, strings] of Object.entries(golden.pages)) {
   for (const s of strings) {
     if (haystack.has(s)) continue;
-    if (s in EXPECTED_REMOVALS) continue;
-    const change = EXPECTED_CHANGES[s];
+    if (removed.has(s)) continue;
+    const change = changeTo.get(s);
     if (change && haystack.has(change.to)) continue;
     missing.push({ page, s, change });
   }
