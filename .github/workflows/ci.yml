@@ -56,5 +56,11 @@ jobs:
       - name: Check every i18n key the pages use resolves
         run: npm run test:i18n
 
+      # init.mjs is the first command a forker runs, on the one file whose
+      # comments are its documentation. If it mangles site.config.mjs it
+      # does so before they know anything about the repo.
+      - name: Check `npm run init` rewrites site.config.mjs cleanly
+        run: npm run test:init
+
       - name: Deploy dry-run sanity check
         run: npm run deploy:dry-run

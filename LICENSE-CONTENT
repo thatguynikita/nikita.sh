@@ -3,28 +3,56 @@ Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International
 
 Copyright (c) 2026 Nikita Chernozipunnikov
 
-This license applies to the personal and creative content of nikita.sh —
-the biography, résumé/work-history text, photography, and the terminal
-persona's writing (fortunes, boot-sequence text, easter-egg dialogue,
-and similar copy) found throughout this repository, including but not
-limited to:
+This license covers one thing: the parts of this repository that are
+statements about a specific real person. Everything else — including the
+whole of the terminal's writing and jokes — is MIT-licensed; see LICENSE.
 
-  - nikita-photo.png
-  - content/site-data.mjs (the facts and their written expression)
-  - the personality/copy embedded in index.html and cv.html that isn't
-    part of the terminal's underlying mechanism (fortunes, boot lines,
-    the ssh persona dialogue, and similar)
-  - the generated /llm/ mirror pages, insofar as their text is derived
-    from the above
+WHAT THIS LICENSE COVERS
 
-It does NOT apply to the surrounding code — the terminal engine, the
-content-generation pipeline, page structure/styling, and build/deploy
-tooling — which is MIT-licensed; see LICENSE.
+  - The photograph (public/assets/img/nikita-photo.png).
+  - The name and identity: "Nikita Chernozipunnikov" / "Никита
+    Чернозипунников", and nikita.sh as that person's site.
+  - The factual personal content in content/site-data.mjs — the
+    biography (ABOUT, ABOUT_CV_SUFFIX), the skills, the work history
+    (JOBS), education, certifications, spoken languages, the
+    personality traits list, the llms.txt prose (LLMS_TXT), and the
+    per-page descriptions in PAGES — together with the wording in which
+    those facts are expressed.
+  - Anything generated from the above: the /llm/ mirror pages, the
+    JSON-LD, and the <noscript> fallbacks, insofar as their text is
+    derived from that content.
 
-Under CC BY-NC-ND 4.0, you may share this content as-is with attribution,
-for non-commercial purposes. You may not use it commercially, and you
-may not distribute modified/adapted versions of it (e.g. don't reuse
-the biography, photo, or persona as your own).
+  You may share this material as-is, with attribution, for
+  non-commercial purposes. You may not use it commercially, and you may
+  not distribute modified or adapted versions of it — in short, don't
+  present someone else's biography, photograph or career as your own.
+
+WHAT THIS LICENSE DOES NOT COVER
+
+  Everything in this repository that is not a statement about a real
+  person, including all of the following, is MIT (see LICENSE):
+
+  - The terminal engine, the content pipeline, the build and deploy
+    tooling, page structure, styling and themes.
+  - The entire terminal persona and easter-egg layer: the fortunes, the
+    boot sequence, the fake top / df / ps / who / w / uname / kubectl /
+    terraform output, the sudo jokes, the whoami quips, the fake claude
+    CLI conversation, the milk-quest.sh script, and the ssh recruiter
+    Q&A — its questions and its answers.
+
+  That layer is deliberately MIT. It is the part of this project worth
+  forking, and a license that forbade adapting it would have made the
+  fork pointless.
+
+A NOTE ON THE MIT-LICENSED PARTS THAT STILL DESCRIBE SOMEONE
+
+  Some of that MIT content is written in a specific person's voice and
+  describes their specific career — the recruiter Q&A answers, the
+  neofetch card's Uptime and Status lines, the "eleven years" in various
+  jokes. The license permits you to keep them. Common sense does not:
+  they are defaults you are expected to rewrite, in the same way you'd
+  rewrite the bio. See docs/SETUP.md, which separates "must replace"
+  (this file) from "should replace" (that).
 
 Full license text: https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
 Human-readable summary: https://creativecommons.org/licenses/by-nc-nd/4.0/

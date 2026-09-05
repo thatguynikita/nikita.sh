@@ -9,16 +9,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
+npm run init           # interactive first-run setup — writes site.config.mjs, then lists what personal content is left to replace
 npm run build          # propagate content/site-data.mjs + site.config.mjs + content/locales/* -> public/index.html, public/cv.html, public/404.html, public/llm/*, public/{sitemap.xml,robots.txt,llms.txt,site.webmanifest}
 npm test               # both checks below
 npm run test:strings   # assert no user-visible string disappeared (see tests/golden-strings.json)
 npm run test:i18n      # assert every i18n key the pages ask for resolves in every locale
+npm run test:init      # assert `npm run init` rewrites site.config.mjs without mangling it
 npm run deploy:dry-run # preview the full deploy manifest (file -> bucket key -> content-type), no network calls, no bucket needed
 npm run deploy -- --bucket <bucket-name>   # deploy everything (or set NIKITASH_BUCKET env var and drop --bucket)
 npm run deploy -- --bucket <bucket-name> index.html cv.html   # deploy only specific files (still checked against the allowlist) — unprefixed, same as --dry-run output
 ```
 
-There are two tests (`npm test`, described under "User-facing strings" below) and no linter or bundler — no dependencies are installed (`node_modules/` is gitignored but nothing populates it). "Correctness" is verified by `git diff` after a build (should be empty on a no-op run) and by exercising pages in a real browser (`file://` won't execute the JS — use the `static` preview config in `.claude/launch.json`, `python3 -m http.server --directory public` on port 8934, which serves `public/index.html`/`public/cv.html`/`public/404.html`).
+There are three tests (`npm test`) and no linter or bundler — no dependencies are installed (`node_modules/` is gitignored but nothing populates it). "Correctness" is verified by `git diff` after a build (should be empty on a no-op run) and by exercising pages in a real browser (`file://` won't execute the JS — use the `static` preview config in `.claude/launch.json`, `python3 -m http.server --directory public` on port 8934, which serves `public/index.html`/`public/cv.html`/`public/404.html`).
 
 CI (`.github/workflows/ci.yml`) runs `npm run build` then fails if `git status --porcelain` is non-empty — this is the drift check that catches a hand-edited `GENERATED:*` block or `llm/*` mirror page. It also runs `npm run test:strings` and `npm run deploy:dry-run`.
 
@@ -96,15 +98,26 @@ The rest of this section describes the object-storage path.
 
 ## Crawler mirror (`/llm/`)
 
-`SITE.mirrors.enabled` in `site.config.mjs` gates the whole feature, and off is a supported configuration rather than a degraded one: no mirror files are written, the live pages stop emitting `hreflang` alternates, and `sitemap.xml`/`llms.txt` stop listing mirror URLs. The `<noscript>` fallbacks on `index.html`/`cv.html` come out of the same `mirror-*.mjs` templates but are unaffected — they never reference a mirror URL.
+`SITE.mirrors.enabled` in `site.config.mjs` gates the whole feature, and off is a supported configuration rather than a degraded one: the live pages stop emitting `hreflang` alternates, `sitemap.xml`/`llms.txt` stop listing mirror URLs, and the build **deletes** the mirror pages it previously generated rather than merely not writing them — a fork clones this repo with them already committed, so skipping would leave the original site's mirrors on disk, in the deploy manifest, and live. It only removes files it owns; `llm/style.css` is hand-authored and survives. The `<noscript>` fallbacks on `index.html`/`cv.html` come out of the same `mirror-*.mjs` templates but are unaffected — they never reference a mirror URL.
 
 Everything locale-dependent in those templates lives in the per-locale `UI` table at the top of each file (including the notice and license prose, which used to be `lang === "ru" ? … : …` ternaries). The mirrors link each other with **relative** hrefs, unlike the live pages' absolute ones, so the "../" depth is computed by `mirrorRelPath()`/`mirrorRootRelPath()` in `scripts/lib/site-urls.mjs` rather than written literally. The trailing "English version: …" pointer names other languages **in English on every locale's page** — that's deliberate and matches the hand-written originals, since these pages exist for crawlers.
 
 `index.html`/`cv.html` never link to `/llm/` — a JS page and a plain-HTML page serving the same content differently at the same URL would read as cloaking to search engines. Discovery instead goes through `sitemap.xml` and `llms.txt` (which list `/llm/` and `/llm/ru/` directly), `hreflang` cross-references between the EN/RU mirror pairs (plus `x-default` pointing at EN), and a visible EN/RU switcher on each mirror page.
 
+## First-run experience (this is a template)
+
+The repo is meant to be forked, and a few things exist purely so a stranger's first hour works:
+
+- **`npm run init`** asks the handful of questions that decide `site.config.mjs`, writes it, and then lists every file still mentioning the previous owner. It deliberately does **not** touch `content/site-data.mjs` — that file is prose with comments, template literals and load-bearing line wraps, and a script editing it would either mangle it or need to be smarter than it's worth. The scan-and-list approach is a better checklist than anything hardcoded, and it can be re-run until clean.
+- **`scripts/lib/write-config.mjs`** is the pure function that rewrites `site.config.mjs`, separated out so it can be tested (`npm run test:init`). Its regexes match **horizontal whitespace only** (`[ \t]`, not `\s`) — `\s` crosses line boundaries and silently ate the blank lines between commented sections and pulled the next `},` up onto the value line. Every key in that file carries a paragraph of explanation, and those comments *are* the documentation for a forker, which is why it edits in place rather than regenerating.
+- **Validation failures print a message, not a stack trace**, and changing the locale list gets a tailored hint — it's the most common first edit and produces ~70 identical errors at once.
+- **`npm run test:strings` recognises a fork.** Past a fifth of the snapshot missing, it stops listing strings and says to re-record: that isn't a regression, it's a different site.
+
 ## Licensing
 
-Dual-licensed and this split matters when adding new content: **code** (terminal engine, content pipeline, build/deploy tooling, page structure/styling) is MIT (`LICENSE`); **content** (bio, résumé text, photography, the terminal persona's writing — fortunes, boot-sequence lines, easter-egg dialogue) is CC BY-NC-ND 4.0 (`LICENSE-CONTENT`), applied by reference, not full legal text inline.
+Dual-licensed, and the line is **not** where it looks: **CC BY-NC-ND** (`LICENSE-CONTENT`) covers only what is a statement about a real person — the photograph, the name/identity, and the factual personal content in `content/site-data.mjs` (bio, skills, work history, education, certs, spoken languages, traits, `LLMS_TXT`, `PAGES` descriptions) plus anything generated from it. **Everything else is MIT** (`LICENSE`), including the *entire* terminal persona and easter-egg layer: fortunes, boot sequence, fake `top`/`df`/`ps`/`who`/`w`/`uname`/`kubectl`/`terraform` output, sudo jokes, `whoami` quips, the fake `claude` conversation, `milk-quest.sh`, and the ssh recruiter Q&A **including its answers**. That layer is deliberately MIT because it's the part worth forking. Both licenses are applied by reference, not full legal text inline.
+
+When adding content, the question to ask is "is this a claim about a person, or is it a joke the terminal tells?" — the first is CC BY-NC-ND, the second is MIT. Some MIT copy still describes this specific person (the recruiter answers, the neofetch `Uptime`/`Status` lines); `docs/SETUP.md` separates "must replace (legal)" from "should replace (it's about someone else)".
 
 ## Other
 

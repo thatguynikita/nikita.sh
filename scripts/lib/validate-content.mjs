@@ -290,7 +290,37 @@ export function validateSiteData() {
     throw new Error(
       `content/site-data.mjs failed validation (${errors.length} problem${errors.length === 1 ? "" : "s"}):\n` +
         errors.map((e) => `  - ${e}`).join("\n") +
+        localeHint(errors) +
         `\n\nThe expected shape of every field is declared in scripts/lib/validate-content.mjs.`
     );
   }
+}
+
+// Changing the locale list is the first thing most forks do, and it
+// produces dozens of these at once. A generic "see the schema" is not a
+// useful answer to seventy identical errors, so say what the fix is.
+function localeHint(errors) {
+  const unexpected = errors.filter((e) => e.includes("unexpected locale")).length;
+  const missing = errors.filter((e) => /: missing$/.test(e) || e.includes("missing translation")).length;
+  if (!unexpected && !missing) return "";
+
+  const lines = ["", ""];
+  if (unexpected) {
+    lines.push(
+      `${unexpected} of these are languages content/site-data.mjs still has but`,
+      `site.config.mjs no longer lists. Delete those keys from the locale maps`,
+      `above — every one is named in the list, and the file has no other`,
+      `structure to get wrong. Your editor's multi-cursor will do it in one pass.`
+    );
+  }
+  if (missing) {
+    if (unexpected) lines.push("");
+    lines.push(
+      `${missing} of these are languages site.config.mjs lists that`,
+      `content/site-data.mjs doesn't have yet. Add a key for each, alongside`,
+      `the existing ones.`
+    );
+  }
+  lines.push("", `Then run the build again — it re-checks everything and lists whatever's left.`);
+  return lines.join("\n");
 }
