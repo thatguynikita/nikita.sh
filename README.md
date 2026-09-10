@@ -8,8 +8,10 @@
 > a rewrite of the same idea on Vite + TypeScript, with the CV prerendered
 > instead of assembled in the browser.
 >
-> Nothing here is maintained. If you came for the terminal, go to the new
-> repo; if you came for the history, it's all still here, frozen.
+> Nothing here is maintained, and nothing here is deployed — the live
+> site is no longer built from this repository. If you came for the
+> terminal, go to the new repo; if you came for the history, it's all
+> still here, frozen.
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/code-MIT-blue" alt="Code license: MIT"></a>
@@ -34,6 +36,12 @@ Everything deployed lived under `public/`; the repo root was
 source/tooling only. A small zero-dependency Node pipeline in `scripts/`
 kept facts that appeared in several places in sync, from one source of
 truth in `content/site-data.mjs`.
+
+[nikita.sh](https://nikita.sh) is still online, but it is served from
+elsewhere now. The build and deploy tooling in this repo points at
+infrastructure it no longer owns; treat `scripts/deploy.mjs` and
+`docs/UPDATE-GUIDE.md` as a record of how it used to work, not as
+instructions.
 
 ## Why it moved
 
